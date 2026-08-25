@@ -1,0 +1,113 @@
+/* ========= Design tokens (kept in sync with home.component.scss) ========= */
+:host{
+  --blue: #2563eb;
+  --navy: #0f1b2d;
+  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+
+  display: block;
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  line-height: 1.5;
+}
+
+:host, :host *{box-sizing:border-box;}
+img{max-width:100%; display:block;}
+a{color:inherit; text-decoration:none;}
+ul{list-style:none; margin:0; padding:0;}
+
+.container{
+  width:100%;
+  max-width:1240px;
+  margin:0 auto;
+  padding:0 24px;
+}
+
+/* ========= Footer ========= */
+.site-footer{background:var(--navy); color:#cbd5e1; padding-top:56px;}
+.footer-grid{
+  display:grid;
+  grid-template-columns:1.3fr 1fr 1fr 1fr 1.3fr;
+  gap:28px;
+  padding-bottom:40px;
+  border-bottom:1px solid rgba(255,255,255,.1);
+  min-width:0;
+}
+.footer-grid > *{min-width:0;}
+.footer-col h4{margin:0 0 14px;}
+.footer-heading{color:#fff; font-size:1.05rem; font-weight:700;}
+.footer-heading-spaced{margin-top:1.25rem;}
+.footer-col p{margin:0 0 8px; font-size:.88rem; line-height:1.6;}
+.footer-brand .footer-logo{
+  width:88px; height:88px; object-fit:contain; margin-bottom:14px;
+  /* Source logo is a black seal on a white square. invert() flips it to a
+     white seal on a black square, then screen drops that black to
+     transparent (shows the navy footer through) — reads as a clean white
+     logo with no image edit needed. */
+  filter:invert(1);
+  mix-blend-mode:screen;
+}
+.footer-brand h4{color:#fff; font-size:.92rem;}
+.social-row{display:flex; gap:10px;}
+.social-icon{
+  width:34px; height:34px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:.85rem; font-weight:700; color:#fff;
+}
+.social-yt{background:#ef4444;}
+.social-fb{background:#2563eb;}
+.social-ig{background:linear-gradient(45deg,#f58529,#dd2a7b,#8134af);}
+.social-li{background:#0a66c2;}
+.social-default{background:#334155;}
+.footer-links li a{display:block; padding:4px 0; font-size:.9rem; color:#cbd5e1;}
+.footer-links li a:hover{color:#fff;}
+.visitor-counter{display:flex; gap:4px;}
+.visitor-counter span{
+  background:#0b1524; border:1px solid rgba(255,255,255,.15);
+  color:#4ade80; font-weight:700; font-family:monospace; font-size:1rem;
+  width:26px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:4px;
+}
+.footer-map .open-in-maps{display:inline-block; margin-bottom:10px; color:#93c5fd; font-size:.85rem; font-weight:600;}
+.map-embed{width:100%; height:150px; border:0; border-radius:8px;}
+.footer-bottom{
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+  padding:20px 24px; font-size:.85rem; color:#93a3b8;
+}
+.footer-bottom-links{display:flex; gap:18px;}
+.footer-bottom-links a:hover{color:#fff;}
+
+/* ========= Floating widgets ========= */
+.admission-ribbon{
+  position:fixed; right:0; top:45%; transform:translateY(-50%) rotate(180deg);
+  writing-mode:vertical-rl;
+  background:var(--blue); color:#fff; font-weight:700; font-size:.85rem;
+  padding:14px 8px; border-radius:6px 0 0 6px; letter-spacing:.03em;
+  z-index:90;
+}
+.to-top{
+  position:fixed; right:20px; bottom:20px;
+  width:44px; height:44px; border-radius:50%;
+  /* Was var(--navy) — same color as .site-footer, so the button vanished
+     into it once scrolled that far. Blue keeps it visible over both the
+     white page body and the navy footer. */
+  background:var(--blue); color:#fff; border:none;
+  font-size:1.1rem; cursor:pointer; box-shadow:var(--shadow);
+  z-index:90;
+}
+
+/* ========= Responsive ========= */
+@media (max-width: 1240px){
+  .footer-grid{grid-template-columns:1fr 1fr;}
+}
+@media (max-width: 640px){
+  .admission-ribbon{display:none;}
+  .container{padding:0 16px;}
+
+  /* ---- Footer: center everything on mobile ---- */
+  .footer-grid{grid-template-columns:1fr; text-align:center;}
+  .footer-brand{display:flex; flex-direction:column; align-items:center;}
+  .social-row{justify-content:center;}
+  .footer-heading-spaced{margin-top:1.5rem;}
+  .visitor-counter{justify-content:center;}
+  .footer-map{display:flex; flex-direction:column; align-items:center;}
+  .footer-bottom{flex-direction:column; align-items:center; text-align:center;}
+  .footer-bottom-links{justify-content:center;}
+}

@@ -55,90 +55,9 @@ ul{list-style:none; margin:0; padding:0;}
 .btn-sm{padding:6px 14px; font-size:0.8rem;}
 .btn-block{width:100%; margin-top:6px; text-align:center;}
 
-/* ========= Header ========= */
-.site-header{
-  background:#fff;
-  position:sticky;
-  top:0;
-  z-index:100;
-}
-
-/* Row 1 — logo/title on the left, login pinned to the far right */
-.header-top{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:16px;
-  padding-top:18px;
-  padding-bottom:18px;
-  overflow:hidden;
-}
-.brand{display:flex; align-items:center; gap:12px; flex-shrink:1; min-width:0;}
-.brand-logo{width:48px; height:48px; object-fit:contain; flex-shrink:0;}
-.brand-text{display:flex; flex-direction:column; min-width:0;}
-.brand-title{
-  font-size:1.375rem; font-weight:700; color:var(--text);
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-.brand-tagline{
-  font-size:.85rem; color:var(--text-muted);
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-.header-actions{display:flex; align-items:center; gap:10px; flex-shrink:0;}
-
-/* Row 2 — full-width nav bar, directly under row 1. .nav-inner is also
-   used on row 1 (header-top) so both rows share .container's exact
-   width/max-width/padding and start flush with each other at every
-   viewport width. No scrolling here — below 1240px the hamburger takes
-   over (see the media query at the bottom), and at/above 1240px this is
-   capped to the same 1240px .container width everywhere else on the
-   page, sized to fit all 11 items in one line. */
-/* Direct-child only — a plain ".main-nav ul" descendant selector would also
-   match .sub-nav (nested one level deeper) and force it horizontal too. */
-.main-nav > .nav-inner > ul{display:flex; align-items:center; gap:14px; flex-wrap:nowrap;}
-.nav-inner > ul > li > a{
-  display:flex; align-items:center; gap:3px;
-  font-size:.9rem; font-weight:500; color:#000; padding:12px 0; white-space:nowrap;
-}
-.nav-inner > ul > li > a.active,
-.nav-inner > ul > li > a:hover{color:var(--blue);}
-.chev{width:14px; height:14px; flex-shrink:0; color:var(--text-muted); transition:transform .2s ease;}
-.has-sub:hover > a .chev{transform:rotate(180deg);}
-
-.has-sub{position:relative;}
-.sub-nav{
-  position:absolute; top:100%; left:0;
-  background:#fff; border:1px solid var(--border); border-radius:8px;
-  box-shadow:var(--shadow); min-width:200px; padding:6px;
-  opacity:0; visibility:hidden; transform:translateY(6px);
-  transition:opacity .15s, transform .15s, visibility .15s;
-  z-index:50;
-}
-.has-sub:hover .sub-nav{opacity:1; visibility:visible; transform:translateY(0);}
-.sub-nav li a{display:block; padding:8px 10px; border-radius:6px; font-size:.88rem; white-space:nowrap;}
-.sub-nav li a:hover{background:var(--bg-muted); color:var(--blue);}
-
-.nav-toggle{
-  display:none;
-  flex-direction:column;
-  justify-content:center;
-  gap:5px;
-  width:44px; height:44px;
-  border:1px solid var(--border);
-  border-radius:8px;
-  background:#fff;
-  cursor:pointer;
-  padding:0;
-  flex-shrink:0;
-}
-.nav-toggle span{
-  display:block; width:18px; height:2px; margin:0 auto;
-  background:var(--text); border-radius:2px;
-  transition:transform .2s, opacity .2s;
-}
-.nav-toggle.is-active span:nth-child(1){transform:translateY(7px) rotate(45deg);}
-.nav-toggle.is-active span:nth-child(2){opacity:0;}
-.nav-toggle.is-active span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+/* Header and footer chrome (site-header/nav/footer/floating widgets) now
+   live in the shared app-site-header / app-site-footer components — see
+   src/app/shared. */
 
 /* ========= Hero ========= */
 .hero{
@@ -166,7 +85,7 @@ ul{list-style:none; margin:0; padding:0;}
   position:relative; z-index:2; padding:90px 24px 110px;
   max-width:760px; margin:0 auto; text-align:center;
 }
-.hero-content h1{font-size:3rem; font-weight:800; margin:0 0 18px; line-height:1.15; color:#fff;}
+.hero-content h1{font-size:2.5rem; font-weight:700; margin:0 0 18px; line-height:1.15; color:#fff;}
 .hero-sub{font-size:1.15rem; margin:0 0 16px; color:#fff; opacity:.95;}
 .hero-desc{font-size:1rem; opacity:.9; margin:0 auto 32px; max-width:620px; color:#fff;}
 .hero-actions{display:flex; gap:14px; flex-wrap:wrap; justify-content:center;}
@@ -212,7 +131,9 @@ ul{list-style:none; margin:0; padding:0;}
 
 /* ========= Announcements ========= */
 .announce-card{
-  border:1px solid var(--border); border-radius:var(--radius);
+  /* Darker than --border ($e5e7eb) — the card was reading almost
+     borderless against the muted section background. */
+  border:1px solid #c7ccd4; border-radius:var(--radius);
   padding:22px; display:flex; flex-direction:column; gap:10px;
 }
 .announce-tags{display:flex; gap:10px; flex-wrap:wrap; justify-content:space-between; align-items:center;}
@@ -257,7 +178,7 @@ ul{list-style:none; margin:0; padding:0;}
 /* ========= Programs ========= */
 .program-card{border-radius:var(--radius); padding:28px; display:flex; flex-direction:column; gap:12px;}
 .program-card h3{margin:0; font-size:1.2rem; font-weight:700;}
-.program-card p{margin:0; color:#374151; font-size:.92rem; flex:1;}
+.program-card p{margin:0; color:var(--text-muted); font-size:.92rem; flex:1;}
 .learn-more{
   color:var(--blue); font-weight:600; font-size:.9rem;
   background:none; border:none; padding:0; text-align:left; cursor:pointer; font-family:inherit;
@@ -268,120 +189,14 @@ ul{list-style:none; margin:0; padding:0;}
 
 /* ========= Our Program full description (inline expand, no modal) ========= */
 .program-full-description{
-  color:#374151; font-size:.92rem; line-height:1.7;
-}
-
-/* ========= Footer ========= */
-.site-footer{background:var(--navy); color:#cbd5e1; padding-top:56px;}
-.footer-grid{
-  display:grid;
-  grid-template-columns:1.3fr 1fr 1fr 1fr 1.3fr;
-  gap:28px;
-  padding-bottom:40px;
-  border-bottom:1px solid rgba(255,255,255,.1);
-  min-width:0;
-}
-.footer-grid > *{min-width:0;}
-.footer-col h4{margin:0 0 14px;}
-.footer-heading{color:#fff; font-size:1.05rem; font-weight:700;}
-.footer-heading-spaced{margin-top:1.25rem;}
-.footer-col p{margin:0 0 8px; font-size:.88rem; line-height:1.6;}
-.footer-brand .footer-logo{width:88px; height:88px; object-fit:contain; margin-bottom:14px;}
-.footer-brand h4{color:#fff; font-size:1.1rem;}
-.footer-tagline{color:#93a3b8; font-size:.85rem; margin-bottom:16px;}
-.social-row{display:flex; gap:10px;}
-.social-icon{
-  width:34px; height:34px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  font-size:.85rem; font-weight:700; color:#fff;
-}
-.social-yt{background:#ef4444;}
-.social-fb{background:#2563eb;}
-.social-ig{background:linear-gradient(45deg,#f58529,#dd2a7b,#8134af);}
-.social-li{background:#0a66c2;}
-.social-default{background:#334155;}
-.footer-links li a{display:block; padding:4px 0; font-size:.9rem; color:#cbd5e1;}
-.footer-links li a:hover{color:#fff;}
-.visitor-counter{display:flex; gap:4px;}
-.visitor-counter span{
-  background:#0b1524; border:1px solid rgba(255,255,255,.15);
-  color:#4ade80; font-weight:700; font-family:monospace; font-size:1rem;
-  width:26px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:4px;
-}
-.footer-map .open-in-maps{display:inline-block; margin-bottom:10px; color:#93c5fd; font-size:.85rem; font-weight:600;}
-.map-embed{width:100%; height:150px; border:0; border-radius:8px;}
-.footer-bottom{
-  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
-  padding:20px 24px; font-size:.85rem; color:#93a3b8;
-}
-.footer-bottom-links{display:flex; gap:18px;}
-.footer-bottom-links a:hover{color:#fff;}
-
-/* ========= Floating widgets ========= */
-.admission-ribbon{
-  position:fixed; right:0; top:45%; transform:translateY(-50%) rotate(180deg);
-  writing-mode:vertical-rl;
-  background:var(--blue); color:#fff; font-weight:700; font-size:.85rem;
-  padding:14px 8px; border-radius:6px 0 0 6px; letter-spacing:.03em;
-  z-index:90;
-}
-.to-top{
-  position:fixed; right:20px; bottom:20px;
-  width:44px; height:44px; border-radius:50%;
-  background:var(--navy); color:#fff; border:none;
-  font-size:1.1rem; cursor:pointer; box-shadow:var(--shadow);
-  z-index:90;
+  color:var(--text-muted); font-size:.92rem; line-height:1.7;
 }
 
 /* ========= Responsive ========= */
 @media (max-width: 1240px){
-  .nav-toggle{display:flex;}
-  /* Compact header once we're in hamburger territory — 18px top/bottom
-     reads fine next to a full desktop nav row, but is oversized once the
-     header is just a logo + a toggle button on its own. */
-  .header-top{padding-top:12px; padding-bottom:12px;}
-
-  .main-nav{
-    display:block;
-    position:fixed;
-    top:72px;
-    left:0; right:0;
-    max-height:calc(100vh - 72px);
-    background:#fff;
-    overflow-y:auto;
-    transform:translateY(-8px);
-    opacity:0;
-    visibility:hidden;
-    pointer-events:none;
-    transition:opacity .18s, transform .18s, visibility .18s;
-    z-index:99;
-  }
-  .main-nav.nav-open{
-    opacity:1; visibility:visible; transform:translateY(0); pointer-events:auto;
-  }
-  /* Scoped to .main-nav so this doesn't also strip header-top's padding —
-     header-top carries .nav-inner too, purely to share its alignment. */
-  .main-nav .nav-inner{padding:0;}
-  /* align-items:stretch overrides the desktop rule's align-items:center
-     (line ~98) — without it each li shrinks to its text width and centers
-     in the column instead of filling the drawer edge-to-edge. */
-  .main-nav .nav-inner > ul{flex-direction:column; align-items:stretch; gap:0; padding:8px 4px; white-space:normal;}
-  .main-nav .nav-inner > ul > li{border-bottom:1px solid var(--border);}
-  .main-nav .nav-inner > ul > li > a{padding:14px 16px; justify-content:space-between;}
-
-  .sub-nav{
-    position:static; opacity:1; visibility:visible; transform:none;
-    box-shadow:none; border:none; border-radius:0;
-    max-height:0; overflow:hidden; padding:0 16px;
-    transition:max-height .2s ease;
-  }
-  .has-sub.open-sub .sub-nav{max-height:400px; padding:4px 16px 10px;}
-  .has-sub.open-sub > a .chev{transform:rotate(180deg);}
-
   .grid-4{grid-template-columns:repeat(2,1fr);}
   .grid-6{grid-template-columns:repeat(3,1fr);}
   .grid-3{grid-template-columns:1fr;}
-  .footer-grid{grid-template-columns:1fr 1fr;}
 }
 @media (max-width: 640px){
   .grid-4, .grid-6{grid-template-columns:1fr 1fr;}
@@ -389,35 +204,10 @@ ul{list-style:none; margin:0; padding:0;}
      squeezed 2-up column on a phone (that's what was pushing tags/text past
      the card edge). Single column here, unlike the other grids above. */
   .grid-2{grid-template-columns:1fr;}
-  .hero-content h1{font-size:2.1rem;}
+  .hero-content h1{font-size:1.8rem;}
   .hero-content{padding:64px 20px 80px;}
-  .admission-ribbon{display:none;}
 
   .container{padding:0 16px;}
-
-  /* ---- Header: more breathing room around logo + toggle ---- */
-  .header-top{padding-top:16px; padding-bottom:16px;}
-  .brand-logo{width:38px; height:38px;}
-  .brand-title{font-size:1.02rem;}
-  .brand-tagline{display:none;}
-  .header-inner{gap:10px;}
-
-  /* ---- Mobile nav drawer: standard app-style list, offset recalculated
-     to match .header-top's new 16px/16px padding + 38px logo (≈70px). ---- */
-  .main-nav{top:70px; box-shadow:0 8px 20px rgba(0,0,0,.15);}
-  .main-nav .nav-inner > ul > li > a{padding:16px 20px; font-size:.95rem;}
-  .has-sub.open-sub .sub-nav{padding:4px 20px 12px;}
-  .sub-nav li a{padding:10px 12px;}
-
-  /* ---- Footer: center everything on mobile ---- */
-  .footer-grid{grid-template-columns:1fr; text-align:center;}
-  .footer-brand{display:flex; flex-direction:column; align-items:center;}
-  .social-row{justify-content:center;}
-  .footer-heading-spaced{margin-top:1.5rem;}
-  .visitor-counter{justify-content:center;}
-  .footer-map{display:flex; flex-direction:column; align-items:center;}
-  .footer-bottom{flex-direction:column; align-items:center; text-align:center;}
-  .footer-bottom-links{justify-content:center;}
 }
 @media (max-width: 400px){
   .grid-4, .grid-6{grid-template-columns:1fr 1fr;}

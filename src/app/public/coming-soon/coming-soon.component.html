@@ -1,4 +1,6 @@
-<div class="flex min-h-screen items-center justify-center bg-white px-6 text-gray-900 dark:bg-slate-950 dark:text-white">
+<app-site-header></app-site-header>
+
+<div class="flex min-h-screen items-center justify-center bg-gray-100 px-6 text-gray-900 dark:bg-slate-950 dark:text-white">
 
   <section class="w-full max-w-3xl text-center">
 
@@ -10,7 +12,7 @@
 
     <!-- Heading -->
     <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl dark:text-white">
-      {{ title }}
+      {{ title() }}
       <span class="block pt-2 text-indigo-600 dark:text-indigo-400">Coming Soon</span>
     </h1>
 
@@ -19,7 +21,7 @@
       We are currently working to bring this section online.
     </p>
     <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-600 dark:text-slate-400">
-      Our {{ title }} page is under development and will be available soon. Thank you for your patience and understanding.
+      Our {{ title() }} page is under development and will be available soon. Thank you for your patience and understanding.
     </p>
 
     <!-- Divider -->
@@ -31,10 +33,8 @@
       We're working hard to make this page available as soon as possible. Thank you for your continued support.
     </p>
 
-    <a routerLink="/" class="mt-10 inline-flex items-center gap-2 text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400">
-      &larr; Back to Home
-    </a>
-
   </section>
 
 </div>
+
+<app-site-footer></app-site-footer>

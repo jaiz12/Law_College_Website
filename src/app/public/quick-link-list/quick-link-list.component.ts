@@ -1,7 +1,9 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { SiteHeaderComponent } from '../../shared/site-header/site-header.component';
+import { SiteFooterComponent } from '../../shared/site-footer/site-footer.component';
 
 interface QuickLinkRow {
   id: number;
@@ -19,7 +21,7 @@ interface QuickLinkRow {
 @Component({
   selector: 'app-quick-link-list',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, SiteHeaderComponent, SiteFooterComponent],
   templateUrl: './quick-link-list.component.html',
   styleUrl: './quick-link-list.component.scss'
 })
