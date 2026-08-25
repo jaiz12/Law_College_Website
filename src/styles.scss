@@ -1,0 +1,20 @@
+/* You can add global styles to this file, and also import other style files */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+// Belt-and-suspenders: a component-scoped rule can't reach html/body, so the
+// public homepage's no-horizontal-overflow guarantee is enforced here instead.
+html, body {
+  overflow-x: hidden;
+}
+
+// Set on <body> while the mobile nav drawer is open (see HomeComponent's
+// toggleNav/closeNav) — the drawer is position:fixed and covers the header
+// only, so without this the page underneath keeps scrolling behind it.
+body.nav-drawer-open {
+  overflow: hidden;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
