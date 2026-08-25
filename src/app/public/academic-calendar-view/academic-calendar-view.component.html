@@ -1,0 +1,13 @@
+<div class="calendar-page">
+  @if (loading) {
+    <p class="status-text">Loading academic calendar…</p>
+  } @else if (calendar && fileUrl) {
+    @if (isPdf) {
+      <iframe class="calendar-pdf" [src]="safeFileUrl" title="Academic Calendar"></iframe>
+    } @else {
+      <img class="calendar-image" [src]="fileUrl" [alt]="calendar.title">
+    }
+  } @else {
+    <p class="status-text">Academic calendar not available yet.</p>
+  }
+</div>

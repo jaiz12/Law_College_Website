@@ -1,0 +1,7 @@
+{
+  "production": false,
+  "ssrIgnoresSsl": true,
+  "API_URL": "https://localhost:7299/api",
+  "IMAGE_API_URL": "https://localhost:7299/",
+  "UI_URL": "http://localhost:4200"
+}

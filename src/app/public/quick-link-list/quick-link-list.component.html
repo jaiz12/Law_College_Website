@@ -1,0 +1,37 @@
+<div class="min-h-screen bg-white px-6 py-16 text-gray-900 dark:bg-slate-950 dark:text-white">
+
+  <section class="mx-auto w-full max-w-3xl">
+
+    <a routerLink="/" class="mb-8 inline-flex items-center gap-2 text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400">
+      &larr; Back to Home
+    </a>
+
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-white">
+      {{ pageTitle }}
+    </h1>
+
+    @if (loading) {
+      <p class="mt-8 text-gray-500 dark:text-slate-400">Loading&hellip;</p>
+    } @else if (items.length) {
+      <ul class="mt-8 divide-y divide-gray-200 rounded-xl border border-gray-200 dark:divide-slate-800 dark:border-slate-800">
+        @for (item of items; track item.id) {
+          <li>
+            <button type="button"
+                    class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-gray-50 dark:hover:bg-slate-900"
+                    [class.cursor-default]="!item.externalLink"
+                    (click)="onRowClick(item)">
+              <span class="font-medium text-gray-900 dark:text-white">{{ item.title }}</span>
+              @if (item.externalLink) {
+                <span class="shrink-0 text-indigo-600 dark:text-indigo-400">&#8594;</span>
+              }
+            </button>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="mt-8 text-gray-500 dark:text-slate-400">Nothing here yet — check back soon.</p>
+    }
+
+  </section>
+
+</div>
