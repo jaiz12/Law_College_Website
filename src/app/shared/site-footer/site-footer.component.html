@@ -1,0 +1,68 @@
+<footer class="site-footer">
+  <div class="container footer-grid">
+
+    <div class="footer-col footer-brand">
+      <img [src]="siteLogo" [alt]="siteTitle + ' seal'" class="footer-logo">
+      <h4>{{ siteTitle }}</h4>
+      <div class="social-row">
+        @for (item of socialMediaLinks; track item.id) {
+          <a [href]="item.link" target="_blank" rel="noopener" class="social-icon" [class]="socialIconClass(item.icon)">
+            <i [class]="item.icon"></i>
+          </a>
+        }
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-heading">Contact Us</h4>
+      <p>Sikkim Government Law College<br>Gangtok, Sikkim - 737101<br>India</p>
+      <p>info&#64;sglc.edu.in</p>
+      <p>+91-3592-270215</p>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-heading">Important Links</h4>
+      <ul class="footer-links">
+        <li><a [routerLink]="['/pages', 'Admissions']">&#8250; Admissions</a></li>
+        <li><a [routerLink]="['/pages', 'Academics']">&#8250; Academics</a></li>
+        <li><a [routerLink]="['/pages', 'Examinations']">&#8250; Examinations</a></li>
+        <li><a [routerLink]="['/pages', 'Student Life']">&#8250; Student Life</a></li>
+        <li><a routerLink="/legal-aid">&#8250; Legal Aid</a></li>
+        <li><a [routerLink]="['/pages', 'Alumni']">&#8250; Alumni</a></li>
+        <li><a [href]="cmsUrl" target="_blank" rel="noopener">&#8250; Login</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-heading">College Timing</h4>
+      <p>09:00 AM to 05:00 PM</p>
+      <h4 class="footer-heading footer-heading-spaced">Site Visitors</h4>
+      <div class="visitor-counter" aria-label="site visitor count (static placeholder)">
+        <span>0</span><span>0</span><span>0</span><span>0</span><span>0</span><span>1</span>
+      </div>
+    </div>
+
+    <div class="footer-col footer-map">
+      <a href="https://www.google.com/maps/search/?api=1&query=Sikkim+Government+Law+College+Gangtok+Sikkim" target="_blank" rel="noopener" class="open-in-maps">Open in Maps &#8599;</a>
+      <iframe class="map-embed" loading="lazy"
+        src="https://www.google.com/maps?q=Sikkim+Government+Law+College+Gangtok+Sikkim&output=embed"
+        title="Sikkim Government Law College location map"></iframe>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom container">
+    <span>&copy; 2026 Sikkim Government Law College. All rights reserved.</span>
+    <span class="footer-bottom-links">
+      <a [routerLink]="['/pages', 'Privacy Policy']">Privacy Policy</a>
+      <a [routerLink]="['/pages', 'Terms of Service']">Terms of Service</a>
+      <a [routerLink]="['/pages', 'Website Builder']">Website Builder</a>
+    </span>
+  </div>
+</footer>
+
+<!-- Fixed side admission ribbon -->
+<a [routerLink]="['/pages', 'Admission Open']" class="admission-ribbon">Admission Open</a>
+
+<!-- Scroll to top -->
+<button type="button" class="to-top" aria-label="Scroll to top" (click)="scrollToTop()">&#8593;</button>

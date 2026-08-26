@@ -55,6 +55,7 @@ ul{list-style:none; margin:0; padding:0;}
 .btn-sm{padding:6px 14px; font-size:0.8rem;}
 .btn-block{width:100%; margin-top:6px; text-align:center;}
 
+<<<<<<< HEAD
 /* ========= Header ========= */
 .site-header{
   background:#fff;
@@ -139,6 +140,11 @@ ul{list-style:none; margin:0; padding:0;}
 .nav-toggle.is-active span:nth-child(1){transform:translateY(7px) rotate(45deg);}
 .nav-toggle.is-active span:nth-child(2){opacity:0;}
 .nav-toggle.is-active span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+=======
+/* Header and footer chrome (site-header/nav/footer/floating widgets) now
+   live in the shared app-site-header / app-site-footer components — see
+   src/app/shared. */
+>>>>>>> master
 
 /* ========= Hero ========= */
 .hero{
@@ -166,7 +172,11 @@ ul{list-style:none; margin:0; padding:0;}
   position:relative; z-index:2; padding:90px 24px 110px;
   max-width:760px; margin:0 auto; text-align:center;
 }
+<<<<<<< HEAD
 .hero-content h1{font-size:3rem; font-weight:800; margin:0 0 18px; line-height:1.15; color:#fff;}
+=======
+.hero-content h1{font-size:2.5rem; font-weight:700; margin:0 0 18px; line-height:1.15; color:#fff;}
+>>>>>>> master
 .hero-sub{font-size:1.15rem; margin:0 0 16px; color:#fff; opacity:.95;}
 .hero-desc{font-size:1rem; opacity:.9; margin:0 auto 32px; max-width:620px; color:#fff;}
 .hero-actions{display:flex; gap:14px; flex-wrap:wrap; justify-content:center;}
@@ -212,7 +222,13 @@ ul{list-style:none; margin:0; padding:0;}
 
 /* ========= Announcements ========= */
 .announce-card{
+<<<<<<< HEAD
   border:1px solid var(--border); border-radius:var(--radius);
+=======
+  /* Darker than --border ($e5e7eb) — the card was reading almost
+     borderless against the muted section background. */
+  border:1px solid #c7ccd4; border-radius:var(--radius);
+>>>>>>> master
   padding:22px; display:flex; flex-direction:column; gap:10px;
 }
 .announce-tags{display:flex; gap:10px; flex-wrap:wrap; justify-content:space-between; align-items:center;}
@@ -257,7 +273,11 @@ ul{list-style:none; margin:0; padding:0;}
 /* ========= Programs ========= */
 .program-card{border-radius:var(--radius); padding:28px; display:flex; flex-direction:column; gap:12px;}
 .program-card h3{margin:0; font-size:1.2rem; font-weight:700;}
+<<<<<<< HEAD
 .program-card p{margin:0; color:#374151; font-size:.92rem; flex:1;}
+=======
+.program-card p{margin:0; color:var(--text-muted); font-size:.92rem; flex:1;}
+>>>>>>> master
 .learn-more{
   color:var(--blue); font-weight:600; font-size:.9rem;
   background:none; border:none; padding:0; text-align:left; cursor:pointer; font-family:inherit;
@@ -268,6 +288,7 @@ ul{list-style:none; margin:0; padding:0;}
 
 /* ========= Our Program full description (inline expand, no modal) ========= */
 .program-full-description{
+<<<<<<< HEAD
   color:#374151; font-size:.92rem; line-height:1.7;
 }
 
@@ -331,10 +352,14 @@ ul{list-style:none; margin:0; padding:0;}
   background:var(--navy); color:#fff; border:none;
   font-size:1.1rem; cursor:pointer; box-shadow:var(--shadow);
   z-index:90;
+=======
+  color:var(--text-muted); font-size:.92rem; line-height:1.7;
+>>>>>>> master
 }
 
 /* ========= Responsive ========= */
 @media (max-width: 1240px){
+<<<<<<< HEAD
   .nav-toggle{display:flex;}
   /* Compact header once we're in hamburger territory — 18px top/bottom
      reads fine next to a full desktop nav row, but is oversized once the
@@ -382,6 +407,11 @@ ul{list-style:none; margin:0; padding:0;}
   .grid-6{grid-template-columns:repeat(3,1fr);}
   .grid-3{grid-template-columns:1fr;}
   .footer-grid{grid-template-columns:1fr 1fr;}
+=======
+  .grid-4{grid-template-columns:repeat(2,1fr);}
+  .grid-6{grid-template-columns:repeat(3,1fr);}
+  .grid-3{grid-template-columns:1fr;}
+>>>>>>> master
 }
 @media (max-width: 640px){
   .grid-4, .grid-6{grid-template-columns:1fr 1fr;}
@@ -389,6 +419,7 @@ ul{list-style:none; margin:0; padding:0;}
      squeezed 2-up column on a phone (that's what was pushing tags/text past
      the card edge). Single column here, unlike the other grids above. */
   .grid-2{grid-template-columns:1fr;}
+<<<<<<< HEAD
   .hero-content h1{font-size:2.1rem;}
   .hero-content{padding:64px 20px 80px;}
   .admission-ribbon{display:none;}
@@ -418,6 +449,12 @@ ul{list-style:none; margin:0; padding:0;}
   .footer-map{display:flex; flex-direction:column; align-items:center;}
   .footer-bottom{flex-direction:column; align-items:center; text-align:center;}
   .footer-bottom-links{justify-content:center;}
+=======
+  .hero-content h1{font-size:1.8rem;}
+  .hero-content{padding:64px 20px 80px;}
+
+  .container{padding:0 16px;}
+>>>>>>> master
 }
 @media (max-width: 400px){
   .grid-4, .grid-6{grid-template-columns:1fr 1fr;}

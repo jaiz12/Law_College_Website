@@ -1,5 +1,9 @@
 import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+<<<<<<< HEAD
 import { provideRouter } from '@angular/router';
+=======
+import { provideRouter, withInMemoryScrolling } from '@angular/router';
+>>>>>>> master
 
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
@@ -12,7 +16,14 @@ export function initializeApp(configService: ConfigService) {
 
 export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({ eventCoalescing: true }),
+<<<<<<< HEAD
     provideRouter(routes),
+=======
+    // Every navigation lands at the top of the new page (unless jumping to
+    // an in-page #anchor) — without this, scrolling down on one page (e.g.
+    // to the footer) then following a link kept the old scroll position.
+    provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top', anchorScrolling: 'enabled' })),
+>>>>>>> master
     provideHttpClient(),
     provideClientHydration(),
 

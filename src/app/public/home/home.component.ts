@@ -1,10 +1,16 @@
+<<<<<<< HEAD
 import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { Component, HostListener, OnInit, PLATFORM_ID, Renderer2, inject } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+=======
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
+>>>>>>> master
 import { RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SafeHtmlPipe } from '../../services/safe-html.pipe';
 import { ConfigService } from '../../services/config.service';
+<<<<<<< HEAD
 
 interface NavSubItem {
   label: string;
@@ -14,6 +20,10 @@ interface NavItem {
   label: string;
   subItems?: NavSubItem[];
 }
+=======
+import { SiteHeaderComponent } from '../../shared/site-header/site-header.component';
+import { SiteFooterComponent } from '../../shared/site-footer/site-footer.component';
+>>>>>>> master
 
 interface WhyChooseUsItem {
   id: number;
@@ -42,12 +52,15 @@ interface AnnouncementTag {
   kind: string;
 }
 
+<<<<<<< HEAD
 interface SocialMediaLink {
   id: number;
   icon: string;
   link: string;
 }
 
+=======
+>>>>>>> master
 interface AnnouncementItem {
   id: number;
   title: string;
@@ -63,11 +76,22 @@ interface AnnouncementItem {
  * this project — a separate project (Law_College_UI) owns the entire
  * login/forgot-password/reset-password flow; the footer's Login link just
  * opens it directly via config.json's UI_URL.
+<<<<<<< HEAD
+=======
+ *
+ * Header and footer are the shared app-site-header / app-site-footer
+ * components (src/app/shared) so every public page gets identical site
+ * chrome.
+>>>>>>> master
  */
 @Component({
   selector: 'app-home',
   standalone: true,
+<<<<<<< HEAD
   imports: [CommonModule, RouterModule, SafeHtmlPipe],
+=======
+  imports: [CommonModule, RouterModule, SafeHtmlPipe, SiteHeaderComponent, SiteFooterComponent],
+>>>>>>> master
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -75,6 +99,7 @@ export class HomeComponent implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly apiService = inject(ApiService);
   private readonly configService = inject(ConfigService);
+<<<<<<< HEAD
   private readonly titleService = inject(Title);
   private readonly renderer = inject(Renderer2);
   private readonly document = inject(DOCUMENT);
@@ -96,6 +121,8 @@ export class HomeComponent implements OnInit {
   readonly defaultSiteLogo = '/images/home/logo.png';
   siteTitle = this.defaultSiteTitle;
   siteLogo = this.defaultSiteLogo;
+=======
+>>>>>>> master
 
   readonly whyChooseUsPageName = 'Why Choose Us';
   whyChooseUsItems: WhyChooseUsItem[] = [];
@@ -107,6 +134,7 @@ export class HomeComponent implements OnInit {
   programs: OurProgramItem[] = [];
   selectedProgram: OurProgramItem | null = null;
 
+<<<<<<< HEAD
   readonly navItems: NavItem[] = [
     { label: 'About Us', subItems: [
       { label: 'History' },
@@ -152,23 +180,30 @@ export class HomeComponent implements OnInit {
     ] }
   ];
 
+=======
+>>>>>>> master
   /** Cycled onto each announcement's category tag, same trick as programTints. */
   readonly announcementTagKinds = ['blue', 'green', 'purple', 'orange'];
   readonly announcementsToShow = 4;
   announcements: AnnouncementItem[] = [];
 
+<<<<<<< HEAD
   navOpen = false;
   openSubmenuIndex: number | null = null;
 
   ngOnInit(): void {
     this.getSiteBranding();
     this.getSocialMediaLinks();
+=======
+  ngOnInit(): void {
+>>>>>>> master
     this.getWhyChooseUsItems();
     this.getStatisticsItems();
     this.getOurProgramItems();
     this.getAnnouncements();
   }
 
+<<<<<<< HEAD
   /** Header brand, footer brand, browser tab title AND favicon all come from
    *  this one call — the favicon only updates once a real logo is uploaded,
    *  so it never gets stomped with the default while the CMS is still empty. */
@@ -242,6 +277,8 @@ export class HomeComponent implements OnInit {
     return 'social-default';
   }
 
+=======
+>>>>>>> master
   getWhyChooseUsItems(): void {
     this.apiService
       .GetRequest('Home/' + this.whyChooseUsPageName)
@@ -389,6 +426,7 @@ export class HomeComponent implements OnInit {
   toggleProgramDetails(program: OurProgramItem): void {
     this.selectedProgram = this.selectedProgram === program ? null : program;
   }
+<<<<<<< HEAD
 
   toggleNav(): void {
     this.navOpen = !this.navOpen;
@@ -444,4 +482,6 @@ export class HomeComponent implements OnInit {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
+=======
+>>>>>>> master
 }

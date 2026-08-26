@@ -1,0 +1,225 @@
+/* ========= Design tokens (kept in sync with home.component.scss) ========= */
+:host{
+  --blue: #2563eb;
+  --text: #111827;
+  --text-muted: #6b7280;
+  --bg-muted: #f3f5f8;
+  --border: #e5e7eb;
+
+  display: block;
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  line-height: 1.5;
+}
+
+:host, :host *{box-sizing:border-box;}
+img{max-width:100%; display:block;}
+a{color:inherit; text-decoration:none;}
+ul{list-style:none; margin:0; padding:0;}
+
+/* max-width was 1240px — too narrow for 11 top-level items (measured
+   ~1282px needed including padding), so the last item(s) silently
+   overflowed past the box and, on any narrower window, past the visible
+   edge entirely (read as "items are just missing"). Widened to 1320px
+   rather than uncapped so header-top and the nav row keep sharing the
+   exact same box — both use .container, so they stay flush at the same
+   left edge; an uncapped nav row would drift left of the (still-centered)
+   logo row on any window wider than the old 1240px cap. */
+.container{
+  width:100%;
+  max-width:1320px;
+  margin:0 auto;
+  padding:0 24px;
+}
+
+/* ========= Header ========= */
+.site-header{
+  background:#fff;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+
+/* Row 1 — logo/title on the left, login pinned to the far right */
+.header-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  /* Padding trimmed from 18px to offset the logo going 48px -> 88px below,
+     so the row's overall height barely moves even though the logo is now
+     as big as the footer's. */
+  padding-top:4px;
+  padding-bottom:4px;
+  overflow:hidden;
+}
+.brand{display:flex; align-items:center; gap:12px; flex-shrink:1; min-width:0;}
+/* Same size as .footer-logo (site-footer.component.scss). */
+.brand-logo{width:88px; height:88px; object-fit:contain; flex-shrink:0;}
+.brand-text{display:flex; flex-direction:column; min-width:0;}
+.brand-title{
+  font-size:1.375rem; font-weight:700; color:var(--text);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.header-actions{display:flex; align-items:center; gap:10px; flex-shrink:0;}
+
+/* Row 2 — full-width nav bar, directly under row 1. .nav-inner is also
+   used on row 1 (header-top) so both rows share .container's exact
+   width/max-width/padding and start flush with each other at every
+   viewport width. No scrolling here — below 1320px the hamburger takes
+   over (see the media query at the bottom), and at/above 1320px this is
+   capped to the same 1320px .container width everywhere else on the
+   page, sized to fit all 11 items in one line. */
+/* Direct-child only — a plain ".main-nav ul" descendant selector would also
+   match .sub-nav (nested one level deeper) and force it horizontal too. */
+.main-nav > .nav-inner > ul{display:flex; align-items:center; gap:14px; flex-wrap:nowrap;}
+.nav-inner > ul > li > a{
+  display:flex; align-items:center; gap:3px;
+  font-size:.9rem; font-weight:500; color:#000; padding:7px 0; white-space:nowrap;
+}
+.nav-inner > ul > li > a.active,
+.nav-inner > ul > li > a:hover{color:var(--blue);}
+.chev{width:14px; height:14px; flex-shrink:0; color:var(--text-muted); transition:transform .2s ease;}
+.has-sub:hover > a .chev{transform:rotate(180deg);}
+
+.has-sub{position:relative;}
+.sub-nav{
+  position:absolute; top:100%; left:0;
+  background:#fff; border:1px solid var(--border); border-radius:8px;
+  box-shadow:0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06); min-width:200px; padding:10px;
+  opacity:0; visibility:hidden; transform:translateY(6px);
+  transition:opacity .15s, transform .15s, visibility .15s;
+  z-index:50;
+}
+.has-sub:hover .sub-nav{opacity:1; visibility:visible; transform:translateY(0);}
+.sub-nav li a{display:block; padding:6px 10px; border-radius:6px; font-size:.88rem; white-space:nowrap; line-height:1.3;}
+.sub-nav li a:hover{background:var(--bg-muted); color:var(--blue);}
+
+/* >7 items (About Us, Student Life, Committee and Cell) — split into 2
+   independent columns (two real <ul>s, half the items in each — see
+   subNavColumns()) instead of one dropdown tall enough to run off the
+   bottom of the screen. Deliberately NOT CSS multi-column (column-count
+   balances by total height, so item counts per column can come out
+   uneven — 5-then-3 instead of a clean 4-then-4) and NOT a single CSS
+   grid with shared row tracks (a row spans both columns, so one column's
+   wrapped 2-line label stretches a blank gap into the other column at
+   that same row). Two plain flex children have no such coupling. Fixed
+   column widths (not flex:1) so the panel reads as two intentional,
+   evenly-sized lists rather than stretching to fill an arbitrary total. */
+.sub-nav-cols{
+  display:flex;
+  gap:18px;
+  /* No explicit width — this element also carries the base .sub-nav rule's
+     padding+border (border-box), so a fixed width here has to separately
+     account for that on top of the two columns' own width, and previously
+     didn't: the columns+gap needed more room than the box actually had,
+     overflowing past the visible rounded panel (hover highlight included)
+     by the padding+border amount. Auto-sizing to the flex content avoids
+     the arithmetic entirely — the panel is exactly as wide as it needs
+     to be, padding included. */
+}
+.sub-nav-col{flex:0 0 209px; min-width:0;}
+/* Base .sub-nav rule keeps long labels on one line (fine for a single,
+   free-width column) — in 2 columns that same nowrap text just runs past
+   its column's edge. Let it wrap instead, so it stays inside the box. A
+   tight line-height keeps a wrapped 2-line label from reading as more
+   than one extra line's worth of extra space. */
+.sub-nav-cols li a{white-space:normal; line-height:1.2;}
+
+/* Dropdowns default to opening flush with their trigger's left edge, which
+   is fine near the left of the bar — but for items past the horizontal
+   midpoint (Compliance/Disclosures onward), a left-anchored 2-column panel
+   can run past the right edge of the nav, or the viewport itself, and get
+   silently clipped. Flip those to anchor from their trigger's right edge
+   instead. nth-child counts the "Home" <li> too, so 7 lands on
+   Compliance/Disclosures (the 7th top-level item overall). */
+.has-sub:nth-child(n+7) .sub-nav{left:auto; right:0;}
+
+.nav-toggle{
+  display:none;
+  flex-direction:column;
+  justify-content:center;
+  gap:5px;
+  width:44px; height:44px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:#fff;
+  cursor:pointer;
+  padding:0;
+  flex-shrink:0;
+}
+.nav-toggle span{
+  display:block; width:18px; height:2px; margin:0 auto;
+  background:var(--text); border-radius:2px;
+  transition:transform .2s, opacity .2s;
+}
+.nav-toggle.is-active span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.nav-toggle.is-active span:nth-child(2){opacity:0;}
+.nav-toggle.is-active span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* ========= Responsive ========= */
+@media (max-width: 1320px){
+  .nav-toggle{display:flex;}
+  /* Compact header once we're in hamburger territory — 18px top/bottom
+     reads fine next to a full desktop nav row, but is oversized once the
+     header is just a logo + a toggle button on its own. */
+  .header-top{padding-top:12px; padding-bottom:12px;}
+
+  .main-nav{
+    display:block;
+    position:fixed;
+    top:72px;
+    left:0; right:0;
+    max-height:calc(100vh - 72px);
+    background:#fff;
+    overflow-y:auto;
+    transform:translateY(-8px);
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transition:opacity .18s, transform .18s, visibility .18s;
+    z-index:99;
+  }
+  .main-nav.nav-open{
+    opacity:1; visibility:visible; transform:translateY(0); pointer-events:auto;
+  }
+  /* Scoped to .main-nav so this doesn't also strip header-top's padding —
+     header-top carries .nav-inner too, purely to share its alignment. */
+  .main-nav .nav-inner{padding:0;}
+  /* align-items:stretch overrides the desktop rule's align-items:center
+     (line ~98) — without it each li shrinks to its text width and centers
+     in the column instead of filling the drawer edge-to-edge. */
+  .main-nav .nav-inner > ul{flex-direction:column; align-items:stretch; gap:0; padding:8px 4px; white-space:normal;}
+  .main-nav .nav-inner > ul > li{border-bottom:1px solid var(--border);}
+  .main-nav .nav-inner > ul > li > a{padding:14px 16px; justify-content:space-between;}
+
+  .sub-nav{
+    position:static; opacity:1; visibility:visible; transform:none;
+    box-shadow:none; border:none; border-radius:0;
+    max-height:0; overflow:hidden; padding:0 16px;
+    transition:max-height .2s ease;
+  }
+  /* 2 columns only makes sense as a wide desktop dropdown — back to a
+     single column filling the drawer's width in the mobile accordion. */
+  .sub-nav-cols{display:block; width:auto;}
+  .has-sub.open-sub .sub-nav{max-height:600px; padding:4px 16px 10px; overflow-y:auto;}
+  .has-sub.open-sub > a .chev{transform:rotate(180deg);}
+}
+@media (max-width: 640px){
+  .container{padding:0 16px;}
+
+  /* ---- Header: more breathing room around logo + toggle ---- */
+  .header-top{padding-top:16px; padding-bottom:16px;}
+  .brand{gap:8px;}
+  .brand-logo{width:34px; height:34px;}
+  /* Small enough that the full college name fits on one line instead of
+     ellipsis-truncating against the logo + hamburger on a phone width. */
+  .brand-title{font-size:.8rem;}
+  .header-inner{gap:10px;}
+
+  /* ---- Mobile nav drawer: standard app-style list, offset recalculated
+     to match .header-top's new 16px/16px padding + 38px logo (≈70px). ---- */
+  .main-nav{top:70px; box-shadow:0 8px 20px rgba(0,0,0,.15);}
+  .main-nav .nav-inner > ul > li > a{padding:16px 20px; font-size:.95rem;}
+  .has-sub.open-sub .sub-nav{padding:4px 20px 12px;}
+  .sub-nav li a{padding:10px 12px;}
+}
