@@ -6,16 +6,11 @@
 
 // Belt-and-suspenders: a component-scoped rule can't reach html/body, so the
 // public homepage's no-horizontal-overflow guarantee is enforced here instead.
-<<<<<<< HEAD
-html, body {
-  overflow-x: hidden;
-=======
 // `clip` (not `hidden`) — any non-visible overflow on html/body turns body
 // into a scroll container and breaks descendant `position: sticky` (the
 // site header), while `clip` clips the same overflow without that side effect.
 html, body {
   overflow-x: clip;
->>>>>>> master
 }
 
 // Set on <body> while the mobile nav drawer is open (see HomeComponent's
