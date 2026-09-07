@@ -60,6 +60,17 @@ ul{list-style:none; margin:0; padding:0;}
   font-size:1.375rem; font-weight:700; color:var(--text);
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
+/* .brand-title now renders CMS rich text via [innerHTML] (Bug Report rows
+   8/12/13), which isn't run through Angular's template compiler and so
+   never gets this component's scoping attribute — needs ::ng-deep. Force
+   every CKEditor block tag (headings, paragraphs, blockquote) back to
+   inline text sized off this element, not its own tag default, so a
+   one-line brand title can't be blown up or wrapped onto multiple lines by
+   an editor-applied heading level (also the mismatched-heading-size half of
+   row 11 — the tag itself may be wrong, but it can no longer change layout). */
+.brand-title ::ng-deep :is(h1, h2, h3, h4, p, blockquote, div){
+  display:inline; font:inherit; font-weight:inherit; color:inherit; margin:0; padding:0;
+}
 .header-actions{display:flex; align-items:center; gap:10px; flex-shrink:0;}
 
 /* Row 2 — full-width nav bar, directly under row 1. .nav-inner is also

@@ -3,9 +3,13 @@
   <!-- Row 1: logo/title on the left, login on the far right -->
   <div class="header-top container nav-inner">
     <a routerLink="/" class="brand">
-      <img [src]="siteLogo" [alt]="siteTitle + ' seal'" class="brand-logo">
+      <img [src]="siteLogo" [alt]="siteTitleText + ' seal'" class="brand-logo">
       <span class="brand-text">
-        <span class="brand-title">{{ siteTitle }}</span>
+        <!-- Bug Report rows 8/12/13: the CMS's Title field is CKEditor rich
+             text (headings/bold/&nbsp; etc.), but this was plain
+             interpolation — so the raw HTML tags printed as visible text
+             instead of being rendered. -->
+        <span class="brand-title" [innerHTML]="siteTitle | safeHtml"></span>
       </span>
     </a>
 

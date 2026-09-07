@@ -24,7 +24,7 @@
 
     <div class="grid grid-4">
       @for (item of whyChooseUsItems; track item.id) {
-        <div class="card" [class.card-clickable]="item.externalLink"
+        <div class="card" [class.card-clickable]="isValidLink(item.externalLink)"
              (click)="onWhyChooseUsCardClick(item)">
           <div class="icon-badge blue">
             <i [class]="item.icon"></i>

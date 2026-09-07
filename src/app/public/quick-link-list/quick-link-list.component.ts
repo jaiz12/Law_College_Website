@@ -2,6 +2,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { isAbsoluteHttpUrl } from '../../services/url.util';
 import { SiteHeaderComponent } from '../../shared/site-header/site-header.component';
 import { SiteFooterComponent } from '../../shared/site-footer/site-footer.component';
 
@@ -36,6 +37,9 @@ export class QuickLinkListComponent implements OnInit {
   loading = true;
   items: QuickLinkRow[] = [];
 
+  /** Exposed for the template — see onRowClick. */
+  readonly isValidLink = isAbsoluteHttpUrl;
+
   ngOnInit(): void {
     if (!this.apiEndpoint) {
       this.loading = false;
@@ -54,7 +58,9 @@ export class QuickLinkListComponent implements OnInit {
               title: item.title ?? item.Title ?? '',
               externalLink: item.externalLink ?? item.ExternalLink ?? null
             }))
-            .sort((a: QuickLinkRow, b: QuickLinkRow) => a.id - b.id);
+            // Bug Report rows 88/99: newest-added should show first here
+            // too, same as the CMS admin list.
+            .sort((a: QuickLinkRow, b: QuickLinkRow) => b.id - a.id);
 
           this.loading = false;
         },
@@ -66,9 +72,11 @@ export class QuickLinkListComponent implements OnInit {
   }
 
   onRowClick(item: QuickLinkRow): void {
-    if (!item.externalLink || !isPlatformBrowser(this.platformId)) {
+    // Bug Report rows 92/96: an invalid/malformed link was silently
+    // redirecting the visitor to the Home page instead of doing nothing.
+    if (!isAbsoluteHttpUrl(item.externalLink) || !isPlatformBrowser(this.platformId)) {
       return;
     }
-    window.open(item.externalLink, '_blank', 'noopener');
+    window.open(item.externalLink!, '_blank', 'noopener');
   }
 }

@@ -46,7 +46,18 @@ ul{list-style:none; margin:0; padding:0;}
   mix-blend-mode:screen;
 }
 .footer-brand h4{color:#fff; font-size:.92rem;}
-.social-row{display:flex; gap:10px;}
+/* Same [innerHTML] rich-text flattening as site-header's .brand-title
+   (Bug Report rows 8/12/13) — needs ::ng-deep for the same reason: this
+   content skips Angular's template compiler, so it never gets the
+   component's scoping attribute. */
+.footer-brand h4 ::ng-deep :is(h1, h2, h3, h4, p, blockquote, div){
+  display:inline; font:inherit; color:inherit; margin:0; padding:0;
+}
+/* Bug Report row 33: no wrap meant a full set of social icons overflowed
+   this column's width and spilled over neighboring footer columns, with
+   the overlapping icons partly unclickable. Wrapping keeps every icon
+   inside its own column no matter how many the CMS has. */
+.social-row{display:flex; flex-wrap:wrap; gap:10px;}
 .social-icon{
   width:34px; height:34px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;

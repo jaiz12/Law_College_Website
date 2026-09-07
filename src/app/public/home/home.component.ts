@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SafeHtmlPipe } from '../../services/safe-html.pipe';
 import { ConfigService } from '../../services/config.service';
+import { isAbsoluteHttpUrl } from '../../services/url.util';
 import { SiteHeaderComponent } from '../../shared/site-header/site-header.component';
 import { SiteFooterComponent } from '../../shared/site-footer/site-footer.component';
 
@@ -66,6 +67,11 @@ export class HomeComponent implements OnInit {
   private readonly apiService = inject(ApiService);
   private readonly configService = inject(ConfigService);
 
+  /** Exposed for the template so a card with an invalid External Link
+   *  doesn't render with a pointer cursor / hover affordance for a click
+   *  that onWhyChooseUsCardClick will just ignore. */
+  readonly isValidLink = isAbsoluteHttpUrl;
+
   readonly whyChooseUsPageName = 'Why Choose Us';
   whyChooseUsItems: WhyChooseUsItem[] = [];
 
@@ -107,9 +113,10 @@ export class HomeComponent implements OnInit {
               description: item.description ?? item.Description ?? '',
               externalLink: item.externalLink ?? item.ExternalLink ?? null
             }))
-            // API returns newest-first (admin-list convention); the public
-            // page shows entries in the order they were added instead.
-            .sort((a: { id: number }, b: { id: number }) => a.id - b.id);
+            // Bug Report row 41: newest-added should show first here too,
+            // same as the CMS admin list — was sorted oldest-first, so a
+            // freshly-added card never appeared "at the top" on the site.
+            .sort((a: { id: number }, b: { id: number }) => b.id - a.id);
         },
         error: (err) => {
           console.error('Why Choose Us Error:', err);
@@ -118,11 +125,15 @@ export class HomeComponent implements OnInit {
   }
 
   onWhyChooseUsCardClick(item: WhyChooseUsItem): void {
-    if (!item.externalLink || !isPlatformBrowser(this.platformId)) {
+    // Bug Report row 38: an invalid/malformed External Link was silently
+    // redirecting the visitor to the Home page (window.open resolves a
+    // non-absolute string as a path relative to the current page) instead
+    // of doing nothing for a link that was never usable in the first place.
+    if (!isAbsoluteHttpUrl(item.externalLink) || !isPlatformBrowser(this.platformId)) {
       return;
     }
 
-    window.open(item.externalLink, '_blank', 'noopener');
+    window.open(item.externalLink!, '_blank', 'noopener');
   }
 
   getStatisticsItems(): void {
@@ -142,7 +153,8 @@ export class HomeComponent implements OnInit {
               title: item.title ?? item.Title ?? '',
               count: item.count ?? item.Count ?? ''
             }))
-            .sort((a: { id: number }, b: { id: number }) => a.id - b.id);
+            // Bug Report row 45: same newest-first fix as Why Choose Us.
+            .sort((a: { id: number }, b: { id: number }) => b.id - a.id);
         },
         error: (err) => {
           console.error('Statistics Error:', err);
@@ -168,7 +180,8 @@ export class HomeComponent implements OnInit {
               shortDescription: item.shortDescription ?? item.ShortDescription ?? '',
               description: item.description ?? item.Description ?? ''
             }))
-            .sort((a: OurProgramItem, b: OurProgramItem) => a.id - b.id)
+            // Bug Report row 64: same newest-first fix as Why Choose Us.
+            .sort((a: OurProgramItem, b: OurProgramItem) => b.id - a.id)
             .map((item: OurProgramItem, index: number) => ({
               ...item,
               tint: this.programTints[index % this.programTints.length]

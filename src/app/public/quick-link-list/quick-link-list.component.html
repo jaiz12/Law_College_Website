@@ -16,10 +16,10 @@
           <li>
             <button type="button"
                     class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-gray-50 dark:hover:bg-slate-900"
-                    [class.cursor-default]="!item.externalLink"
+                    [class.cursor-default]="!isValidLink(item.externalLink)"
                     (click)="onRowClick(item)">
               <span class="font-medium text-gray-900 dark:text-white">{{ item.title }}</span>
-              @if (item.externalLink) {
+              @if (isValidLink(item.externalLink)) {
                 <span class="shrink-0 text-indigo-600 dark:text-indigo-400">&#8594;</span>
               }
             </button>

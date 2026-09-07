@@ -12,10 +12,6 @@ interface AcademicCalendarView {
 
 const PDF_EXTENSIONS = ['.pdf'];
 
-/** Bundled fallback so the page shows something before the CMS has an
- *  active calendar uploaded — swap/remove once the CMS one is live. */
-const FALLBACK_PDF_URL = '/documents/academic-calendar-2026.pdf';
-
 /**
  * Public "just the calendar" page — opened in a new tab from the homepage's
  * Quick Access "Academic Calendar" card. Shows the currently active
@@ -52,7 +48,13 @@ export class AcademicCalendarViewComponent implements OnInit {
           isActive: item.isActive ?? item.IsActive ?? false
         }));
 
-        this.calendar = items.find(item => item.isActive) ?? items[0] ?? null;
+        // Bug Report rows 73/78/79: falling back to items[0] (or a bundled
+        // placeholder PDF) whenever nothing is marked Active meant the page
+        // always showed *something* — the wrong calendar after the active
+        // one was deleted, or a generic PDF when the CMS had none at all.
+        // Only ever show a calendar the CMS explicitly marked Active; no
+        // active calendar means the empty state below, not a guess.
+        this.calendar = items.find(item => item.isActive) ?? null;
 
         if (this.calendar?.file) {
           this.fileUrl = this.imageBaseUrl + this.calendar.file;
@@ -61,23 +63,19 @@ export class AcademicCalendarViewComponent implements OnInit {
             ? this.sanitizer.bypassSecurityTrustResourceUrl(this.fileUrl)
             : null;
         } else {
-          this.useFallbackPdf();
+          this.fileUrl = null;
+          this.safeFileUrl = null;
         }
 
         this.loading = false;
       },
       error: (err) => {
         console.error('Academic Calendar Error:', err);
-        this.useFallbackPdf();
+        this.calendar = null;
+        this.fileUrl = null;
+        this.safeFileUrl = null;
         this.loading = false;
       }
     });
-  }
-
-  private useFallbackPdf(): void {
-    this.calendar = { title: 'Academic Calendar', file: FALLBACK_PDF_URL, isActive: true };
-    this.fileUrl = FALLBACK_PDF_URL;
-    this.isPdf = true;
-    this.safeFileUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.fileUrl);
   }
 }

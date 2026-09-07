@@ -4,6 +4,7 @@ import { Title } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { ConfigService } from '../../services/config.service';
+import { SafeHtmlPipe } from '../../services/safe-html.pipe';
 
 interface NavSubItem {
   label: string;
@@ -25,7 +26,7 @@ interface NavItem {
 @Component({
   selector: 'app-site-header',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, SafeHtmlPipe],
   templateUrl: './site-header.component.html',
   styleUrl: './site-header.component.scss'
 })
@@ -40,7 +41,13 @@ export class SiteHeaderComponent implements OnInit {
   readonly logoAndTitleSectionName = 'Logo And Title';
   readonly defaultSiteTitle = 'Sikkim Government Law College';
   readonly defaultSiteLogo = '/images/home/logo.png';
+  /** Raw CKEditor HTML from the CMS, rendered via [innerHTML] in the
+   *  template (see safeHtml pipe) — carries formatting like bold/headings. */
   siteTitle = this.defaultSiteTitle;
+  /** Tags-stripped version for contexts that need plain text: the <img>
+   *  alt text and the browser tab title (Bug Report row 8 — an alt/title
+   *  full of raw HTML tags would just move the same bug somewhere else). */
+  siteTitleText = this.defaultSiteTitle;
   siteLogo = this.defaultSiteLogo;
 
   /**
@@ -163,11 +170,12 @@ export class SiteHeaderComponent implements OnInit {
           const logoPath = data.logoPath ?? data.LogoPath ?? '';
 
           this.siteTitle = name || this.defaultSiteTitle;
+          this.siteTitleText = this.siteTitle.replace(/<[^>]*>/g, '').trim() || this.defaultSiteTitle;
           this.siteLogo = logoPath
             ? this.configService.get('IMAGE_API_URL') + logoPath
             : this.defaultSiteLogo;
 
-          this.titleService.setTitle(this.siteTitle);
+          this.titleService.setTitle(this.siteTitleText);
 
           if (logoPath && isPlatformBrowser(this.platformId)) {
             const favicon: HTMLLinkElement | null = this.document.querySelector('link[rel="icon"]');
