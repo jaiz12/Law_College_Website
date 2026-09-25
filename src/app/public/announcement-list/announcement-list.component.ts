@@ -2,13 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../services/api.service';
-import { Announcement, AnnouncementTag, announcementTags, mapAnnouncement } from '../../services/announcement.model';
+import { AnnouncementWithTags, mapAnnouncements } from '../../services/announcement.model';
 import { SiteHeaderComponent } from '../../shared/site-header/site-header.component';
 import { SiteFooterComponent } from '../../shared/site-footer/site-footer.component';
-
-interface AnnouncementRow extends Announcement {
-  tags: AnnouncementTag[];
-}
 
 /**
  * Full announcement list — used for both News & Events > Announcements
@@ -32,7 +28,7 @@ export class AnnouncementListComponent implements OnInit {
   readonly pageTitle: string = this.route.snapshot.data['title'] ?? 'Announcements';
 
   loading = true;
-  items: AnnouncementRow[] = [];
+  items: AnnouncementWithTags[] = [];
 
   ngOnInit(): void {
     if (!this.apiEndpoint) {
@@ -44,10 +40,7 @@ export class AnnouncementListComponent implements OnInit {
       .GetRequestRows(this.apiEndpoint)
       .subscribe({
         next: (data: any[]) => {
-          this.items = data.map((row: any, index: number) => {
-            const item = mapAnnouncement(row, this.apiService.IMAGE_API_URL);
-            return { ...item, tags: announcementTags(item, index) };
-          });
+          this.items = mapAnnouncements(data, this.apiService.IMAGE_API_URL);
           this.loading = false;
         },
         error: (err) => {

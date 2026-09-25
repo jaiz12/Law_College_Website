@@ -45,10 +45,12 @@ export class ApiService {
 
   /** GET for list endpoints: the API returns a serialized DataTable (a
    *  bare array), occasionally wrapped as { data: [...] } — always yields
-   *  an array. */
+   *  an array of row objects. Any other shape ({}, null, a string, null
+   *  rows) becomes "no rows" instead of crashing the page's mapping code. */
   GetRequestRows(url: string): Observable<any[]> {
     return this.GetRequest(url).pipe(
-      map(res => Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : [])
+      map(res => Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : []),
+      map((rows: unknown[]) => rows.filter(row => row !== null && typeof row === 'object'))
     );
   }
 

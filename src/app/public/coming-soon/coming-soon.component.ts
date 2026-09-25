@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { combineLatest, map } from 'rxjs';
+import { SERVER_RESPONSE } from '../../services/server-response.token';
 import { SiteHeaderComponent } from '../../shared/site-header/site-header.component';
 import { SiteFooterComponent } from '../../shared/site-footer/site-footer.component';
 
@@ -35,6 +36,14 @@ export class ComingSoonComponent {
       notFound: data['notFound'] === true
     }))
   );
+
+  constructor() {
+    // Direct SSR request for an unknown URL answers 404, not 200. In the
+    // browser the token isn't provided, so client navigation is unaffected.
+    if (this.route.snapshot.data['notFound'] === true) {
+      inject(SERVER_RESPONSE, { optional: true })?.status(404);
+    }
+  }
 
   readonly view = toSignal(this.view$, {
     initialValue: {

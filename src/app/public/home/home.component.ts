@@ -3,7 +3,7 @@ import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SafeHtmlPipe } from '../../services/safe-html.pipe';
-import { Announcement, AnnouncementTag, announcementTags, mapAnnouncement } from '../../services/announcement.model';
+import { AnnouncementWithTags, mapAnnouncements } from '../../services/announcement.model';
 import { isAbsoluteHttpUrl } from '../../services/url.util';
 import { formatStatCount } from '../../services/format.util';
 import { SITE_PATHS } from '../../services/site-links';
@@ -32,9 +32,6 @@ interface OurProgramItem {
   tint: string;
 }
 
-interface AnnouncementItem extends Announcement {
-  tags: AnnouncementTag[];
-}
 
 /**
  * Public marketing homepage — served at the app root ('/').
@@ -76,7 +73,7 @@ export class HomeComponent implements OnInit {
   selectedProgram: OurProgramItem | null = null;
 
   readonly announcementsToShow = 4;
-  announcements: AnnouncementItem[] = [];
+  announcements: AnnouncementWithTags[] = [];
 
   ngOnInit(): void {
     this.getWhyChooseUsItems();
@@ -182,12 +179,8 @@ export class HomeComponent implements OnInit {
       .GetRequestRows('Announcements')
       .subscribe({
         next: (data: any[]) => {
-          this.announcements = data
-            .slice(0, this.announcementsToShow)
-            .map((row: any, index: number) => {
-              const item = mapAnnouncement(row, this.apiService.IMAGE_API_URL);
-              return { ...item, tags: announcementTags(item, index) };
-            });
+          this.announcements = mapAnnouncements(data, this.apiService.IMAGE_API_URL)
+            .slice(0, this.announcementsToShow);
         },
         error: (err) => {
           console.error('Announcements Error:', err);

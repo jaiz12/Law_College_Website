@@ -74,7 +74,10 @@ html.nav-drawer-open {
   // CKEditor wraps tables in <figure class="table">. display:block +
   // overflow-x lets a wide table scroll inside its box on phones instead
   // of stretching the page; rows/cells keep their table layout.
-  figure { margin: 0 0 .75em; }
+  // display:block also neutralises Tailwind's `.table { display: table }`
+  // utility, which collides with CKEditor's own <figure class="table">
+  // wrapper and would size the figure to the table's full width.
+  figure { display: block; margin: 0 0 .75em; }
   table {
     display: block;
     max-width: 100%;

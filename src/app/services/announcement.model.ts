@@ -30,6 +30,20 @@ export function announcementTags(item: Announcement, index: number): Announcemen
   return tags;
 }
 
+export interface AnnouncementWithTags extends Announcement {
+  tags: AnnouncementTag[];
+}
+
+/** API rows -> display items. Rows without a title (malformed — Title is
+ *  required in the CMS) are dropped rather than shown as blank entries.
+ *  Identity is the row Id, never the title: two announcements can share one. */
+export function mapAnnouncements(rows: any[], imageBaseUrl: string): AnnouncementWithTags[] {
+  return rows
+    .map(row => mapAnnouncement(row, imageBaseUrl))
+    .filter(item => String(item.title).trim().length > 0)
+    .map((item, index) => ({ ...item, tags: announcementTags(item, index) }));
+}
+
 export function mapAnnouncement(item: any, imageBaseUrl: string): Announcement {
   const filePath: string | null = item.filePath ?? item.FilePath ?? null;
   return {
