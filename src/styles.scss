@@ -13,11 +13,97 @@ html, body {
   overflow-x: clip;
 }
 
-// Set on <body> while the mobile nav drawer is open (see HomeComponent's
-// toggleNav/closeNav) — the drawer is position:fixed and covers the header
-// only, so without this the page underneath keeps scrolling behind it.
-body.nav-drawer-open {
+// Set on <html> while the mobile nav drawer is open (SiteHeaderComponent's
+// toggleNav/closeNav) so the page underneath can't scroll behind it. On
+// <html>, not <body>: overflow on html goes to the viewport, whereas
+// body{overflow:hidden} turns body into a scroll container and un-sticks
+// the sticky header (same reason as the `clip` note above).
+html.nav-drawer-open {
   overflow: hidden;
 }
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+// ========= CMS rich text (CKEditor output) =========
+// Global on purpose: content rendered through [innerHTML] never gets a
+// component's style-scoping attribute, so component styles can only reach
+// it via ::ng-deep. One opt-in class instead — put `rich-text` on the
+// container of any CMS HTML. Everything is scoped under it, so UI lists
+// (nav, footer) keep Tailwind's reset.
+// Inline styles CKEditor writes (font size/colour, alignment, list-style-type,
+// indent margin) are left alone and still win over these defaults.
+.rich-text {
+  overflow-wrap: break-word;
+
+  > :first-child { margin-top: 0; }
+  > :last-child { margin-bottom: 0; }
+
+  p { margin: 0 0 .75em; }
+
+  h1, h2, h3, h4, h5, h6 { margin: 1em 0 .4em; font-weight: 700; line-height: 1.25; color: inherit; }
+  h1 { font-size: 1.6em; }
+  h2 { font-size: 1.35em; }
+  h3 { font-size: 1.15em; }
+  h4, h5, h6 { font-size: 1em; }
+
+  strong, b { font-weight: 700; }
+  em, i { font-style: italic; }
+  u { text-decoration: underline; }
+  s { text-decoration: line-through; }
+
+  a { color: #2563eb; text-decoration: underline; }
+  a:not([href]) { color: inherit; text-decoration: none; }
+
+  ul, ol { margin: 0 0 .75em; padding-left: 1.6em; }
+  ul { list-style: disc; }
+  ol { list-style: decimal; }
+  ul ul { list-style: circle; }
+  ul ul ul { list-style: square; }
+  li { margin: .2em 0; }
+  li > ul, li > ol { margin: .2em 0 0; }
+
+  blockquote {
+    display: block;
+    margin: 0 0 .75em;
+    padding: .5em 1em;
+    border-left: 4px solid #cbd5e1;
+    background: rgba(148, 163, 184, .1);
+    font-style: italic;
+  }
+
+  // CKEditor wraps tables in <figure class="table">. display:block +
+  // overflow-x lets a wide table scroll inside its box on phones instead
+  // of stretching the page; rows/cells keep their table layout.
+  figure { margin: 0 0 .75em; }
+  table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    margin: 0 0 .75em;
+  }
+  th, td { border: 1px solid #cbd5e1; padding: 6px 10px; text-align: left; vertical-align: top; }
+  th { font-weight: 700; background: rgba(148, 163, 184, .15); }
+
+  img { max-width: 100%; height: auto; }
+}
+
+// Tighter variant for short one-field titles (header/footer brand): same
+// elements, but headings stay relative to the surrounding text size and
+// block spacing is minimal so a heading or blockquote can't blow up the header.
+.rich-text.rich-text-compact {
+  p, h1, h2, h3, h4, h5, h6, blockquote, ul, ol, figure, table { margin: 0; }
+  h1 { font-size: 1.15em; }
+  h2 { font-size: 1.08em; }
+  h3, h4, h5, h6 { font-size: 1em; }
+  blockquote { padding: 0 .6em; }
+  th, td { padding: 2px 6px; }
+
+  // On phones an editor-chosen inline font size (e.g. 24px on the college
+  // name) no longer fits the header/footer column and splits words
+  // mid-way; fall back to the container's size there. !important is the
+  // only way to beat an inline style attribute.
+  @media (max-width: 640px) {
+    [style*="font-size"] { font-size: inherit !important; }
+  }
+}

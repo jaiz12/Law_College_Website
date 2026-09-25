@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ConfigService } from './config.service';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 /**
  * Generic HTTP client for the public site's read-only calls against the
@@ -17,7 +17,10 @@ export class ApiService {
 
   private API_URL;
   public IMAGE_API_URL;
-  public UI_URL;
+  /** CMS (Law_College_UI) base URL — the footer Login link. Deliberately
+   *  its own key: in the CMS's config, "UI_URL" means this public
+   *  website, so reusing that name here pointed Login back at the website. */
+  public CMS_URL: string;
 
   private getHeaders(isFormData: boolean = false): HttpHeaders {
     let headers = new HttpHeaders();
@@ -31,13 +34,22 @@ export class ApiService {
   constructor(private http: HttpClient, private configService: ConfigService) {
     this.API_URL = this.configService.get('API_URL');
     this.IMAGE_API_URL = this.configService.get('IMAGE_API_URL');
-    this.UI_URL = this.configService.get('UI_URL') ?? '';
+    this.CMS_URL = this.configService.get('CMS_URL') ?? '';
   }
 
   GetRequest(url: string, params?: unknown): Observable<any> {
     return this.http.get<any>(`${this.API_URL}/${url}`, {
       headers: this.getHeaders(),
     });
+  }
+
+  /** GET for list endpoints: the API returns a serialized DataTable (a
+   *  bare array), occasionally wrapped as { data: [...] } — always yields
+   *  an array. */
+  GetRequestRows(url: string): Observable<any[]> {
+    return this.GetRequest(url).pipe(
+      map(res => Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : [])
+    );
   }
 
   PostRequest(

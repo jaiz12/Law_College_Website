@@ -1,11 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 import { ApiService } from '../../services/api.service';
+import { SafeHtmlPipe } from '../../services/safe-html.pipe';
+import { htmlToPlainText } from '../../services/rich-text.util';
+import { SiteTitleStrategy } from '../../services/site-title.strategy';
+import { SiteHeaderComponent } from '../../shared/site-header/site-header.component';
+import { SiteFooterComponent } from '../../shared/site-footer/site-footer.component';
 
 interface AcademicCalendarView {
   title: string;
+  /** CKEditor rich text from the CMS's Content field. */
+  content: string;
   file: string | null;
   isActive: boolean;
 }
@@ -13,48 +21,48 @@ interface AcademicCalendarView {
 const PDF_EXTENSIONS = ['.pdf'];
 
 /**
- * Public "just the calendar" page — opened in a new tab from the homepage's
- * Quick Access "Academic Calendar" card. Shows the currently active
- * calendar (set via the CMS, a separate project) full-screen as an image
- * or embedded PDF, no title/chrome.
+ * Academic Calendar page — shows the calendar marked Active in the CMS
+ * (Academics > Academic Calendar): its title, rich-text content and the
+ * uploaded image/PDF.
  */
 @Component({
   selector: 'app-academic-calendar-view',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SafeHtmlPipe, SiteHeaderComponent, SiteFooterComponent],
   templateUrl: './academic-calendar-view.component.html',
   styleUrl: './academic-calendar-view.component.scss'
 })
 export class AcademicCalendarViewComponent implements OnInit {
   private readonly apiService = inject(ApiService);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly titleStrategy = inject(SiteTitleStrategy);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly imageBaseUrl = this.apiService.IMAGE_API_URL;
 
   loading = true;
   calendar: AcademicCalendarView | null = null;
+  hasContent = false;
   fileUrl: string | null = null;
   safeFileUrl: SafeResourceUrl | null = null;
   isPdf = false;
 
   ngOnInit(): void {
-    this.apiService.GetRequest('AcademicCalendar').subscribe({
-      next: (res: any) => {
-        const data = Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : [];
-
+    // takeUntilDestroyed: a late response must not retitle the next page.
+    this.apiService.GetRequestRows('AcademicCalendar').pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (data: any[]) => {
         const items: AcademicCalendarView[] = data.map((item: any) => ({
           title: item.title ?? item.Title ?? '',
+          content: item.content ?? item.Content ?? '',
           file: item.file ?? item.File ?? item.filePath ?? item.FilePath ?? null,
           isActive: item.isActive ?? item.IsActive ?? false
         }));
 
-        // Bug Report rows 73/78/79: falling back to items[0] (or a bundled
-        // placeholder PDF) whenever nothing is marked Active meant the page
-        // always showed *something* — the wrong calendar after the active
-        // one was deleted, or a generic PDF when the CMS had none at all.
         // Only ever show a calendar the CMS explicitly marked Active; no
-        // active calendar means the empty state below, not a guess.
+        // active calendar means the empty state, not a guess.
         this.calendar = items.find(item => item.isActive) ?? null;
+        // CKEditor leaves "<p>&nbsp;</p>" in an emptied editor — that's no content.
+        this.hasContent = htmlToPlainText(this.calendar?.content).length > 0;
 
         if (this.calendar?.file) {
           this.fileUrl = this.imageBaseUrl + this.calendar.file;
@@ -67,6 +75,7 @@ export class AcademicCalendarViewComponent implements OnInit {
           this.safeFileUrl = null;
         }
 
+        this.titleStrategy.setPageTitle(this.calendar?.title);
         this.loading = false;
       },
       error: (err) => {

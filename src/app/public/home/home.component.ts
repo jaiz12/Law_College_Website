@@ -3,8 +3,10 @@ import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SafeHtmlPipe } from '../../services/safe-html.pipe';
-import { ConfigService } from '../../services/config.service';
+import { Announcement, AnnouncementTag, announcementTags, mapAnnouncement } from '../../services/announcement.model';
 import { isAbsoluteHttpUrl } from '../../services/url.util';
+import { formatStatCount } from '../../services/format.util';
+import { SITE_PATHS } from '../../services/site-links';
 import { SiteHeaderComponent } from '../../shared/site-header/site-header.component';
 import { SiteFooterComponent } from '../../shared/site-footer/site-footer.component';
 
@@ -30,17 +32,8 @@ interface OurProgramItem {
   tint: string;
 }
 
-interface AnnouncementTag {
-  text: string;
-  kind: string;
-}
-
-interface AnnouncementItem {
-  id: number;
-  title: string;
-  startDate: string | null;
+interface AnnouncementItem extends Announcement {
   tags: AnnouncementTag[];
-  fileUrl: string | null;
 }
 
 /**
@@ -49,7 +42,7 @@ interface AnnouncementItem {
  * bar come from the backend's Home content API. There is no Login page in
  * this project — a separate project (Law_College_UI) owns the entire
  * login/forgot-password/reset-password flow; the footer's Login link just
- * opens it directly via config.json's UI_URL.
+ * opens it directly via config.json's CMS_URL.
  *
  * Header and footer are the shared app-site-header / app-site-footer
  * components (src/app/shared) so every public page gets identical site
@@ -65,12 +58,12 @@ interface AnnouncementItem {
 export class HomeComponent implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly apiService = inject(ApiService);
-  private readonly configService = inject(ConfigService);
 
   /** Exposed for the template so a card with an invalid External Link
    *  doesn't render with a pointer cursor / hover affordance for a click
    *  that onWhyChooseUsCardClick will just ignore. */
   readonly isValidLink = isAbsoluteHttpUrl;
+  readonly paths = SITE_PATHS;
 
   readonly whyChooseUsPageName = 'Why Choose Us';
   whyChooseUsItems: WhyChooseUsItem[] = [];
@@ -82,8 +75,6 @@ export class HomeComponent implements OnInit {
   programs: OurProgramItem[] = [];
   selectedProgram: OurProgramItem | null = null;
 
-  /** Cycled onto each announcement's category tag, same trick as programTints. */
-  readonly announcementTagKinds = ['blue', 'green', 'purple', 'orange'];
   readonly announcementsToShow = 4;
   announcements: AnnouncementItem[] = [];
 
@@ -96,14 +87,9 @@ export class HomeComponent implements OnInit {
 
   getWhyChooseUsItems(): void {
     this.apiService
-      .GetRequest('Home/' + this.whyChooseUsPageName)
+      .GetRequestRows('Home/' + this.whyChooseUsPageName)
       .subscribe({
-        next: (res: any) => {
-          const data = Array.isArray(res)
-            ? res
-            : Array.isArray(res?.data)
-              ? res.data
-              : [];
+        next: (data: any[]) => {
 
           this.whyChooseUsItems = data
             .map((item: any) => ({
@@ -138,21 +124,19 @@ export class HomeComponent implements OnInit {
 
   getStatisticsItems(): void {
     this.apiService
-      .GetRequest('Home/' + this.statisticsPageName)
+      .GetRequestRows('Home/' + this.statisticsPageName)
       .subscribe({
-        next: (res: any) => {
-          const data = Array.isArray(res)
-            ? res
-            : Array.isArray(res?.data)
-              ? res.data
-              : [];
+        next: (data: any[]) => {
 
           this.statisticsItems = data
             .map((item: any) => ({
               id: item.id ?? item.Id ?? 0,
               title: item.title ?? item.Title ?? '',
-              count: item.count ?? item.Count ?? ''
+              // CMS editors enter a plain number; the "+" is presentation.
+              count: formatStatCount(item.count ?? item.Count)
             }))
+            // A stat with no number would render as a bare label.
+            .filter((item: StatisticItem) => item.count && item.title)
             // Bug Report row 45: same newest-first fix as Why Choose Us.
             .sort((a: { id: number }, b: { id: number }) => b.id - a.id);
         },
@@ -164,25 +148,19 @@ export class HomeComponent implements OnInit {
 
   getOurProgramItems(): void {
     this.apiService
-      .GetRequest('OurProgram')
+      .GetRequestRows('OurProgram')
       .subscribe({
-        next: (res: any) => {
-          const data = Array.isArray(res)
-            ? res
-            : Array.isArray(res?.data)
-              ? res.data
-              : [];
-
+        next: (data: any[]) => {
           this.programs = data
-            .map((item: any) => ({
+            .map((item: any): Omit<OurProgramItem, 'tint'> => ({
               id: item.id ?? item.Id ?? 0,
               title: item.title ?? item.Title ?? '',
               shortDescription: item.shortDescription ?? item.ShortDescription ?? '',
               description: item.description ?? item.Description ?? ''
             }))
             // Bug Report row 64: same newest-first fix as Why Choose Us.
-            .sort((a: OurProgramItem, b: OurProgramItem) => b.id - a.id)
-            .map((item: OurProgramItem, index: number) => ({
+            .sort((a, b) => b.id - a.id)
+            .map((item, index): OurProgramItem => ({
               ...item,
               tint: this.programTints[index % this.programTints.length]
             }));
@@ -197,46 +175,18 @@ export class HomeComponent implements OnInit {
    * "Latest Announcements" — CMS's News & Events > Announcements module
    * (Law_College_API's /api/Announcements, GetAllIsActive — same backend as
    * everything else on this page, already newest-first). Homepage only
-   * shows the latest few; the full list lives on the CMS-managed archive
-   * page, not built here yet (falls through to the "pages/:title" placeholder).
+   * shows the latest few; "View All" opens the full Announcements page.
    */
   getAnnouncements(): void {
     this.apiService
-      .GetRequest('Announcements')
+      .GetRequestRows('Announcements')
       .subscribe({
-        next: (res: any) => {
-          const data = Array.isArray(res)
-            ? res
-            : Array.isArray(res?.data)
-              ? res.data
-              : [];
-
+        next: (data: any[]) => {
           this.announcements = data
             .slice(0, this.announcementsToShow)
-            .map((item: any, index: number) => {
-              const category = item.category ?? item.Category ?? '';
-              const urgent = item.urgent ?? item.Urgent ?? false;
-
-              const tags: AnnouncementTag[] = [];
-              if (category) {
-                tags.push({
-                  text: category,
-                  kind: this.announcementTagKinds[index % this.announcementTagKinds.length]
-                });
-              }
-              if (urgent) {
-                tags.push({ text: 'Urgent', kind: 'red' });
-              }
-
-              const filePath = item.filePath ?? item.FilePath ?? null;
-
-              return {
-                id: item.id ?? item.Id ?? 0,
-                title: item.title ?? item.Title ?? '',
-                startDate: item.startDate ?? item.StartDate ?? null,
-                tags,
-                fileUrl: filePath ? this.configService.get('IMAGE_API_URL') + filePath : null
-              };
+            .map((row: any, index: number) => {
+              const item = mapAnnouncement(row, this.apiService.IMAGE_API_URL);
+              return { ...item, tags: announcementTags(item, index) };
             });
         },
         error: (err) => {

@@ -32,11 +32,16 @@ ul{list-style:none; margin:0; padding:0;}
 }
 
 /* ========= Header ========= */
-.site-header{
-  background:#fff;
+/* Sticky must sit on :host, not .site-header: a sticky element only sticks
+   within its parent, and .site-header's parent is this host element — the
+   exact same height — so the header just scrolled away with the page. */
+:host{
   position:sticky;
   top:0;
   z-index:100;
+}
+.site-header{
+  background:#fff;
 }
 
 /* Row 1 — logo/title on the left, login pinned to the far right */
@@ -56,20 +61,13 @@ ul{list-style:none; margin:0; padding:0;}
 /* Same size as .footer-logo (site-footer.component.scss). */
 .brand-logo{width:88px; height:88px; object-fit:contain; flex-shrink:0;}
 .brand-text{display:flex; flex-direction:column; min-width:0;}
+/* CMS rich text (global .rich-text.rich-text-compact styles headings,
+   blockquotes, tables, lists). Wraps instead of ellipsis-truncating: a
+   long CMS title used to lose everything past the first line. */
 .brand-title{
-  font-size:1.375rem; font-weight:700; color:var(--text);
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-/* .brand-title now renders CMS rich text via [innerHTML] (Bug Report rows
-   8/12/13), which isn't run through Angular's template compiler and so
-   never gets this component's scoping attribute — needs ::ng-deep. Force
-   every CKEditor block tag (headings, paragraphs, blockquote) back to
-   inline text sized off this element, not its own tag default, so a
-   one-line brand title can't be blown up or wrapped onto multiple lines by
-   an editor-applied heading level (also the mismatched-heading-size half of
-   row 11 — the tag itself may be wrong, but it can no longer change layout). */
-.brand-title ::ng-deep :is(h1, h2, h3, h4, p, blockquote, div){
-  display:inline; font:inherit; font-weight:inherit; color:inherit; margin:0; padding:0;
+  display:block;
+  font-size:1.375rem; font-weight:700; color:var(--text); line-height:1.25;
+  white-space:normal;
 }
 .header-actions{display:flex; align-items:center; gap:10px; flex-shrink:0;}
 
@@ -87,7 +85,10 @@ ul{list-style:none; margin:0; padding:0;}
   display:flex; align-items:center; gap:3px;
   font-size:.9rem; font-weight:500; color:#000; padding:7px 0; white-space:nowrap;
 }
+/* .active comes from routerLinkActive (Home: exact match; sections: any
+   of their pages open), never hardcoded. */
 .nav-inner > ul > li > a.active,
+.nav-inner > ul > li.active > a,
 .nav-inner > ul > li > a:hover{color:var(--blue);}
 .chev{width:14px; height:14px; flex-shrink:0; color:var(--text-muted); transition:transform .2s ease;}
 .has-sub:hover > a .chev{transform:rotate(180deg);}
@@ -103,7 +104,8 @@ ul{list-style:none; margin:0; padding:0;}
 }
 .has-sub:hover .sub-nav{opacity:1; visibility:visible; transform:translateY(0);}
 .sub-nav li a{display:block; padding:6px 10px; border-radius:6px; font-size:.88rem; white-space:nowrap; line-height:1.3;}
-.sub-nav li a:hover{background:var(--bg-muted); color:var(--blue);}
+.sub-nav li a:hover,
+.sub-nav li a.active{background:var(--bg-muted); color:var(--blue);}
 
 /* >7 items (About Us, Student Life, Committee and Cell) — split into 2
    independent columns (two real <ul>s, half the items in each — see
@@ -178,9 +180,12 @@ ul{list-style:none; margin:0; padding:0;}
   .main-nav{
     display:block;
     position:fixed;
-    top:72px;
+    /* --drawer-top is the header's measured bottom edge (set on open, see
+       SiteHeaderComponent.toggleNav) — header height isn't fixed now that
+       a long CMS title can wrap onto several lines. */
+    top:var(--drawer-top, 72px);
     left:0; right:0;
-    max-height:calc(100vh - 72px);
+    max-height:calc(100vh - var(--drawer-top, 72px));
     background:#fff;
     overflow-y:auto;
     transform:translateY(-8px);
@@ -229,7 +234,7 @@ ul{list-style:none; margin:0; padding:0;}
 
   /* ---- Mobile nav drawer: standard app-style list, offset recalculated
      to match .header-top's new 16px/16px padding + 38px logo (≈70px). ---- */
-  .main-nav{top:70px; box-shadow:0 8px 20px rgba(0,0,0,.15);}
+  .main-nav{box-shadow:0 8px 20px rgba(0,0,0,.15);}
   .main-nav .nav-inner > ul > li > a{padding:16px 20px; font-size:.95rem;}
   .has-sub.open-sub .sub-nav{padding:4px 20px 12px;}
   .sub-nav li a{padding:10px 12px;}

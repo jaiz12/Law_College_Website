@@ -4,34 +4,43 @@
 
   <section class="w-full max-w-3xl text-center">
 
-    <!-- Badge -->
-    <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-300">
-      <span class="h-2 w-2 animate-pulse rounded-full bg-indigo-500 dark:bg-indigo-400"></span>
-      Under Construction
-    </div>
+    @if (view().notFound) {
+      <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl dark:text-white">
+        Page Not Found
+      </h1>
+      <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-600 dark:text-slate-400">
+        The page you are looking for doesn't exist or may have been moved.
+      </p>
+    } @else {
+      <!-- Badge -->
+      <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-300">
+        <span class="h-2 w-2 animate-pulse rounded-full bg-indigo-500 dark:bg-indigo-400"></span>
+        Under Construction
+      </div>
 
-    <!-- Heading -->
-    <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl dark:text-white">
-      {{ title() }}
-      <span class="block pt-2 text-indigo-600 dark:text-indigo-400">Coming Soon</span>
-    </h1>
+      <!-- Heading -->
+      <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl dark:text-white">
+        {{ view().title }}
+        <span class="block pt-2 text-indigo-600 dark:text-indigo-400">Coming Soon</span>
+      </h1>
 
-    <!-- Description -->
-    <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-600 dark:text-slate-400">
-      We are currently working to bring this section online.
-    </p>
-    <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-600 dark:text-slate-400">
-      Our {{ title() }} page is under development and will be available soon. Thank you for your patience and understanding.
-    </p>
+      <!-- Description -->
+      <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-600 dark:text-slate-400">
+        We are currently working to bring this section online.
+      </p>
+      <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-600 dark:text-slate-400">
+        Our {{ view().title }} page is under development and will be available soon. Thank you for your patience and understanding.
+      </p>
 
-    <!-- Divider -->
-    <div class="mx-auto my-10 h-px w-24 bg-gray-200 dark:bg-slate-700"></div>
+      <!-- Divider -->
+      <div class="mx-auto my-10 h-px w-24 bg-gray-200 dark:bg-slate-700"></div>
 
-    <!-- Stay Connected -->
-    <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Stay Connected</h2>
-    <p class="mt-2 text-gray-500 dark:text-slate-400">
-      We're working hard to make this page available as soon as possible. Thank you for your continued support.
-    </p>
+      <!-- Stay Connected -->
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Stay Connected</h2>
+      <p class="mt-2 text-gray-500 dark:text-slate-400">
+        We're working hard to make this page available as soon as possible. Thank you for your continued support.
+      </p>
+    }
 
   </section>
 
