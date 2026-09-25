@@ -2,8 +2,10 @@
   <div class="container footer-grid">
 
     <div class="footer-col footer-brand">
-      <img [src]="siteLogo" [alt]="siteTitleText + ' seal'" class="footer-logo">
-      <h4 [innerHTML]="siteTitle | safeHtml"></h4>
+      @if (branding$ | async; as branding) {
+        <img [src]="branding.logoUrl" [alt]="branding.titleText + ' seal'" class="footer-logo">
+        <h4 class="rich-text rich-text-compact" [innerHTML]="branding.titleHtml | safeHtml"></h4>
+      }
       <div class="social-row">
         @for (item of socialMediaLinks; track item.id) {
           <a [href]="item.link" target="_blank" rel="noopener" class="social-icon" [class]="socialIconClass(item.icon)">
@@ -20,67 +22,55 @@
           @if (item.icon) { <i [class]="item.icon"></i> }
           {{ item.detail }}
         </p>
-      } @empty {
-        <!-- CMS has nothing saved yet — same copy this footer always
-             showed, now just the fallback instead of the only option. -->
+      }
+      @if (contactState === 'error') {
+        <!-- API unreachable only — an empty CMS section stays empty. -->
         <p>Sikkim Government Law College<br>Gangtok, Sikkim - 737101<br>India</p>
-        <p>info&#64;sglc.edu.in</p>
-        <p>+91-3592-270215</p>
       }
     </div>
 
     <div class="footer-col">
       <h4 class="footer-heading">Important Links</h4>
       <ul class="footer-links">
+        <!-- Entirely CMS-managed (Header and Footer > Important Links). -->
         @for (item of importantLinks; track item.id) {
           <li>
-            @if (isInternalLink(item)) {
-              <a [routerLink]="['/pages', item.link]">&#8250; {{ item.name }}</a>
-            } @else if (isValidLink(item.link)) {
-              <a [href]="item.link" target="_blank" rel="noopener">&#8250; {{ item.name }}</a>
+            @if (item.target.kind === 'internal') {
+              <a [routerLink]="'/' + item.target.path">&#8250; {{ item.name }}</a>
+            } @else {
+              <a [href]="item.target.url" target="_blank" rel="noopener">&#8250; {{ item.name }}</a>
             }
-            <!-- Type "External" with a link that isn't actually a usable
-                 absolute URL renders nothing rather than a link that
-                 redirects wrong. -->
           </li>
-        } @empty {
-          <!-- CMS has nothing saved yet — same static links this footer
-               always showed, now just the fallback instead of the only
-               option. -->
-          <li><a [routerLink]="['/pages', 'Admissions']">&#8250; Admissions</a></li>
-          <li><a [routerLink]="['/pages', 'Academics']">&#8250; Academics</a></li>
-          <li><a [routerLink]="['/pages', 'Examinations']">&#8250; Examinations</a></li>
-          <li><a [routerLink]="['/pages', 'Student Life']">&#8250; Student Life</a></li>
-          <li><a [routerLink]="['/pages', 'Alumni']">&#8250; Alumni</a></li>
         }
-        <li><a routerLink="/legal-aid">&#8250; Legal Aid</a></li>
-        <!-- Not CMS-managed by design (see class doc comment): this project
-             has no login page of its own, so the Login link always points
-             straight at the separate admin app. Bug Report row 19: with no
-             guard here, a missing/blank config.json UI_URL rendered as
-             href="" — a real, clickable link that just reloads the current
-             page, i.e. exactly the "redirects back to the same website"
-             symptom reported. Only render it once cmsUrl is an actual
-             usable URL. -->
-        @if (isValidLink(cmsUrl)) {
+        <!-- Config-driven, not CMS data — see cmsUrl in the component. -->
+        @if (cmsUrl) {
           <li><a [href]="cmsUrl" target="_blank" rel="noopener">&#8250; Login</a></li>
         }
       </ul>
     </div>
 
     <div class="footer-col">
+      <!-- Static: no CMS/API field for college timing exists yet. -->
       <h4 class="footer-heading">College Timing</h4>
       <p>09:00 AM to 05:00 PM</p>
-      <h4 class="footer-heading footer-heading-spaced">Site Visitors</h4>
-      <div class="visitor-counter" aria-label="site visitor count (static placeholder)">
-        <span>0</span><span>0</span><span>0</span><span>0</span><span>0</span><span>1</span>
-      </div>
+      <!-- Real count from the SiteVisit API only; hidden (never faked) when
+           unavailable. Wrapped in an object so a count of 0 still shows. -->
+      @if ({ count: monthlyVisitCount$ | async }; as visits) {
+        @if (visits.count !== null) {
+          <h4 class="footer-heading footer-heading-spaced">Site Visitors <span class="footer-heading-note">(this month)</span></h4>
+          <div class="visitor-counter" [attr.aria-label]="visits.count + ' site visitors this month'">
+            @for (digit of counterDigits(visits.count); track $index) {
+              <span>{{ digit }}</span>
+            }
+          </div>
+        }
+      }
     </div>
 
     <div class="footer-col footer-map">
-      <a [href]="mapOpenUrl ?? defaultMapOpenUrl" target="_blank" rel="noopener" class="open-in-maps">Open in Maps &#8599;</a>
+      <a [href]="mapOpenUrl" target="_blank" rel="noopener" class="open-in-maps">Open in Maps &#8599;</a>
       <iframe class="map-embed" loading="lazy"
-        [src]="mapEmbedUrl ? (mapEmbedSafeUrl!) : defaultMapEmbedUrl"
+        [src]="mapEmbedUrl"
         title="Sikkim Government Law College location map"></iframe>
     </div>
 

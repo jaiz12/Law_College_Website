@@ -1,0 +1,50 @@
+<app-site-header></app-site-header>
+
+<div class="min-h-screen bg-gray-100 px-6 py-16 text-gray-900 dark:bg-slate-950 dark:text-white">
+
+  <section class="mx-auto w-full max-w-3xl">
+
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-white">
+      {{ pageTitle }}
+    </h1>
+
+    @if (loading) {
+      <p class="mt-8 text-gray-500 dark:text-slate-400">Loading&hellip;</p>
+    } @else if (items.length) {
+      <ul class="mt-8 divide-y divide-gray-200 rounded-xl border border-gray-200 bg-white dark:divide-slate-800 dark:border-slate-800 dark:bg-slate-950">
+        @for (item of items; track item.id) {
+          <li class="flex flex-col gap-2 px-5 py-4">
+            @if (item.tags.length) {
+              <div class="flex flex-wrap gap-2">
+                @for (tag of item.tags; track $index) {
+                  <span class="rounded-full px-3 py-0.5 text-xs font-semibold"
+                        [class.bg-blue-100]="tag.kind === 'blue'" [class.text-blue-700]="tag.kind === 'blue'"
+                        [class.bg-green-100]="tag.kind === 'green'" [class.text-green-700]="tag.kind === 'green'"
+                        [class.bg-purple-100]="tag.kind === 'purple'" [class.text-purple-700]="tag.kind === 'purple'"
+                        [class.bg-amber-100]="tag.kind === 'orange'" [class.text-amber-700]="tag.kind === 'orange'"
+                        [class.bg-red-100]="tag.kind === 'red'" [class.text-red-700]="tag.kind === 'red'">{{ tag.text }}</span>
+                }
+              </div>
+            }
+            <span class="font-medium [overflow-wrap:anywhere]">{{ item.title }}</span>
+            @if (item.startDate) {
+              <span class="text-sm text-gray-500 dark:text-slate-400">
+                {{ item.startDate | date: 'd MMMM y' }}
+                @if (item.endDate) { &ndash; {{ item.endDate | date: 'd MMMM y' }} }
+              </span>
+            }
+            @if (item.fileUrl) {
+              <a class="self-start text-sm font-semibold text-indigo-600 dark:text-indigo-400" [href]="item.fileUrl" target="_blank" rel="noopener">View attachment &#8594;</a>
+            }
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="mt-8 text-gray-500 dark:text-slate-400">Nothing here yet — check back soon.</p>
+    }
+
+  </section>
+
+</div>
+
+<app-site-footer></app-site-footer>

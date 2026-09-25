@@ -45,14 +45,10 @@ ul{list-style:none; margin:0; padding:0;}
   filter:invert(1);
   mix-blend-mode:screen;
 }
+/* CMS Title rich text — element styling comes from the global
+   .rich-text.rich-text-compact rules (styles.scss). */
 .footer-brand h4{color:#fff; font-size:.92rem;}
-/* Same [innerHTML] rich-text flattening as site-header's .brand-title
-   (Bug Report rows 8/12/13) — needs ::ng-deep for the same reason: this
-   content skips Angular's template compiler, so it never gets the
-   component's scoping attribute. */
-.footer-brand h4 ::ng-deep :is(h1, h2, h3, h4, p, blockquote, div){
-  display:inline; font:inherit; color:inherit; margin:0; padding:0;
-}
+.footer-heading-note{font-size:.75rem; font-weight:400; color:#93a3b8;}
 /* Bug Report row 33: no wrap meant a full set of social icons overflowed
    this column's width and spilled over neighboring footer columns, with
    the overlapping icons partly unclickable. Wrapping keeps every icon

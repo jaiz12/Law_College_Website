@@ -47,11 +47,9 @@ export class QuickLinkListComponent implements OnInit {
     }
 
     this.apiService
-      .GetRequest(this.apiEndpoint)
+      .GetRequestRows(this.apiEndpoint)
       .subscribe({
-        next: (res: any) => {
-          const data = Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : [];
-
+        next: (data: any[]) => {
           this.items = data
             .map((item: any) => ({
               id: item.id ?? item.Id ?? 0,

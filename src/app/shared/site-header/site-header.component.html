@@ -1,50 +1,55 @@
 <header class="site-header">
 
-  <!-- Row 1: logo/title on the left, login on the far right -->
-  <div class="header-top container nav-inner">
-    <a routerLink="/" class="brand">
-      <img [src]="siteLogo" [alt]="siteTitleText + ' seal'" class="brand-logo">
-      <span class="brand-text">
-        <!-- Bug Report rows 8/12/13: the CMS's Title field is CKEditor rich
-             text (headings/bold/&nbsp; etc.), but this was plain
-             interpolation — so the raw HTML tags printed as visible text
-             instead of being rendered. -->
-        <span class="brand-title" [innerHTML]="siteTitle | safeHtml"></span>
-      </span>
-    </a>
+  <!-- Row 1: logo/title on the left, nav toggle on the far right -->
+  @if (branding$ | async; as branding) {
+    <div class="header-top container nav-inner">
+      <a routerLink="/" class="brand">
+        <img [src]="branding.logoUrl" [alt]="branding.titleText + ' seal'" class="brand-logo">
+        <span class="brand-text">
+          <!-- CMS Title is CKEditor rich text — rendered, not interpolated,
+               so its formatting shows instead of raw tags. -->
+          <span class="brand-title rich-text rich-text-compact" [innerHTML]="branding.titleHtml | safeHtml"></span>
+        </span>
+      </a>
 
-    <div class="header-actions">
-      <button type="button" class="nav-toggle" [class.is-active]="navOpen"
-              [attr.aria-expanded]="navOpen" aria-label="Toggle navigation menu" aria-controls="mainNav"
-              (click)="toggleNav()">
-        <span></span><span></span><span></span>
-      </button>
+      <div class="header-actions">
+        <button type="button" class="nav-toggle" [class.is-active]="navOpen"
+                [attr.aria-expanded]="navOpen" aria-label="Toggle navigation menu" aria-controls="mainNav"
+                (click)="toggleNav()">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
-  </div>
+  }
 
 
   <nav id="mainNav" class="main-nav" [class.nav-open]="navOpen" aria-label="Primary">
     <div class="container nav-inner">
       <ul>
-        <li><a routerLink="/" class="active" (click)="closeNav()">Home</a></li>
+        <li>
+          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+             ariaCurrentWhenActive="page" (click)="closeNav()">Home</a>
+        </li>
 
-        @for (item of navItems; track item.label; let i = $index) {
-          <li class="has-sub" [class.open-sub]="openSubmenuIndex === i">
-            <!-- A leaf item (no subItems, e.g. "Media & Gallery") always
+        @for (item of navItems; track item.path; let i = $index) {
+          <!-- routerLinkActive on the <li> also picks up the submenu's
+               links, so a section is highlighted while any of its pages is open. -->
+          <li class="has-sub" [class.open-sub]="openSubmenuIndex === i" routerLinkActive="active">
+            <!-- A leaf item (no children, e.g. "Media & Gallery") always
                  navigates and closes the drawer — same as Home — instead of
                  toggling a submenu that doesn't exist. -->
-            <a [routerLink]="(isDesktopNav || !item.subItems?.length) ? ['/pages', item.label] : null"
-               [attr.aria-expanded]="item.subItems?.length ? openSubmenuIndex === i : null"
-               [attr.aria-haspopup]="item.subItems?.length ? true : null"
-               (click)="item.subItems?.length ? toggleSubmenu(i, $event) : closeNav()">
+            <a [routerLink]="(isDesktopNav || !item.children?.length) ? '/' + item.path : null"
+               [attr.aria-expanded]="item.children?.length ? openSubmenuIndex === i : null"
+               [attr.aria-haspopup]="item.children?.length ? true : null"
+               (click)="item.children?.length ? toggleSubmenu(i, $event) : closeNav()">
               {{ item.label }}
-              @if (item.subItems?.length) {
+              @if (item.children?.length) {
                 <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                   <path d="M6 9l6 6 6-6"/>
                 </svg>
               }
             </a>
-            @if (item.subItems && item.subItems.length > 7) {
+            @if (item.children && item.children.length > 7) {
               <!-- Long submenus (About Us, Student Life, Committee and
                    Cell) split into 2 independent columns instead of one
                    very tall dropdown — two separate <ul>s side by side
@@ -54,16 +59,16 @@
               <div class="sub-nav sub-nav-cols">
                 @for (col of subNavColumns(item); track $index) {
                   <ul class="sub-nav-col">
-                    @for (sub of col; track sub.label) {
-                      <li><a [routerLink]="['/pages', sub.label]" (click)="closeNav()">{{ sub.label }}</a></li>
+                    @for (sub of col; track sub.path) {
+                      <li><a [routerLink]="'/' + sub.path" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeNav()">{{ sub.label }}</a></li>
                     }
                   </ul>
                 }
               </div>
-            } @else if (item.subItems?.length) {
+            } @else if (item.children?.length) {
               <ul class="sub-nav">
-                @for (sub of item.subItems; track sub.label) {
-                  <li><a [routerLink]="['/pages', sub.label]" (click)="closeNav()">{{ sub.label }}</a></li>
+                @for (sub of item.children; track sub.path) {
+                  <li><a [routerLink]="'/' + sub.path" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeNav()">{{ sub.label }}</a></li>
                 }
               </ul>
             }

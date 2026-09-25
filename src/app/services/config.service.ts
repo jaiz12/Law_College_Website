@@ -11,10 +11,18 @@ export class ConfigService {
 
   constructor(private http: HttpClient) { }
 
+  /** Runtime config (public/config.json, replaced per environment at deploy
+   *  time). A missing/unreadable file is logged instead of failing app
+   *  bootstrap, so the site still renders its static parts. */
   async loadConfig(): Promise<void> {
-    this.config = await firstValueFrom(
-      this.http.get('/config.json')
-    );
+    try {
+      this.config = await firstValueFrom(
+        this.http.get('/config.json')
+      );
+    } catch (err) {
+      console.error('Config load error:', err);
+      this.config = {};
+    }
   }
 
   get(path: string): any {

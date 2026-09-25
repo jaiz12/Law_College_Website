@@ -1,13 +1,28 @@
-<div class="calendar-page">
-  @if (loading) {
-    <p class="status-text">Loading academic calendar…</p>
-  } @else if (calendar && fileUrl) {
-    @if (isPdf) {
-      <iframe class="calendar-pdf" [src]="safeFileUrl" title="Academic Calendar"></iframe>
+<app-site-header></app-site-header>
+
+<main class="calendar-page">
+  <div class="calendar-container">
+    @if (loading) {
+      <p class="status-text">Loading academic calendar…</p>
+    } @else if (calendar && (fileUrl || hasContent)) {
+      <h1 class="calendar-title">{{ calendar.title || 'Academic Calendar' }}</h1>
+
+      @if (hasContent) {
+        <div class="calendar-content rich-text" [innerHTML]="calendar.content | safeHtml"></div>
+      }
+
+      @if (fileUrl) {
+        @if (isPdf) {
+          <iframe class="calendar-pdf" [src]="safeFileUrl" [title]="calendar.title || 'Academic Calendar'"></iframe>
+          <a class="calendar-open" [href]="fileUrl" target="_blank" rel="noopener">Open PDF in a new tab &#8599;</a>
+        } @else {
+          <img class="calendar-image" [src]="fileUrl" [alt]="calendar.title">
+        }
+      }
     } @else {
-      <img class="calendar-image" [src]="fileUrl" [alt]="calendar.title">
+      <p class="status-text">Academic calendar not available yet.</p>
     }
-  } @else {
-    <p class="status-text">Academic calendar not available yet.</p>
-  }
-</div>
+  </div>
+</main>
+
+<app-site-footer></app-site-footer>

@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { SiteVisitService } from './services/site-visit.service';
 
 @Component({
   selector: 'app-root',
@@ -8,6 +9,11 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent {
-  title = 'Law_College_UI';
+export class AppComponent implements OnInit {
+  private readonly siteVisitService = inject(SiteVisitService);
+
+  ngOnInit(): void {
+    // Once per app load (browser only) — not per page component.
+    this.siteVisitService.start();
+  }
 }

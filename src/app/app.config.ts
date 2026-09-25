@@ -1,10 +1,11 @@
 import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter, withInMemoryScrolling } from '@angular/router';
+import { TitleStrategy, provideRouter, withInMemoryScrolling } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
 import { ConfigService } from './services/config.service';
 import { provideHttpClient } from '@angular/common/http';
+import { SiteTitleStrategy } from './services/site-title.strategy';
 
 export function initializeApp(configService: ConfigService) {
   return () => configService.loadConfig();
@@ -18,6 +19,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top', anchorScrolling: 'enabled' })),
     provideHttpClient(),
     provideClientHydration(),
+    { provide: TitleStrategy, useExisting: SiteTitleStrategy },
 
     {
       provide: APP_INITIALIZER,
