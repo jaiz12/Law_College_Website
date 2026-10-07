@@ -1,0 +1,103 @@
+<app-site-header></app-site-header>
+
+<main class="cms-page">
+  <div class="cms-container">
+    <h1 class="cms-title">{{ pageTitle }}</h1>
+
+    @if (loading) {
+      <p class="status-text">Loading&hellip;</p>
+    } @else {
+      @switch (kind) {
+        @case ('content') {
+          @if (record) {
+            <article class="content-layout" [class.has-image]="record.imageUrl">
+              @if (record.imageUrl) {
+                <img class="content-image" [src]="record.imageUrl" [alt]="record.title || pageTitle">
+              }
+              @if (record.html) {
+                <div class="content-body rich-text" [innerHTML]="record.html | safeHtml"></div>
+              }
+            </article>
+
+            @if (record.fileUrl) {
+              @if (record.isPdf) {
+                <iframe class="content-pdf" [src]="safePdfUrl" [title]="pageTitle"></iframe>
+              }
+              <a class="action-link" [href]="record.fileUrl" target="_blank" rel="noopener">
+                {{ record.isPdf ? 'Open PDF in a new tab' : 'View document' }} &#8599;
+              </a>
+            }
+          } @else {
+            <p class="status-text">Content not available yet — check back soon.</p>
+          }
+        }
+
+        @case ('list') {
+          @if (items.length) {
+            <ul class="card-grid">
+              @for (item of items; track item.id) {
+                <li class="card">
+                  @if (item.imageUrl) {
+                    <img class="card-image" [src]="item.imageUrl" [alt]="item.title" loading="lazy">
+                  }
+                  <div class="card-body">
+                    @if (item.title) {
+                      <h2 class="card-title">{{ item.title }}</h2>
+                    }
+                    @if (item.html) {
+                      <div class="card-text rich-text" [innerHTML]="item.html | safeHtml"></div>
+                    }
+                    @if (item.fileUrl || item.linkUrl) {
+                      <div class="card-actions">
+                        @if (item.fileUrl) {
+                          <a class="action-link" [href]="item.fileUrl" target="_blank" rel="noopener">
+                            {{ item.isPdf ? 'View PDF' : 'View document' }} &#8599;
+                          </a>
+                        }
+                        @if (item.linkUrl) {
+                          <a class="action-link" [href]="item.linkUrl" target="_blank" rel="noopener">Visit link &#8599;</a>
+                        }
+                      </div>
+                    }
+                  </div>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="status-text">Nothing here yet — check back soon.</p>
+          }
+        }
+
+        @case ('people') {
+          @if (items.length) {
+            <ul class="people-grid">
+              @for (person of items; track person.id) {
+                <li class="person">
+                  @if (person.imageUrl) {
+                    <img class="person-photo" [src]="person.imageUrl" [alt]="person.name" loading="lazy">
+                  } @else {
+                    <span class="person-photo person-initial" aria-hidden="true">{{ person.name.charAt(0) }}</span>
+                  }
+                  <h2 class="person-name">{{ person.name }}</h2>
+                  @if (person.designation) {
+                    <p class="person-designation">{{ person.designation }}</p>
+                  }
+                  @if (person.email) {
+                    <a class="person-contact" [href]="'mailto:' + person.email">{{ person.email }}</a>
+                  }
+                  @if (person.phone) {
+                    <a class="person-contact" [href]="'tel:' + person.phone">{{ person.phone }}</a>
+                  }
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="status-text">Nothing here yet — check back soon.</p>
+          }
+        }
+      }
+    }
+  </div>
+</main>
+
+<app-site-footer></app-site-footer>

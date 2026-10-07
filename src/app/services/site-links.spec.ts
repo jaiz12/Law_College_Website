@@ -1,4 +1,5 @@
 import { SITE_PATHS, flattenSiteNav, resolveInternalPath, resolveSiteLink } from './site-links';
+import { CMS_PAGES } from './cms-pages';
 
 describe('site-links', () => {
   it('maps the CMS "UI_URL + path" internal link to the website route, ignoring the host', () => {
@@ -28,6 +29,11 @@ describe('site-links', () => {
 
   it('treats the link type case-insensitively', () => {
     expect(resolveSiteLink('http://x/student-life/library', 'Internal')).toEqual({ kind: 'internal', path: SITE_PATHS.library });
+  });
+
+  it('has a nav entry for every CMS module page', () => {
+    const navPaths = new Set(flattenSiteNav().map(item => item.path));
+    expect(Object.keys(CMS_PAGES).filter(path => !navPaths.has(path))).toEqual([]);
   });
 
   it('has unique nav paths', () => {
