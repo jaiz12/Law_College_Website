@@ -1,0 +1,160 @@
+<app-site-header></app-site-header>
+
+<main class="register-page">
+  <div class="register-container">
+
+    @if (submitted) {
+      <section class="register-card success" role="status" aria-live="polite">
+        <h1 class="success-title">You're officially back in the alumni circle! 🎓💙</h1>
+        <p class="success-text">Thank you for staying connected with us.</p>
+        <a routerLink="/" class="btn btn-primary">Back to Home</a>
+      </section>
+    } @else {
+      <section class="register-card">
+        <header class="register-header">
+          <p class="register-eyebrow">Alumni Registration — Stay Connected</p>
+          <h1 class="register-title">Welcome Back! 👋</h1>
+          <p class="register-sub">Help us reconnect with our alumni community.</p>
+          <p class="register-note">It takes less than 2 minutes.</p>
+        </header>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+          <div class="field-grid">
+
+            <div class="field">
+              <label for="fullName">Full Name <span class="req" aria-hidden="true">*</span></label>
+              <input id="fullName" type="text" formControlName="fullName" placeholder="Enter your full name"
+                     autocomplete="name" maxlength="100" [class.invalid]="error('fullName')"
+                     [attr.aria-invalid]="!!error('fullName')" aria-describedby="fullName-err">
+              @if (error('fullName'); as msg) { <p class="field-error" id="fullName-err">{{ msg }}</p> }
+            </div>
+
+            <div class="field">
+              <label for="email">Email Address <span class="req" aria-hidden="true">*</span></label>
+              <input id="email" type="email" formControlName="email" placeholder="Your email"
+                     autocomplete="email" maxlength="100" [class.invalid]="error('email')"
+                     [attr.aria-invalid]="!!error('email')" aria-describedby="email-err">
+              @if (error('email'); as msg) { <p class="field-error" id="email-err">{{ msg }}</p> }
+            </div>
+
+            <div class="field">
+              <label for="mobileNumber">Mobile Number <span class="req" aria-hidden="true">*</span></label>
+              <input id="mobileNumber" type="tel" inputmode="numeric" formControlName="mobileNumber"
+                     placeholder="10-digit mobile number" autocomplete="tel-national" maxlength="16"
+                     (input)="onMobileInput($event)" [class.invalid]="error('mobileNumber')"
+                     [attr.aria-invalid]="!!error('mobileNumber')" aria-describedby="mobile-err">
+              @if (error('mobileNumber'); as msg) { <p class="field-error" id="mobile-err">{{ msg }}</p> }
+            </div>
+
+            <div class="field">
+              <label for="course">Course / Programme <span class="req" aria-hidden="true">*</span></label>
+              <select id="course" formControlName="course" [class.invalid]="error('course')"
+                      [attr.aria-invalid]="!!error('course')" aria-describedby="course-err">
+                <option value="" disabled>Select course</option>
+                @for (course of courses; track course) {
+                  <option [value]="course">{{ course }}</option>
+                }
+              </select>
+              @if (error('course'); as msg) { <p class="field-error" id="course-err">{{ msg }}</p> }
+            </div>
+
+            <div class="field">
+              <label for="batchYear">Batch / Graduation Year <span class="req" aria-hidden="true">*</span></label>
+              <select id="batchYear" formControlName="batchYear" [class.invalid]="error('batchYear')"
+                      [attr.aria-invalid]="!!error('batchYear')" aria-describedby="batch-err">
+                <option value="" disabled>Select year</option>
+                @for (year of batchYears; track year) {
+                  <option [value]="year">{{ year }}</option>
+                }
+              </select>
+              @if (error('batchYear'); as msg) { <p class="field-error" id="batch-err">{{ msg }}</p> }
+            </div>
+
+            <div class="field">
+              <label for="profession">Current Profession / Role</label>
+              <input id="profession" type="text" formControlName="profession" maxlength="100"
+                     placeholder="e.g., Advocate, Judge, Corporate Professional, Academician">
+              @if (error('profession'); as msg) { <p class="field-error">{{ msg }}</p> }
+            </div>
+
+            <div class="field">
+              <label for="organisation">Current Organisation / Chamber</label>
+              <input id="organisation" type="text" formControlName="organisation" maxlength="150"
+                     placeholder="Where are you currently working?" autocomplete="organization">
+              @if (error('organisation'); as msg) { <p class="field-error">{{ msg }}</p> }
+            </div>
+
+            <div class="field">
+              <label for="location">Current City / Location</label>
+              <input id="location" type="text" formControlName="location" maxlength="100"
+                     placeholder="City, State" autocomplete="address-level2">
+              @if (error('location'); as msg) { <p class="field-error">{{ msg }}</p> }
+            </div>
+
+            <fieldset class="field field-full">
+              <legend>I'd like to stay connected through:</legend>
+              <div class="check-grid">
+                @for (option of connectOptions; track option) {
+                  <label class="check">
+                    <input type="checkbox" [checked]="isConnectChecked(option)"
+                           (change)="toggleConnect(option, $any($event.target).checked)">
+                    <span>{{ option }}</span>
+                  </label>
+                }
+              </div>
+            </fieldset>
+
+            <div class="field">
+              <label for="linkedInUrl">LinkedIn / Professional Profile <span class="opt">(Optional)</span></label>
+              <input id="linkedInUrl" type="url" formControlName="linkedInUrl" placeholder="Paste link"
+                     maxlength="300" [class.invalid]="error('linkedInUrl')"
+                     [attr.aria-invalid]="!!error('linkedInUrl')" aria-describedby="linkedin-err">
+              @if (error('linkedInUrl'); as msg) { <p class="field-error" id="linkedin-err">{{ msg }}</p> }
+            </div>
+
+            <div class="field">
+              <label for="photo">Profile Photo <span class="opt">(Optional)</span></label>
+              <div class="photo-row">
+                @if (photoPreview) {
+                  <img class="photo-preview" [src]="photoPreview" alt="Selected profile photo">
+                }
+                <div class="photo-controls">
+                  <input #photoInput id="photo" type="file" accept="image/jpeg,image/png,image/webp"
+                         (change)="onPhotoSelected($event)" aria-describedby="photo-hint photo-err">
+                  <p class="field-hint" id="photo-hint">JPG, PNG or WEBP, up to 2 MB.</p>
+                  @if (photo) {
+                    <button type="button" class="link-btn" (click)="removePhoto(photoInput)">Remove photo</button>
+                  }
+                </div>
+              </div>
+              @if (photoError) { <p class="field-error" id="photo-err">{{ photoError }}</p> }
+            </div>
+
+            <div class="field field-full">
+              <label class="check consent">
+                <input type="checkbox" formControlName="consent"
+                       [attr.aria-invalid]="!!error('consent')" aria-describedby="consent-err">
+                <span>I agree to be contacted by the college regarding alumni activities and updates. <span class="req" aria-hidden="true">*</span></span>
+              </label>
+              @if (error('consent'); as msg) { <p class="field-error" id="consent-err">{{ msg }}</p> }
+            </div>
+          </div>
+
+          @if (submitError) {
+            <p class="submit-error" role="alert">{{ submitError }}</p>
+          }
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" [disabled]="submitting">
+              {{ submitting ? 'Submitting…' : 'Join the Alumni Network' }}
+            </button>
+            <p class="req-note"><span class="req">*</span> Required fields</p>
+          </div>
+        </form>
+      </section>
+    }
+
+  </div>
+</main>
+
+<app-site-footer></app-site-footer>

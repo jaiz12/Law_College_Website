@@ -30,14 +30,18 @@ export const SITE_PATHS = {
   announcements: 'news-events/announcements',
   newsEventsArchives: 'news-events/news-events-archives',
   onlineApplication: 'admissions/online-application',
-  examResults: 'examinations/results'
+  examResults: 'examinations/results',
+  alumniRegister: 'alumni/register-join'
 } as const;
 
 /** Old website-only paths, kept alive as redirects for existing links/bookmarks. */
 export const LEGACY_PAGE_REDIRECTS: Record<string, string> = {
   'academic-calendar': SITE_PATHS.academicCalendar,
   'library': SITE_PATHS.library,
-  'legal-aid': SITE_PATHS.legalAidCell
+  'legal-aid': SITE_PATHS.legalAidCell,
+  // The CMS moved NIRF/AISHE under compliance-or-disclosures/.
+  'compliance/nirf': 'compliance-or-disclosures/nirf',
+  'compliance/aishe': 'compliance-or-disclosures/aishe'
 };
 
 /**
@@ -95,8 +99,8 @@ export const SITE_NAV: SiteNavItem[] = [
     { label: 'UGC Compliance', path: 'compliance/ugc-compliance' },
     // CMS path really is "nirf-iqac" for NAAC / IQAC.
     { label: 'NAAC / IQAC', path: 'compliance/nirf-iqac' },
-    { label: 'NIRF', path: 'compliance/nirf' },
-    { label: 'AISHE', path: 'compliance/aishe' }
+    { label: 'NIRF', path: 'compliance-or-disclosures/nirf' },
+    { label: 'AISHE', path: 'compliance-or-disclosures/aishe' }
   ] },
   { label: 'Committee and Cell', path: 'committee-and-cell', children: [
     { label: 'Internal Quality Assurance Cell (IQAC)', path: 'committee-and-cell/internal-quality-assurance-cell' },
@@ -122,7 +126,7 @@ export const SITE_NAV: SiteNavItem[] = [
   ] },
   { label: 'Alumni', path: 'alumni', children: [
     { label: 'Governing Body', path: 'alumni/governing-body' },
-    { label: 'Register / Join', path: 'alumni/register-join' },
+    { label: 'Register / Join', path: SITE_PATHS.alumniRegister },
     { label: 'Notable Alumni', path: 'alumni/notable-alumni' },
     { label: 'Alumni Events', path: 'alumni/alumni-events' },
     { label: 'Newsletters', path: 'alumni/newsletters' }

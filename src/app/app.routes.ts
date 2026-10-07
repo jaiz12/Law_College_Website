@@ -2,6 +2,7 @@ import { ActivatedRouteSnapshot, Routes } from '@angular/router';
 import { HomeComponent } from './public/home/home.component';
 import { ComingSoonComponent } from './public/coming-soon/coming-soon.component';
 import { LEGACY_PAGE_REDIRECTS, SITE_PATHS, flattenSiteNav } from './services/site-links';
+import { CMS_PAGES } from './services/cms-pages';
 
 const loadQuickLinkList = () =>
   import('./public/quick-link-list/quick-link-list.component')
@@ -10,6 +11,12 @@ const loadQuickLinkList = () =>
 const loadAnnouncementList = () =>
   import('./public/announcement-list/announcement-list.component')
     .then(m => m.AnnouncementListComponent);
+
+const loadCmsPage = () =>
+  import('./public/cms-page/cms-page.component')
+    .then(m => m.CmsPageComponent);
+
+const navLabels = new Map(flattenSiteNav().map(item => [item.path, item.label]));
 
 /** Pages with a real implementation, at the CMS's own menu paths (see site-links.ts). */
 const pageRoutes: Routes = [
@@ -35,13 +42,6 @@ const pageRoutes: Routes = [
     data: { api: 'Library', title: 'Library' }
   },
   {
-    // Same shape as Library, backed by /api/LegalAidCell.
-    path: SITE_PATHS.legalAidCell,
-    title: 'Legal Aid Cell',
-    loadComponent: loadQuickLinkList,
-    data: { api: 'LegalAidCell', title: 'Legal Aid Cell' }
-  },
-  {
     // Active announcements (/api/Announcements).
     path: SITE_PATHS.announcements,
     title: 'Announcements',
@@ -54,7 +54,23 @@ const pageRoutes: Routes = [
     title: 'News & Events Archives',
     loadComponent: loadAnnouncementList,
     data: { api: 'Announcements/ArchiveNewsAndEvents', title: 'News & Events Archives' }
-  }
+  },
+  {
+    // Alumni "Stay Connected" registration form (POST /api/AlumniRegistration).
+    path: SITE_PATHS.alumniRegister,
+    title: 'Register / Join',
+    loadComponent: () =>
+      import('./public/alumni-register/alumni-register.component')
+        .then(m => m.AlumniRegisterComponent)
+  },
+  // Every CMS-managed module page (About Us, Committee and Cell, Student
+  // Life, Alumni, …) — endpoint and layout per page in cms-pages.ts.
+  ...Object.entries(CMS_PAGES).map(([path, page]) => ({
+    path,
+    title: navLabels.get(path) ?? '',
+    loadComponent: loadCmsPage,
+    data: { ...page, title: navLabels.get(path) ?? '' }
+  }))
 ];
 
 const implementedPaths = new Set(pageRoutes.map(route => route.path));

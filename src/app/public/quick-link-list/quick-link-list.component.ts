@@ -13,11 +13,12 @@ interface QuickLinkRow {
 }
 
 /**
- * Generic "title + external link" list page — used for both the Quick
- * Access "Library" and "Legal Aid" cards. Which backend endpoint and page
- * title to use comes from the route's `data` (see app.routes.ts); the CMS
- * (a separate project) manages the rows via /api/Library or
- * /api/LegalAidCell — both share the exact same {Title, ExternalLink} shape.
+ * Generic "title + external link" list page — used for the Quick Access
+ * "Library" card. Which backend endpoint and page title to use comes from
+ * the route's `data` (see app.routes.ts); the CMS (a separate project)
+ * manages the {Title, ExternalLink} rows via /api/Library. (Legal Aid Cell
+ * used to share this page; the CMS now edits it as a Committee and Cell
+ * content page — see cms-pages.ts.)
  */
 @Component({
   selector: 'app-quick-link-list',

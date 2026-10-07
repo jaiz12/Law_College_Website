@@ -5,6 +5,9 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { HttpTestingController } from '@angular/common/http/testing';
 import { routes } from './app.routes';
 import { ComingSoonComponent } from './public/coming-soon/coming-soon.component';
+import { CmsPageComponent } from './public/cms-page/cms-page.component';
+import { AlumniRegisterComponent } from './public/alumni-register/alumni-register.component';
+import { CMS_PAGES } from './services/cms-pages';
 import { SERVER_RESPONSE } from './services/server-response.token';
 import { SiteTitleStrategy } from './services/site-title.strategy';
 import { SITE_PATHS } from './services/site-links';
@@ -43,7 +46,9 @@ describe('app routes', () => {
   for (const [legacy, target] of [
     ['/library', '/student-life/library'],
     ['/legal-aid', '/committee-and-cell/legal-aid-cell'],
-    ['/academic-calendar', '/academics/academic-calendar']
+    ['/academic-calendar', '/academics/academic-calendar'],
+    ['/compliance/nirf', '/compliance-or-disclosures/nirf'],
+    ['/compliance/aishe', '/compliance-or-disclosures/aishe']
   ]) {
     it(`redirects legacy ${legacy} to ${target}`, async () => {
       await harness.navigateByUrl(legacy);
@@ -62,14 +67,34 @@ describe('app routes', () => {
   it('does not set 404 for known pages or Coming Soon pages', async () => {
     await harness.navigateByUrl('/');
     await harness.navigateByUrl('/about/faculty');
+    await harness.navigateByUrl('/admissions/fee-structure');
     await harness.navigateByUrl('/pages/Privacy Policy');
     expect(status).not.toHaveBeenCalled();
   });
 
   it('gives nav pages without an implementation a Coming Soon page titled with the nav label', async () => {
-    await harness.navigateByUrl('/about/faculty', ComingSoonComponent);
-    expect(heading()).toContain('Faculty');
+    await harness.navigateByUrl('/admissions/fee-structure', ComingSoonComponent);
+    expect(heading()).toContain('Fee Structure');
     expect(heading()).toContain('Coming Soon');
+  });
+
+  it('serves every CMS module page (cms-pages.ts) with its nav label, endpoint and layout', async () => {
+    const page = await harness.navigateByUrl('/committee-and-cell/legal-aid-cell', CmsPageComponent);
+    expect(page.api).toBe('CommitteeAndCell/0/Legal Aid Cell');
+    expect(page.kind).toBe('content');
+    expect(heading()).toBe('Legal Aid Cell');
+
+    for (const path of Object.keys(CMS_PAGES)) {
+      const cmsPage = await harness.navigateByUrl('/' + path, CmsPageComponent);
+      expect(cmsPage.pageTitle).withContext(path).toBeTruthy();
+      expect(cmsPage.api).withContext(path).toBe(CMS_PAGES[path].api);
+    }
+  });
+
+  it('serves the Alumni Register / Join form', async () => {
+    await harness.navigateByUrl('/' + SITE_PATHS.alumniRegister, AlumniRegisterComponent);
+    expect(heading()).toContain('Welcome Back!');
+    expect(title()).toBe(`Register / Join | ${COLLEGE}`);
   });
 
   describe('browser title', () => {
