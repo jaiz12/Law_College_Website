@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { HttpTestingController } from '@angular/common/http/testing';
-import { ALUMNI_REGISTER_API, AlumniRegisterComponent, PHOTO_MAX_BYTES } from './alumni-register.component';
+import { ALREADY_REGISTERED_MESSAGE, ALUMNI_REGISTER_API, AlumniRegisterComponent, PHOTO_MAX_BYTES } from './alumni-register.component';
 import { TEST_API_URL, provideTestConfig, provideTestHttp } from '../../testing/test-providers';
 
 describe('AlumniRegisterComponent', () => {
@@ -101,11 +101,11 @@ describe('AlumniRegisterComponent', () => {
     expect(body instanceof FormData).toBeTrue();
     expect(body.get('FullName')).toBe('Asha Rai');
     expect(body.get('MobileNumber')).toBe('9876543210');
-    expect(body.get('Course')).toBe('B.A. LL.B.');
-    expect(body.get('BatchYear')).toBe('2015');
+    expect(body.get('CourseProgramme')).toBe('B.A. LL.B.');
+    expect(body.get('BatchGraduationYear')).toBe('2015');
     // Form order, not click order.
-    expect(body.get('ConnectThrough')).toBe('Alumni Events, Just keep me updated');
-    expect(body.get('Consent')).toBe('true');
+    expect(body.get('ConnectionPreferences')).toBe('Alumni Events, Just keep me updated');
+    expect(body.has('Consent')).toBeFalse();
     expect(body.has('Photo')).toBeFalse();
 
     req.flush({ message: 'Saved', isSucceeded: true });
@@ -119,9 +119,9 @@ describe('AlumniRegisterComponent', () => {
     const fixture = render();
     fillValid(fixture);
     fixture.componentInstance.submit();
-    pendingPost()[0].flush({ message: 'Email already registered', isSucceeded: false });
+    pendingPost()[0].flush({ message: 'Failed to Register', isSucceeded: false });
     fixture.detectChanges();
-    expect(el(fixture).querySelector('.submit-error')!.textContent).toContain('Email already registered');
+    expect(el(fixture).querySelector('.submit-error')!.textContent).toContain(ALREADY_REGISTERED_MESSAGE);
     expect(el(fixture).querySelector('form')).not.toBeNull();
   });
 

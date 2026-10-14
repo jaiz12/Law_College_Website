@@ -16,7 +16,11 @@ const loadCmsPage = () =>
   import('./public/cms-page/cms-page.component')
     .then(m => m.CmsPageComponent);
 
-const navLabels = new Map(flattenSiteNav().map(item => [item.path, item.label]));
+const loadMediaGallery = () =>
+  import('./public/media-gallery/media-gallery.component')
+    .then(m => m.MediaGalleryComponent);
+
+const navLabels =new Map(flattenSiteNav().map(item => [item.path, item.label]));
 
 /** Pages with a real implementation, at the CMS's own menu paths (see site-links.ts). */
 const pageRoutes: Routes = [
@@ -56,12 +60,23 @@ const pageRoutes: Routes = [
     data: { api: 'Announcements/ArchiveNewsAndEvents', title: 'News & Events Archives' }
   },
   {
-    // Alumni "Stay Connected" registration form (POST /api/AlumniRegistration).
+    // Alumni "Stay Connected" registration form (POST /api/Registration).
     path: SITE_PATHS.alumniRegister,
     title: 'Register / Join',
     loadComponent: () =>
       import('./public/alumni-register/alumni-register.component')
         .then(m => m.AlumniRegisterComponent)
+  },
+  {
+    // Albums (/api/Album); one album's photos and videos at :albumId.
+    path: SITE_PATHS.mediaGallery,
+    title: 'Media & Gallery',
+    loadComponent: loadMediaGallery
+  },
+  {
+    path: `${SITE_PATHS.mediaGallery}/:albumId`,
+    title: 'Media & Gallery',
+    loadComponent: loadMediaGallery
   },
   // Every CMS-managed module page (About Us, Committee and Cell, Student
   // Life, Alumni, …) — endpoint and layout per page in cms-pages.ts.

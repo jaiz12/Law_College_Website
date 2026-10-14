@@ -7,12 +7,14 @@
  *   by PageName, which must match the CMS's `pageName` value exactly.
  * - `list`: every record of a module, newest first, as cards (title, image,
  *   rich text, PDF, link — whichever the module has).
- * - `people`: Faculty / Administrative Staff profile cards.
+ * - `people`: Faculty / Administrative Staff profile cards, in display order.
+ * - `profiles`: the same photo cards plus each record's rich text, newest
+ *   first (Student Achievers).
  *
  * `api` is the path under API_URL (Law_College_API). Paths here are nav
  * paths from site-links.ts; the page heading/title is that nav entry's label.
  */
-export type CmsPageKind = 'content' | 'list' | 'people';
+export type CmsPageKind = 'content' | 'list' | 'people' | 'profiles';
 
 export interface CmsPageConfig {
   kind: CmsPageKind;
@@ -22,6 +24,7 @@ export interface CmsPageConfig {
 const content = (api: string): CmsPageConfig => ({ kind: 'content', api });
 const list = (api: string): CmsPageConfig => ({ kind: 'list', api });
 const people = (api: string): CmsPageConfig => ({ kind: 'people', api });
+const profiles = (api: string): CmsPageConfig => ({ kind: 'profiles', api });
 
 const aboutUs = (pageName: string) => content(`AboutUs/0/${pageName}`);
 const committee = (pageName: string) => content(`CommitteeAndCell/0/${pageName}`);
@@ -53,6 +56,7 @@ export const CMS_PAGES: Record<string, CmsPageConfig> = {
   // Examination
   'examinations/notifications': list('Notifications'),
   'examinations/results': content('Results'),
+  'examinations/student-achievers': profiles('StudentAchievers'),
 
   // Student Life (Library has its own link-list page)
   'student-life/student-representative-council': studentLife('Student Representative Council'),

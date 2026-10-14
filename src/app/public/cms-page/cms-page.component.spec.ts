@@ -103,6 +103,22 @@ describe('CmsPageComponent', () => {
       expect(people[0].querySelector<HTMLAnchorElement>('a[href^="tel:"]')).not.toBeNull();
       // No photo: an initial placeholder instead of a broken image.
       expect(people[1].querySelector('.person-initial')!.textContent!.trim()).toBe('S');
+      expect(main(fixture).querySelector('.person-text')).toBeNull();
+    });
+  });
+
+  describe('profiles', () => {
+    it('shows Student Achievers newest first with photo and rich text', () => {
+      const fixture = render('profiles', 'StudentAchievers');
+      respond(fixture, 'StudentAchievers', [
+        { id: 1, name: 'Older', content: '<p>Moot court winner</p>', profileImage: 'assets/a.webp' },
+        { id: 2, name: 'Newer', content: '<p>&nbsp;</p>', profileImage: null }
+      ]);
+      const people = [...main(fixture).querySelectorAll('.person')];
+      expect(people.map(p => p.querySelector('.person-name')!.textContent!.trim())).toEqual(['Newer', 'Older']);
+      expect(people[1].querySelector<HTMLImageElement>('img.person-photo')!.src).toBe(`${TEST_IMAGE_URL}assets/a.webp`);
+      expect(people[1].querySelector('.person-text')!.innerHTML).toContain('Moot court winner');
+      expect(people[0].querySelector('.person-text')).toBeNull();
     });
   });
 });

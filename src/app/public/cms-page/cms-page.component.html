@@ -68,7 +68,7 @@
           }
         }
 
-        @case ('people') {
+        @default {
           @if (items.length) {
             <ul class="people-grid">
               @for (person of items; track person.id) {
@@ -87,6 +87,9 @@
                   }
                   @if (person.phone) {
                     <a class="person-contact" [href]="'tel:' + person.phone">{{ person.phone }}</a>
+                  }
+                  @if (kind === 'profiles' && person.html) {
+                    <div class="person-text rich-text" [innerHTML]="person.html | safeHtml"></div>
                   }
                 </li>
               }
