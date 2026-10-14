@@ -26,7 +26,8 @@ interface CmsItemView extends CmsRow {
  * nav label as `title`:
  * - content: the newest record's rich text, with its image and/or PDF;
  * - list: all records as cards, newest first;
- * - people: Faculty / Administrative Staff, in the CMS's display order.
+ * - people: Faculty / Administrative Staff, in the CMS's display order;
+ * - profiles: photo cards with rich text (Student Achievers), newest first.
  */
 @Component({
   selector: 'app-cms-page',

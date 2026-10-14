@@ -31,7 +31,8 @@ export const SITE_PATHS = {
   newsEventsArchives: 'news-events/news-events-archives',
   onlineApplication: 'admissions/online-application',
   examResults: 'examinations/results',
-  alumniRegister: 'alumni/register-join'
+  alumniRegister: 'alumni/register-join',
+  mediaGallery: 'media-gallery'
 } as const;
 
 /** Old website-only paths, kept alive as redirects for existing links/bookmarks. */
@@ -131,7 +132,7 @@ export const SITE_NAV: SiteNavItem[] = [
     { label: 'Alumni Events', path: 'alumni/alumni-events' },
     { label: 'Newsletters', path: 'alumni/newsletters' }
   ] },
-  { label: 'Media & Gallery', path: 'media-gallery' }
+  { label: 'Media & Gallery', path: SITE_PATHS.mediaGallery }
 ];
 
 /** Every nav entry (parents and children), flattened. */

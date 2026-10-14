@@ -189,6 +189,14 @@
   overflow-wrap:anywhere;
   &:hover{ text-decoration:underline; }
 }
+.person-text{
+  margin-top:6px;
+  color:#4b5563;
+  font-size:.92rem;
+  line-height:1.65;
+  text-align:left;
+  align-self:stretch;
+}
 
 @media (max-width: 640px){
   .cms-container{ padding:0 16px; }

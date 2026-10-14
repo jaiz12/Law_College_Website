@@ -1,0 +1,87 @@
+<app-site-header></app-site-header>
+
+<main class="gallery-page">
+  <div class="gallery-container">
+    @if (album) {
+      <a class="back-link" [routerLink]="galleryPath">&larr; All albums</a>
+      <h1 class="gallery-title">{{ album.name }}</h1>
+      @if (album.description) {
+        <p class="album-description">{{ album.description }}</p>
+      }
+    } @else {
+      <h1 class="gallery-title">Media &amp; Gallery</h1>
+    }
+
+    @if (loading) {
+      <p class="status-text">Loading&hellip;</p>
+    } @else if (album) {
+      @if (media.length) {
+        <ul class="media-grid">
+          @for (item of media; track item.id; let i = $index) {
+            <li>
+              <button type="button" class="media-tile" (click)="open(i)"
+                      [attr.aria-label]="(item.isVideo ? 'Play video ' : 'View photo ') + (i + 1)">
+                @if (item.isVideo) {
+                  <video [src]="item.url" preload="metadata" muted></video>
+                  <span class="play-badge" aria-hidden="true">&#9654;</span>
+                } @else {
+                  <img [src]="item.url" [alt]="album.name + ' photo ' + (i + 1)" loading="lazy">
+                }
+              </button>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="status-text">No photos or videos in this album yet.</p>
+      }
+    } @else if (albumNotFound) {
+      <p class="status-text">
+        This album isn't available. <a [routerLink]="galleryPath">See all albums</a>
+      </p>
+    } @else if (albums.length) {
+      <ul class="album-grid">
+        @for (a of albums; track a.id) {
+          <li>
+            <a class="album-card" [routerLink]="[galleryPath, a.id]">
+              @if (a.coverUrl) {
+                <img class="album-cover" [src]="a.coverUrl" [alt]="a.name" loading="lazy">
+              } @else {
+                <span class="album-cover album-cover-empty" aria-hidden="true">&#128247;</span>
+              }
+              <span class="album-body">
+                <span class="album-name">{{ a.name }}</span>
+                @if (a.description) {
+                  <span class="album-text">{{ a.description }}</span>
+                }
+              </span>
+            </a>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="status-text">Nothing here yet — check back soon.</p>
+    }
+  </div>
+</main>
+
+@if (current; as item) {
+  <div class="viewer" role="dialog" aria-modal="true" aria-label="Media viewer" (click)="close()">
+    <button type="button" class="viewer-close" aria-label="Close" (click)="close()">&times;</button>
+    @if (media.length > 1) {
+      <button type="button" class="viewer-nav viewer-prev" aria-label="Previous"
+              (click)="$event.stopPropagation(); step(-1)">&#8249;</button>
+      <button type="button" class="viewer-nav viewer-next" aria-label="Next"
+              (click)="$event.stopPropagation(); step(1)">&#8250;</button>
+    }
+    <div class="viewer-stage" (click)="$event.stopPropagation()">
+      @if (item.isVideo) {
+        <video [src]="item.url" controls autoplay></video>
+      } @else {
+        <img [src]="item.url" [alt]="(album?.name ?? 'Gallery') + ' photo ' + (viewerIndex! + 1)">
+      }
+    </div>
+    <p class="viewer-count">{{ viewerIndex! + 1 }} / {{ media.length }}</p>
+  </div>
+}
+
+<app-site-footer></app-site-footer>

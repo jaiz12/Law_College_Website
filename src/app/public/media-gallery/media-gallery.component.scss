@@ -1,0 +1,208 @@
+:host{
+  display:block;
+  font-family:"Segoe UI", Arial, Helvetica, sans-serif;
+}
+.gallery-page{
+  background:#f8fafc;
+  min-height:60vh;
+  padding:40px 0 56px;
+}
+.gallery-container{
+  width:100%;
+  max-width:1240px;
+  margin:0 auto;
+  padding:0 24px;
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+.gallery-title{
+  margin:0;
+  font-size:1.75rem;
+  font-weight:700;
+  color:#111827;
+  overflow-wrap:anywhere;
+}
+.back-link{
+  align-self:flex-start;
+  color:#2563eb;
+  font-weight:600;
+  font-size:.9rem;
+  &:hover{ text-decoration:underline; }
+}
+.album-description{
+  margin:-8px 0 0;
+  color:#4b5563;
+  line-height:1.65;
+}
+.status-text{
+  margin:40px auto;
+  color:#6b7280;
+  font-size:1rem;
+  text-align:center;
+  a{ color:#2563eb; font-weight:600; }
+}
+
+// ---- albums ----
+.album-grid{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+  gap:20px;
+}
+.album-card{
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  overflow:hidden;
+  color:inherit;
+  text-decoration:none;
+  transition:box-shadow .2s ease, transform .2s ease;
+  &:hover, &:focus-visible{
+    box-shadow:0 10px 24px rgba(17, 24, 39, .08);
+    transform:translateY(-2px);
+  }
+}
+.album-cover{
+  width:100%;
+  aspect-ratio:16 / 10;
+  object-fit:cover;
+  background:#f3f5f8;
+}
+.album-cover-empty{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:2.5rem;
+}
+.album-body{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  padding:16px 18px 18px;
+}
+.album-name{
+  font-size:1.05rem;
+  font-weight:700;
+  color:#111827;
+  overflow-wrap:anywhere;
+}
+.album-text{
+  color:#4b5563;
+  font-size:.92rem;
+  line-height:1.6;
+  display:-webkit-box;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+// ---- album media ----
+.media-grid{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
+  gap:12px;
+}
+.media-tile{
+  position:relative;
+  display:block;
+  width:100%;
+  aspect-ratio:1;
+  padding:0;
+  border:0;
+  border-radius:10px;
+  overflow:hidden;
+  background:#e5e7eb;
+  cursor:zoom-in;
+  img, video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    transition:transform .3s ease;
+  }
+  &:hover img, &:hover video{ transform:scale(1.04); }
+  &:focus-visible{ outline:3px solid #2563eb; outline-offset:2px; }
+}
+.play-badge{
+  position:absolute;
+  inset:0;
+  margin:auto;
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding-left:4px;
+  background:rgba(17, 24, 39, .65);
+  color:#fff;
+  font-size:1.3rem;
+}
+
+// ---- viewer ----
+.viewer{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0, 0, 0, .9);
+  padding:56px 64px;
+}
+.viewer-stage{
+  max-width:100%;
+  max-height:100%;
+  display:flex;
+  img, video{
+    max-width:100%;
+    max-height:calc(100vh - 112px);
+    object-fit:contain;
+    border-radius:6px;
+  }
+}
+.viewer-close, .viewer-nav{
+  position:absolute;
+  border:0;
+  background:rgba(255, 255, 255, .12);
+  color:#fff;
+  border-radius:50%;
+  width:44px;
+  height:44px;
+  font-size:1.8rem;
+  line-height:1;
+  cursor:pointer;
+  &:hover{ background:rgba(255, 255, 255, .25); }
+}
+.viewer-close{ top:12px; right:12px; }
+.viewer-nav{ top:50%; transform:translateY(-50%); }
+.viewer-prev{ left:12px; }
+.viewer-next{ right:12px; }
+.viewer-count{
+  position:absolute;
+  bottom:14px;
+  left:0;
+  right:0;
+  margin:0;
+  text-align:center;
+  color:#d1d5db;
+  font-size:.9rem;
+}
+
+@media (max-width: 640px){
+  .gallery-container{ padding:0 16px; }
+  .gallery-title{ font-size:1.35rem; }
+  .album-grid{ grid-template-columns:1fr; }
+  .media-grid{ grid-template-columns:repeat(2, 1fr); gap:8px; }
+  .viewer{ padding:56px 8px; }
+  .viewer-nav{ top:auto; bottom:8px; transform:none; }
+}

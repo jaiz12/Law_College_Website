@@ -26,10 +26,20 @@ export const PHOTO_MAX_BYTES = 2 * 1024 * 1024;
 export const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 /**
- * POST endpoint (multipart/form-data) for a registration. Field names in
- * buildFormData() are the contract with the API side.
+ * POST endpoint (multipart/form-data) for a registration — Law_College_API's
+ * Alumni/RegistrationController (sp_Alumni_Registration_Create). Field names
+ * in buildFormData() match its RegistrationDTO.
  */
-export const ALUMNI_REGISTER_API = 'AlumniRegistration';
+export const ALUMNI_REGISTER_API = 'Registration';
+
+/**
+ * Shown when the API answers isSucceeded:false. The insert only fails on the
+ * unique (Email, MobileNumber, FullName) index in practice, i.e. this person
+ * is already registered — the API's own "Failed to Register" doesn't say so.
+ */
+export const ALREADY_REGISTERED_MESSAGE =
+  'We could not save your registration. If you have already registered with this name, email and mobile number, '
+  + "you're already on our alumni list — otherwise please try again.";
 
 function optionalHttpUrl(control: AbstractControl): ValidationErrors | null {
   const value = (control.value ?? '').trim();
@@ -179,7 +189,7 @@ export class AlumniRegisterComponent implements OnDestroy {
             this.submitted = true;
             this.clearPhoto();
           } else {
-            this.submitError = res?.message ?? res?.Message ?? 'We could not save your registration. Please try again.';
+            this.submitError = ALREADY_REGISTERED_MESSAGE;
           }
         },
         error: err => {
@@ -197,15 +207,15 @@ export class AlumniRegisterComponent implements OnDestroy {
     data.append('FullName', v.fullName.trim());
     data.append('Email', v.email.trim());
     data.append('MobileNumber', v.mobileNumber);
-    data.append('Course', v.course);
-    data.append('BatchYear', v.batchYear);
-    data.append('Profession', v.profession.trim());
-    data.append('Organisation', v.organisation.trim());
-    data.append('Location', v.location.trim());
+    data.append('CourseProgramme', v.course);
+    data.append('BatchGraduationYear', v.batchYear);
+    data.append('CurrentProfessionRole', v.profession.trim());
+    data.append('CurrentOrganisationChamber', v.organisation.trim());
+    data.append('CurrentCityLocation', v.location.trim());
     // Kept in the order shown on the form, comma-separated.
-    data.append('ConnectThrough', this.connectOptions.filter(o => v.connectThrough.includes(o)).join(', '));
-    data.append('LinkedInUrl', v.linkedInUrl.trim());
-    data.append('Consent', String(v.consent));
+    data.append('ConnectionPreferences', this.connectOptions.filter(o => v.connectThrough.includes(o)).join(', '));
+    data.append('LinkedInProfile', v.linkedInUrl.trim());
+    // Consent isn't stored; the form can't be submitted without it.
     if (this.photo) {
       data.append('Photo', this.photo, this.photo.name);
     }

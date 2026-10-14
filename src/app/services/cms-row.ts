@@ -4,7 +4,7 @@ import { isAbsoluteHttpUrl } from './url.util';
 /**
  * One CMS record, normalised across the API's module DTOs. Every content
  * module is a variation of the same few columns — Title, Content (or
- * Description), Image (or ProfilePhoto), FilePath, Link — so the public
+ * Description), Image (or ProfilePhoto / ProfileImage), FilePath, Link — so the public
  * pages read them through this one shape instead of each knowing its DTO.
  * Both camelCase and PascalCase keys are accepted (the API serializes
  * DataTables camelCase today; older endpoints were PascalCase).
@@ -46,7 +46,7 @@ export function toCmsRow(row: any): CmsRow {
     title: text(pick(row, 'Title')),
     // CKEditor leaves "<p>&nbsp;</p>" in an emptied editor — that's no content.
     html: htmlToPlainText(html) ? html : '',
-    image: text(pick(row, 'Image', 'ProfilePhoto')) || null,
+    image: text(pick(row, 'Image', 'ProfilePhoto', 'ProfileImage')) || null,
     file: text(pick(row, 'FilePath', 'File')) || null,
     link: text(pick(row, 'Link', 'ExternalLink')) || null,
     name: text(pick(row, 'Name')),
