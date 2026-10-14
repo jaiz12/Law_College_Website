@@ -108,8 +108,9 @@ describe('AlumniRegisterComponent', () => {
     expect(body.has('Consent')).toBeFalse();
     expect(body.has('Photo')).toBeFalse();
 
-    req.flush({ message: 'Saved', isSucceeded: true });
+    req.flush({ message: 'Registered Successfully', description: 'ALU-2026-0007', isSucceeded: true });
     fixture.detectChanges();
+    expect(el(fixture).querySelector('.success-id')!.textContent).toContain('ALU-2026-0007');
     expect(el(fixture).textContent).toContain("You're officially back in the alumni circle!");
     expect(el(fixture).textContent).toContain('Thank you for staying connected with us.');
     expect(el(fixture).querySelector('form')).toBeNull();

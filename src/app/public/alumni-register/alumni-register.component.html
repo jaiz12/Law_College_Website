@@ -7,6 +7,9 @@
       <section class="register-card success" role="status" aria-live="polite">
         <h1 class="success-title">You're officially back in the alumni circle! 🎓💙</h1>
         <p class="success-text">Thank you for staying connected with us.</p>
+        @if (registrationId) {
+          <p class="success-id">Your Registration ID: <strong>{{ registrationId }}</strong></p>
+        }
         <a routerLink="/" class="btn btn-primary">Back to Home</a>
       </section>
     } @else {

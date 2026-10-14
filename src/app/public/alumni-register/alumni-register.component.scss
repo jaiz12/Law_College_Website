@@ -222,6 +222,11 @@ input[type="file"]{
   color:#4b5563;
   font-size:1.05rem;
 }
+.success-id{
+  margin:0 0 18px;
+  color:#111827;
+  strong{ letter-spacing:.03em; }
+}
 
 @media (max-width: 640px){
   .register-container{ padding:0 16px; }
