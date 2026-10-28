@@ -88,7 +88,26 @@ html.nav-drawer-open {
   th, td { border: 1px solid #cbd5e1; padding: 6px 10px; text-align: left; vertical-align: top; }
   th { font-weight: 700; background: rgba(148, 163, 184, .15); }
 
-  img { max-width: 100%; height: auto; }
+  // Tailwind's preflight makes every <img> display:block, which ignores the
+  // paragraph's text-align, so an image centred in CKEditor sat on the left.
+  // inline-block lets images inside a paragraph follow its alignment again.
+  img { display: inline-block; max-width: 100%; height: auto; vertical-align: bottom; }
+
+  // CKEditor 5 block images: <figure class="image [image-style-…]">.
+  // Default is centred; the style classes align or float them.
+  figure.image { display: table; clear: both; text-align: center; margin: .9em auto; }
+  figure.image img { display: block; margin: 0 auto; min-width: 100%; }
+  figure.image.image_resized { display: block; max-width: 100%; }
+  figure.image.image_resized img { width: 100%; }
+  figure.image > figcaption { display: table-caption; caption-side: bottom; padding: .4em; font-size: .85em; }
+  .image-style-block-align-left { margin-left: 0; margin-right: auto; }
+  .image-style-block-align-right { margin-left: auto; margin-right: 0; }
+  .image-style-align-center { margin-left: auto; margin-right: auto; }
+  .image-style-align-left { float: left; margin: 0 1.5em 1em 0; }
+  .image-style-align-right, .image-style-side { float: right; margin: 0 0 1em 1.5em; }
+
+  // Keep floated images inside the content box.
+  &::after { content: ''; display: table; clear: both; }
 }
 
 // Tighter variant for short one-field titles (header/footer brand): same
