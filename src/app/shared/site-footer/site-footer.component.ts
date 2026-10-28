@@ -1,5 +1,5 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
+import { Component, HostListener, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ApiService } from '../../services/api.service';
@@ -193,6 +193,19 @@ export class SiteFooterComponent implements OnInit {
   /** Visit count as fixed-width odometer digits (min 6). */
   counterDigits(count: number): string[] {
     return String(count).padStart(6, '0').split('');
+  }
+
+  /** Scroll-to-top only appears once the visitor has scrolled down a bit
+   *  (was always visible, even at the very top of the page). */
+  readonly toTopThreshold = 400;
+  showToTop = false;
+
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    const show = window.scrollY > this.toTopThreshold;
+    if (show !== this.showToTop) {
+      this.showToTop = show;
+    }
   }
 
   scrollToTop(): void {

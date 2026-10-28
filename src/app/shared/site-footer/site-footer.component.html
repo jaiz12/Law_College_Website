@@ -90,4 +90,5 @@
 <a [routerLink]="['/pages', 'Admission Open']" class="admission-ribbon">Admission Open</a>
 
 <!-- Scroll to top -->
-<button type="button" class="to-top" aria-label="Scroll to top" (click)="scrollToTop()">&#8593;</button>
+<button type="button" class="to-top" aria-label="Scroll to top" (click)="scrollToTop()"
+        [class.is-visible]="showToTop" [attr.aria-hidden]="!showToTop" [attr.tabindex]="showToTop ? null : -1">&#8593;</button>
