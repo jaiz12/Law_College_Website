@@ -57,8 +57,8 @@ export const SITE_NAV: SiteNavItem[] = [
     { label: 'Faculty', path: 'about/faculty' },
     { label: 'Administrative Staff', path: 'about/administrative-staff' },
     { label: 'Infrastructure', path: 'about/infrastructure' },
-    { label: 'Recognitions & Affiliations (BCI, UGC, NAAC, etc.)', path: 'about/recognitions-and-affiliations' },
-    { label: 'Statutory Bodies (IQAC, Academic Council, etc.)', path: 'about/statutory-bodies' }
+    { label: 'Recognitions & Affiliations', path: 'about/recognitions-and-affiliations' },
+    { label: 'Statutory Bodies', path: 'about/statutory-bodies' }
   ] },
   { label: 'Academics', path: 'academics', children: [
     { label: '5-Year Integrated BA LLB', path: 'academics/ba-llb' },
@@ -72,14 +72,14 @@ export const SITE_NAV: SiteNavItem[] = [
     { label: 'Eligibility Admission process & Intake', path: 'admissions/eligibility-admission-process-and-intake' },
     { label: 'Reservation Policy', path: 'admissions/reservation-policy' },
     { label: 'Fee Structure', path: 'admissions/fee-structure' },
-    { label: 'Prospectus (Download)', path: 'admissions/prospectus' },
+    { label: 'Prospectus', path: 'admissions/prospectus' },
     { label: 'Online Application', path: SITE_PATHS.onlineApplication },
     { label: 'Contact Admissions Office', path: 'admissions/contact-admission-office' }
   ] },
   { label: 'Examination', path: 'examinations', children: [
     { label: 'Notifications', path: 'examinations/notifications' },
     { label: 'Exam Schedules', path: 'examinations/exam-schedules' },
-    { label: 'Results (semester-wise)', path: SITE_PATHS.examResults },
+    { label: 'Results', path: SITE_PATHS.examResults },
     { label: 'Student Achievers', path: 'examinations/student-achievers' }
   ] },
   { label: 'Student Life', path: 'student-life', children: [
@@ -96,10 +96,6 @@ export const SITE_NAV: SiteNavItem[] = [
     { label: 'Statistics', path: 'student-life/statistics' }
   ] },
   { label: 'Compliance/Disclosures', path: 'compliance', children: [
-    { label: 'BCI Compliance', path: 'compliance/bci-compliance' },
-    { label: 'UGC Compliance', path: 'compliance/ugc-compliance' },
-    // CMS path really is "nirf-iqac" for NAAC / IQAC.
-    { label: 'NAAC / IQAC', path: 'compliance/nirf-iqac' },
     { label: 'NIRF', path: 'compliance-or-disclosures/nirf' },
     { label: 'AISHE', path: 'compliance-or-disclosures/aishe' }
   ] },
@@ -120,10 +116,7 @@ export const SITE_NAV: SiteNavItem[] = [
     { label: 'SC/ST & Minority Cell', path: 'committee-and-cell/sc-st-minority-cell' }
   ] },
   { label: 'News & Event', path: 'news-events', children: [
-    { label: 'Announcements', path: SITE_PATHS.announcements },
-    { label: 'Seminars & Webinars', path: 'news-events/seminars-webinars' },
-    { label: 'Moot Court Competitions', path: 'news-events/moot-court-competitions' },
-    { label: 'News & Events Archives', path: SITE_PATHS.newsEventsArchives }
+    { label: 'Announcements', path: SITE_PATHS.announcements }
   ] },
   { label: 'Alumni', path: 'alumni', children: [
     { label: 'Governing Body', path: 'alumni/governing-body' },

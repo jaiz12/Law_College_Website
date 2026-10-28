@@ -11,7 +11,7 @@ describe('site-links', () => {
     expect(resolveInternalPath('/committee-and-cell/legal-aid-cell/')).toBe(SITE_PATHS.legalAidCell);
     expect(resolveInternalPath('/legal-aid')).toBe(SITE_PATHS.legalAidCell);
     expect(resolveInternalPath('library')).toBe(SITE_PATHS.library);
-    expect(resolveInternalPath('News & Events Archives')).toBe(SITE_PATHS.newsEventsArchives);
+    expect(resolveInternalPath('Announcements')).toBe(SITE_PATHS.announcements);
   });
 
   it('returns null for unknown or empty internal links instead of guessing', () => {

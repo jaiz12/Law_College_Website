@@ -49,7 +49,7 @@ describe('SiteHeaderComponent navigation state', () => {
     expect(hrefs).toContain('/student-life/library');
     expect(hrefs).toContain('/committee-and-cell/legal-aid-cell');
     expect(hrefs).toContain('/news-events/announcements');
-    expect(hrefs).toContain('/news-events/news-events-archives');
+    expect(hrefs).not.toContain('/news-events/news-events-archives');
     expect(hrefs.filter(h => h?.startsWith('/pages/'))).toEqual([]);
     expect(hrefs.filter(h => h?.includes('%2F'))).toEqual([]);
   });
