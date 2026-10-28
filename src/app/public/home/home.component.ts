@@ -1,11 +1,12 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
+import { Component, ElementRef, Injector, OnInit, PLATFORM_ID, afterNextRender, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SafeHtmlPipe } from '../../services/safe-html.pipe';
 import { AnnouncementWithTags, mapAnnouncements } from '../../services/announcement.model';
 import { isAbsoluteHttpUrl } from '../../services/url.util';
 import { formatStatCount } from '../../services/format.util';
+import { assetUrl } from '../../services/cms-row';
 import { SITE_PATHS } from '../../services/site-links';
 import { SiteHeaderComponent } from '../../shared/site-header/site-header.component';
 import { SiteFooterComponent } from '../../shared/site-footer/site-footer.component';
@@ -22,6 +23,62 @@ interface StatisticItem {
   id: number;
   title: string;
   count: string;
+}
+
+interface HeroBanner {
+  imageUrl: string | null;
+  html: string;
+}
+
+/**
+ * Editors space the banner text with empty paragraphs and trailing
+ * "<br>&nbsp;", which gives uneven gaps between title, tagline and
+ * description. The hero sets its own spacing, so those blank lines go.
+ */
+function stripBlankLines(html: string): string {
+  const blank = '(?:\\s|&nbsp;|\\u00a0|<br\\s*/?>)*';
+  return html
+    .replace(new RegExp(`<p[^>]*>${blank}</p>`, 'gi'), '')
+    .replace(new RegExp(`(?:<br\\s*/?>)${blank}(</p>)`, 'gi'), '$1')
+    .trim();
+}
+
+/**
+ * Wraps every word under `root` in <span class="hero-word"> with its own
+ * animation delay (`--d`), starting at `start` seconds and `step` apart.
+ * Only text nodes are split, so the editor's bold/italic/colour markup
+ * around the words stays as it is. Returns the delay after the last word.
+ */
+function splitWords(root: Element, start: number, step: number): number {
+  const doc = root.ownerDocument;
+  const walker = doc.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const textNodes: Text[] = [];
+  while (walker.nextNode()) {
+    textNodes.push(walker.currentNode as Text);
+  }
+
+  let delay = start;
+  for (const node of textNodes) {
+    const parts = (node.nodeValue ?? '').split(/(\s+)/);
+    if (!parts.some(part => part.trim())) {
+      continue;
+    }
+    const fragment = doc.createDocumentFragment();
+    for (const part of parts) {
+      if (!part.trim()) {
+        if (part) fragment.append(part);
+        continue;
+      }
+      const word = doc.createElement('span');
+      word.className = 'hero-word';
+      word.style.setProperty('--d', `${delay.toFixed(3)}s`);
+      word.textContent = part;
+      fragment.append(word);
+      delay += step;
+    }
+    node.replaceWith(fragment);
+  }
+  return delay;
 }
 
 interface OurProgramItem {
@@ -55,6 +112,8 @@ interface OurProgramItem {
 export class HomeComponent implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly apiService = inject(ApiService);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
 
   /** Exposed for the template so a card with an invalid External Link
    *  doesn't render with a pointer cursor / hover affordance for a click
@@ -72,14 +131,82 @@ export class HomeComponent implements OnInit {
   programs: OurProgramItem[] = [];
   selectedProgram: OurProgramItem | null = null;
 
+  /** CMS Banner record whose Page Name is "Home". undefined while loading,
+   *  null when there is none (the hero then shows its built-in photo and text). */
+  readonly heroBannerPageName = 'Home';
+  heroBanner: HeroBanner | null | undefined;
+
   readonly announcementsToShow = 4;
   announcements: AnnouncementWithTags[] = [];
 
   ngOnInit(): void {
+    this.getHeroBanner();
     this.getWhyChooseUsItems();
     this.getStatisticsItems();
     this.getOurProgramItems();
     this.getAnnouncements();
+  }
+
+  /**
+   * Hero background image + text from the CMS Banner module (/api/Banner).
+   * Was hardcoded before, so a banner uploaded in the CMS never showed up.
+   */
+  getHeroBanner(): void {
+    this.apiService
+      .GetRequestRows('Banner')
+      .subscribe({
+        next: (data: any[]) => {
+          const pageName = this.heroBannerPageName.toLowerCase();
+          const row = data.find((item: any) =>
+            String(item.pageName ?? item.PageName ?? '').trim().toLowerCase() === pageName);
+
+          this.heroBanner = row
+            ? {
+                imageUrl: assetUrl(this.apiService.IMAGE_API_URL, row.imagePath ?? row.ImagePath ?? row.image ?? row.Image),
+                html: stripBlankLines(row.content ?? row.Content ?? '')
+              }
+            : null;
+          this.revealHero();
+        },
+        error: (err) => {
+          this.heroBanner = null;
+          this.revealHero();
+          console.error('Banner Error:', err);
+        }
+      });
+  }
+
+  /**
+   * Starts the hero text entrance once the hero text is in the DOM.
+   * afterNextRender only runs in the browser and after hydration, so the
+   * words are split exactly once, on the final DOM.
+   */
+  private revealHero(): void {
+    afterNextRender(() => {
+      const content = this.host.nativeElement.querySelector<HTMLElement>('.hero-content');
+      if (!content || content.classList.contains('is-ready')) {
+        return;
+      }
+
+      // Title words come in slowest, the long description fastest, so the
+      // whole entrance takes about a second whatever the CMS text is.
+      const blocks = Array.from(
+        content.querySelector('.hero-text')?.children ?? content.querySelectorAll('h1, .hero-sub, .hero-desc'));
+      const steps = [0.07, 0.035, 0.012];
+      let delay = 0.15;
+      blocks.forEach((block, i) => {
+        delay = splitWords(block, delay, steps[Math.min(i, steps.length - 1)]) + 0.1;
+      });
+
+      content.style.setProperty('--hero-actions-delay', `${delay.toFixed(3)}s`);
+      content.classList.add('is-ready');
+    }, { injector: this.injector });
+  }
+
+  /** CSS background-image for the hero; quotes/backslashes are escaped so
+   *  the stored path can't break out of url("..."). */
+  heroBackground(url: string | null | undefined): string | null {
+    return url ? `url("${url.replace(/["\\]/g, encodeURIComponent)}")` : null;
   }
 
   getWhyChooseUsItems(): void {

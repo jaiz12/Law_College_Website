@@ -70,16 +70,25 @@ ul{list-style:none; margin:0; padding:0;}
 }
 .hero-bg{
   position:absolute; inset:0;
-  background-image:url("/images/home/hero-scales.jpg");
   background-size:cover;
   background-position:right center;
   background-color:#2b2f36;
 }
+/* Built-in photo, only when the CMS has no Home banner image. */
+.hero-bg-default{background-image:url("/images/home/hero-scales.jpg");}
 .hero-overlay{
   position:absolute; inset:0;
   /* Light scrim only — the photo's own dark-to-light gradient already
      carries the contrast white text needs; a heavy overlay just dims it. */
   background:linear-gradient(90deg, rgba(10,14,20,.35) 0%, rgba(10,14,20,.18) 55%, rgba(10,14,20,0) 100%);
+}
+/* CMS banner photos can be anything (bright walls, sky), so the light scrim
+   above isn't enough: dim the whole photo evenly and darken the centre
+   further, where the text sits. */
+.hero-overlay-cms{
+  background:
+    radial-gradient(ellipse 60% 55% at 50% 50%, rgba(8,12,20,.5) 0%, rgba(8,12,20,0) 100%),
+    linear-gradient(rgba(8,12,20,.62), rgba(8,12,20,.62));
 }
 .hero-content{
   position:relative; z-index:2; padding:90px 24px 110px;
@@ -87,8 +96,68 @@ ul{list-style:none; margin:0; padding:0;}
 }
 .hero-content h1{font-size:2.5rem; font-weight:700; margin:0 0 18px; line-height:1.15; color:#fff;}
 .hero-sub{font-size:1.15rem; margin:0 0 16px; color:#fff; opacity:.95;}
-.hero-desc{font-size:1rem; opacity:.9; margin:0 auto 32px; max-width:620px; color:#fff;}
-.hero-actions{display:flex; gap:14px; flex-wrap:wrap; justify-content:center;}
+.hero-desc{font-size:1rem; opacity:.9; margin:0 auto 52px; max-width:620px; color:#fff;}
+/* top:6px nudges only the buttons down; a bigger margin would also shift
+   the (vertically centred) text up. */
+.hero-actions{display:flex; gap:14px; flex-wrap:wrap; justify-content:center; position:relative; top:6px;}
+/* CMS banner text (CKEditor): white on the photo unless the editor picked a colour. */
+.hero-text{color:#fff; margin:0 0 52px; text-shadow:0 1px 4px rgba(0,0,0,.65);}
+/* Same hierarchy as the built-in hero: first line is the title, second the
+   tagline, the rest the description. The title size overrides the editor's
+   inline font-size so it always reads as the heading (!important is the
+   only way past an inline style). */
+:host ::ng-deep .hero-text{
+  > *{margin:0 0 14px;}
+  > :first-child{font-size:2.5rem; font-weight:700; line-height:1.15; margin-bottom:18px;}
+  > :first-child [style*="font-size"]{font-size:inherit !important;}
+  > :nth-child(2){font-size:1.15rem; opacity:.95; margin-bottom:16px;}
+  > :nth-child(n+3){font-size:1rem; opacity:.9; max-width:620px; margin-left:auto; margin-right:auto;}
+  > :last-child{margin-bottom:0;}
+}
+@media (max-width:640px){
+  :host ::ng-deep .hero-text > :first-child{font-size:1.75rem;}
+}
+/* ---- Entrance ----
+   The photo fades in from dark while settling from a zoom. The text is
+   hidden until the browser has taken the page over (HomeComponent adds
+   .is-ready after splitting it into words); animating the server-rendered
+   text instead restarted it mid-way when hydration re-set the CMS HTML.
+   Then each word comes in from blur on a spring-like curve, staggered
+   title -> tagline -> description, and the buttons follow. */
+.hero{background:#141821;}
+.hero-bg{animation:hero-settle 6s cubic-bezier(.2,.6,.2,1) both;}
+
+/* Safety net: if the script never runs, show the text anyway. */
+.hero-content:not(.is-ready) > *{opacity:0; animation:hero-show .5s 2.5s forwards;}
+
+:host ::ng-deep .hero-word{
+  display:inline-block;
+  animation:hero-word 1.1s var(--d, 0s) cubic-bezier(.16,1,.3,1) both;
+}
+.is-ready .hero-actions{
+  animation:hero-actions 1s var(--hero-actions-delay, 1s) cubic-bezier(.16,1,.3,1) both;
+}
+.hero-actions .btn{transition:transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s ease;}
+.hero-actions .btn:hover{transform:translateY(-2px); box-shadow:0 10px 24px rgba(0,0,0,.3);}
+
+@keyframes hero-settle{
+  from{opacity:0; transform:scale(1.15);}
+  20%{opacity:1;}
+}
+@keyframes hero-word{from{opacity:0; filter:blur(12px); transform:translateY(.45em);}}
+@keyframes hero-actions{from{opacity:0; filter:blur(6px); transform:translateY(18px) scale(.96);}}
+@keyframes hero-fade{from{opacity:0;}}
+@keyframes hero-blur-in{from{opacity:0; filter:blur(12px);}}
+@keyframes hero-show{to{opacity:1;}}
+
+/* Reduce motion (OS setting, e.g. Windows "Show animations" off): nothing
+   moves or zooms, but words still sharpen in from blur in the same order. */
+@media (prefers-reduced-motion:reduce){
+  .hero-bg{animation-name:hero-fade; animation-duration:1.2s;}
+  :host ::ng-deep .hero-word{animation-name:hero-blur-in;}
+  .is-ready .hero-actions{animation-name:hero-blur-in;}
+  .hero-actions .btn:hover{transform:none;}
+}
 
 /* ========= Sections ========= */
 .section{padding:72px 0;}

@@ -3,12 +3,17 @@
 
 <!-- ============ HERO ============ -->
 <section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-overlay"></div>
+  <div class="hero-bg" [class.hero-bg-default]="heroBanner === null || (heroBanner && !heroBanner.imageUrl)"
+       [style.background-image]="heroBackground(heroBanner?.imageUrl)"></div>
+  <div class="hero-overlay" [class.hero-overlay-cms]="!!heroBanner?.imageUrl"></div>
   <div class="container hero-content">
-    <h1>Sikkim Government Law College</h1>
-    <p class="hero-sub">Nurturing Legal Excellence in the Heart of the Himalayas</p>
-    <p class="hero-desc">Established under the Government of Sikkim, we are committed to providing world-class legal education with a focus on ethics, justice, and social responsibility.</p>
+    @if (heroBanner?.html) {
+      <div class="hero-text rich-text" [innerHTML]="heroBanner!.html | safeHtml"></div>
+    } @else if (heroBanner !== undefined) {
+      <h1>Sikkim Government Law College</h1>
+      <p class="hero-sub">Nurturing Legal Excellence in the Heart of the Himalayas</p>
+      <p class="hero-desc">Established under the Government of Sikkim, we are committed to providing world-class legal education with a focus on ethics, justice, and social responsibility.</p>
+    }
     <div class="hero-actions">
       <a [routerLink]="'/' + paths.onlineApplication" class="btn btn-primary">Apply Now</a>
       <a [routerLink]="['/pages', 'Learn More']" class="btn btn-outline-light">Learn More</a>
