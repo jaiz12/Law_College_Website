@@ -1,8 +1,9 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { combineLatest, map } from 'rxjs';
 import { SERVER_RESPONSE } from '../../services/server-response.token';
+import { PageBannerComponent } from '../../shared/page-banner/page-banner.component';
 import { SiteHeaderComponent } from '../../shared/site-header/site-header.component';
 import { SiteFooterComponent } from '../../shared/site-footer/site-footer.component';
 
@@ -20,7 +21,7 @@ interface ComingSoonView {
 @Component({
   selector: 'app-coming-soon',
   standalone: true,
-  imports: [SiteHeaderComponent, SiteFooterComponent],
+  imports: [RouterLink, PageBannerComponent, SiteHeaderComponent, SiteFooterComponent],
   templateUrl: './coming-soon.component.html',
   styleUrl: './coming-soon.component.scss'
 })

@@ -1,12 +1,12 @@
 <app-site-header></app-site-header>
 
+<app-page-banner [title]="calendar?.title || 'Academic Calendar'"></app-page-banner>
+
 <main class="calendar-page">
   <div class="calendar-container">
     @if (loading) {
       <p class="status-text">Loading academic calendar…</p>
     } @else if (calendar && (fileUrl || hasContent)) {
-      <h1 class="calendar-title">{{ calendar.title || 'Academic Calendar' }}</h1>
-
       @if (hasContent) {
         <div class="calendar-content rich-text" [innerHTML]="calendar.content | safeHtml"></div>
       }

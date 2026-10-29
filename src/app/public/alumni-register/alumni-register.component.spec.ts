@@ -35,7 +35,7 @@ describe('AlumniRegisterComponent', () => {
 
   it('shows the welcome header and all form fields', () => {
     const fixture = render();
-    expect(el(fixture).querySelector('h1')!.textContent).toContain('Welcome Back!');
+    expect(el(fixture).querySelector('.register-title')!.textContent).toContain('Welcome Back!');
     expect(el(fixture).textContent).toContain('It takes less than 2 minutes.');
     expect(el(fixture).querySelectorAll('select#course option:not([disabled])').length).toBe(5);
     expect(el(fixture).querySelectorAll('.check-grid input[type=checkbox]').length).toBe(5);

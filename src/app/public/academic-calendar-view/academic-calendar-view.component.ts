@@ -7,6 +7,7 @@ import { ApiService } from '../../services/api.service';
 import { SafeHtmlPipe } from '../../services/safe-html.pipe';
 import { htmlToPlainText } from '../../services/rich-text.util';
 import { SiteTitleStrategy } from '../../services/site-title.strategy';
+import { PageBannerComponent } from '../../shared/page-banner/page-banner.component';
 import { SiteHeaderComponent } from '../../shared/site-header/site-header.component';
 import { SiteFooterComponent } from '../../shared/site-footer/site-footer.component';
 
@@ -28,7 +29,7 @@ const PDF_EXTENSIONS = ['.pdf'];
 @Component({
   selector: 'app-academic-calendar-view',
   standalone: true,
-  imports: [CommonModule, SafeHtmlPipe, SiteHeaderComponent, SiteFooterComponent],
+  imports: [CommonModule, SafeHtmlPipe, PageBannerComponent, SiteHeaderComponent, SiteFooterComponent],
   templateUrl: './academic-calendar-view.component.html',
   styleUrl: './academic-calendar-view.component.scss'
 })

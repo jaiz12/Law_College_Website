@@ -1,0 +1,80 @@
+:host{display:block; font-family:var(--font-body);}
+:host *{box-sizing:border-box;}
+
+.page-banner{
+  position:relative; overflow:hidden;
+  padding:64px 0 72px;
+  color:#fff;
+  background:
+    radial-gradient(ellipse 60% 90% at 90% 20%, rgba(197,161,87,.16), transparent 60%),
+    radial-gradient(ellipse 50% 80% at 0% 100%, rgba(123,22,38,.35), transparent 60%),
+    linear-gradient(180deg, var(--chamber-900), var(--chamber-950));
+  border-bottom:3px solid var(--brass);
+}
+.banner-pattern{
+  position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(197,161,87,.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(197,161,87,.07) 1px, transparent 1px);
+  background-size:56px 56px;
+  -webkit-mask-image:linear-gradient(90deg, transparent 20%, #000 85%);
+  mask-image:linear-gradient(90deg, transparent 20%, #000 85%);
+}
+/* The site's arch motif, outlined, rising from the bottom-right. */
+.banner-arch{
+  position:absolute; right:6%; bottom:-40px;
+  width:260px; height:300px;
+  border:1px solid rgba(197,161,87,.45);
+  border-bottom:0;
+  border-radius:999px 999px 0 0;
+  animation:arch-rise 1.4s var(--ease-out) both;
+}
+.banner-arch::after{
+  content:''; position:absolute; inset:22px 22px 0;
+  border:1px solid rgba(197,161,87,.22); border-bottom:0;
+  border-radius:999px 999px 0 0;
+}
+.banner-inner{
+  position:relative;
+  width:100%; max-width:1240px; margin:0 auto; padding:0 24px;
+}
+.crumbs ol{display:flex; flex-wrap:wrap; align-items:center; gap:6px 0; margin:0 0 18px; padding:0; list-style:none;}
+.crumbs li{
+  display:flex; align-items:center;
+  font-size:.7rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--brass-light);
+  animation:banner-in .8s var(--ease-out) both;
+}
+.crumbs li + li::before{content:'›'; margin:0 12px; color:rgba(255,255,255,.4); font-size:.9rem;}
+.crumbs a, .crumb-text{color:rgba(255,255,255,.65); transition:color .25s ease;}
+.crumbs a:hover{color:#fff;}
+.crumbs a:focus-visible{outline:2px solid var(--brass-light); outline-offset:3px;}
+.banner-title{
+  margin:0;
+  max-width:880px;
+  font-family:var(--font-display);
+  font-size:clamp(2rem, 4.4vw, 3.4rem); font-weight:600; line-height:1.1; letter-spacing:-.01em;
+  overflow-wrap:anywhere;
+  animation:banner-in 1s .1s var(--ease-out) both;
+}
+.banner-rule{
+  display:block; width:72px; height:3px; margin-top:22px; background:var(--brass);
+  transform-origin:left;
+  animation:rule-grow 1.2s .35s var(--ease-out) both;
+}
+.banner-sub{margin:16px 0 0; color:rgba(255,255,255,.7); animation:banner-in 1s .25s var(--ease-out) both;}
+
+@keyframes banner-in{from{opacity:0; transform:translateY(16px); filter:blur(6px);}}
+@keyframes rule-grow{from{transform:scaleX(0);}}
+@keyframes arch-rise{from{opacity:0; transform:translateY(60px);}}
+@keyframes blur-in{from{opacity:0; filter:blur(8px);}}
+
+@media (prefers-reduced-motion:reduce){
+  .crumbs li, .banner-title, .banner-sub, .banner-arch{animation-name:blur-in;}
+  .banner-rule{animation-name:blur-in;}
+}
+@media (max-width: 640px){
+  .page-banner{padding:44px 0 50px;}
+  .banner-inner{padding:0 16px;}
+  .banner-arch{width:150px; height:180px; right:-30px; opacity:.6;}
+}

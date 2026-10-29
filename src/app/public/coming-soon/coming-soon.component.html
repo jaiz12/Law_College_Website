@@ -1,49 +1,45 @@
 <app-site-header></app-site-header>
 
-<div class="flex min-h-screen items-center justify-center bg-gray-100 px-6 text-gray-900 dark:bg-slate-950 dark:text-white">
+<app-page-banner [title]="view().notFound ? 'Page Not Found' : view().title"></app-page-banner>
 
-  <section class="w-full max-w-3xl text-center">
+<main class="soon-page">
+  <section class="soon-card">
+    <span class="soon-mark" aria-hidden="true">&sect;</span>
 
     @if (view().notFound) {
-      <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl dark:text-white">
-        Page Not Found
-      </h1>
-      <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-600 dark:text-slate-400">
+      <h2 class="soon-title">Page Not Found</h2>
+      <p class="soon-text">
         The page you are looking for doesn't exist or may have been moved.
       </p>
+      <a routerLink="/" class="soon-home">Back to Home &rarr;</a>
     } @else {
       <!-- Badge -->
-      <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-300">
-        <span class="h-2 w-2 animate-pulse rounded-full bg-indigo-500 dark:bg-indigo-400"></span>
-        Under Construction
-      </div>
+      <p class="soon-badge"><span class="soon-dot" aria-hidden="true"></span>Under Construction</p>
 
       <!-- Heading -->
-      <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl dark:text-white">
+      <h2 class="soon-title">
         {{ view().title }}
-        <span class="block pt-2 text-indigo-600 dark:text-indigo-400">Coming Soon</span>
-      </h1>
+        <span class="soon-accent">Coming Soon</span>
+      </h2>
 
       <!-- Description -->
-      <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-600 dark:text-slate-400">
+      <p class="soon-text">
         We are currently working to bring this section online.
       </p>
-      <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-600 dark:text-slate-400">
+      <p class="soon-text">
         Our {{ view().title }} page is under development and will be available soon. Thank you for your patience and understanding.
       </p>
 
       <!-- Divider -->
-      <div class="mx-auto my-10 h-px w-24 bg-gray-200 dark:bg-slate-700"></div>
+      <span class="soon-rule" aria-hidden="true"></span>
 
       <!-- Stay Connected -->
-      <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Stay Connected</h2>
-      <p class="mt-2 text-gray-500 dark:text-slate-400">
+      <h3 class="soon-sub">Stay Connected</h3>
+      <p class="soon-text soon-text-muted">
         We're working hard to make this page available as soon as possible. Thank you for your continued support.
       </p>
     }
-
   </section>
-
-</div>
+</main>
 
 <app-site-footer></app-site-footer>

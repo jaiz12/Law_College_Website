@@ -27,8 +27,8 @@ describe('AnnouncementListComponent', () => {
     fixture.detectChanges();
   };
   const titles = (fixture: ReturnType<typeof render>) =>
-    [...(fixture.nativeElement as HTMLElement).querySelectorAll('section li span.font-medium')].map(s => s.textContent!.trim());
-  const text = (fixture: ReturnType<typeof render>) => (fixture.nativeElement as HTMLElement).querySelector('section')!.textContent!;
+    [...(fixture.nativeElement as HTMLElement).querySelectorAll('main .site-list-title')].map(s => s.textContent!.trim());
+  const text = (fixture: ReturnType<typeof render>) => (fixture.nativeElement as HTMLElement).querySelector('main')!.textContent!;
 
   it('renders two announcements that share a title as two items (tracked by id)', () => {
     // Duplicate @for keys only warn (NG0955) and still render, so the

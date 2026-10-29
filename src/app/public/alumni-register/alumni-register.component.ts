@@ -6,6 +6,7 @@ import { RouterLink } from '@angular/router';
 
 import { ApiService } from '../../services/api.service';
 import { isAbsoluteHttpUrl } from '../../services/url.util';
+import { PageBannerComponent } from '../../shared/page-banner/page-banner.component';
 import { SiteHeaderComponent } from '../../shared/site-header/site-header.component';
 import { SiteFooterComponent } from '../../shared/site-footer/site-footer.component';
 
@@ -54,7 +55,7 @@ function optionalHttpUrl(control: AbstractControl): ValidationErrors | null {
 @Component({
   selector: 'app-alumni-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, SiteHeaderComponent, SiteFooterComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, PageBannerComponent, SiteHeaderComponent, SiteFooterComponent],
   templateUrl: './alumni-register.component.html',
   styleUrl: './alumni-register.component.scss'
 })

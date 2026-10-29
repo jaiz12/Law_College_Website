@@ -8,6 +8,7 @@ import { catchError } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { assetUrl } from '../../services/cms-row';
 import { SITE_PATHS } from '../../services/site-links';
+import { PageBannerComponent } from '../../shared/page-banner/page-banner.component';
 import { SiteHeaderComponent } from '../../shared/site-header/site-header.component';
 import { SiteFooterComponent } from '../../shared/site-footer/site-footer.component';
 
@@ -41,7 +42,7 @@ function text(value: unknown): string {
 @Component({
   selector: 'app-media-gallery',
   standalone: true,
-  imports: [CommonModule, RouterLink, SiteHeaderComponent, SiteFooterComponent],
+  imports: [CommonModule, RouterLink, PageBannerComponent, SiteHeaderComponent, SiteFooterComponent],
   templateUrl: './media-gallery.component.html',
   styleUrl: './media-gallery.component.scss'
 })

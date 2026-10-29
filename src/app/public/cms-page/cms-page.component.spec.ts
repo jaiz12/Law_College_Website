@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, provideRouter } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
+import { of } from 'rxjs';
 import { HttpTestingController } from '@angular/common/http/testing';
 import { CmsPageComponent } from './cms-page.component';
 import { CmsPageKind } from '../../services/cms-pages';
@@ -15,7 +16,7 @@ describe('CmsPageComponent', () => {
         provideRouter([]),
         provideTestHttp(),
         provideTestConfig(),
-        { provide: ActivatedRoute, useValue: { snapshot: { data: { kind, api, title } } } }
+        { provide: ActivatedRoute, useValue: { snapshot: { data: { kind, api, title } }, paramMap: of(convertToParamMap({})) } }
       ]
     });
     const fixture = TestBed.createComponent(CmsPageComponent);
@@ -38,7 +39,7 @@ describe('CmsPageComponent', () => {
         { id: 1, pageName: 'Admission Committee', content: '<p>Old</p>' },
         { id: 2, pageName: 'Admission Committee', content: '<p>Current <strong>text</strong></p>', image: 'assets/x.webp' }
       ]);
-      expect(main(fixture).querySelector('h1')!.textContent!.trim()).toBe('Admission Committee');
+      expect((fixture.nativeElement as HTMLElement).querySelector('h1')!.textContent!.trim()).toBe('Admission Committee');
       expect(main(fixture).querySelector('.content-body')!.innerHTML).toContain('Current <strong>text</strong>');
       expect(main(fixture).querySelector<HTMLImageElement>('.content-image')!.src).toBe(`${TEST_IMAGE_URL}assets/x.webp`);
     });
@@ -47,7 +48,7 @@ describe('CmsPageComponent', () => {
       const fixture = render('content', 'ComplianceOrDisclosures/NIRF');
       respond(fixture, 'ComplianceOrDisclosures/NIRF', [{ id: 1, content: '', filePath: 'assets/nirf.pdf' }]);
       expect(main(fixture).querySelector('iframe.content-pdf')).not.toBeNull();
-      expect(main(fixture).querySelector<HTMLAnchorElement>('a.action-link')!.href).toBe(`${TEST_IMAGE_URL}assets/nirf.pdf`);
+      expect(main(fixture).querySelector<HTMLAnchorElement>('a.doc-link')!.href).toBe(`${TEST_IMAGE_URL}assets/nirf.pdf`);
     });
 
     it('shows the empty state when nothing was saved, or only an emptied editor', () => {

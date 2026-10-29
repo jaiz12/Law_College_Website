@@ -1,54 +1,48 @@
 <app-site-header></app-site-header>
 
+<app-page-banner [title]="pageTitle"></app-page-banner>
+
 <main class="cms-page">
   <div class="cms-container">
-    <h1 class="cms-title">{{ pageTitle }}</h1>
 
     @if (loading) {
-      <p class="status-text">Loading&hellip;</p>
+      <div class="skeleton" aria-live="polite">
+        <span class="sr-only">Loading&hellip;</span>
+        <span class="skeleton-line w-60"></span>
+        <span class="skeleton-line"></span>
+        <span class="skeleton-line"></span>
+        <span class="skeleton-line w-80"></span>
+      </div>
     } @else {
       @switch (kind) {
-        @case ('content') {
-          @if (record) {
-            <article class="content-layout" [class.has-image]="record.imageUrl">
-              @if (record.imageUrl) {
-                <img class="content-image" [src]="record.imageUrl" [alt]="record.title || pageTitle">
-              }
-              @if (record.html) {
-                <div class="content-body rich-text" [innerHTML]="record.html | safeHtml"></div>
-              }
-            </article>
-
-            @if (record.fileUrl) {
-              @if (record.isPdf) {
-                <iframe class="content-pdf" [src]="safePdfUrl" [title]="pageTitle"></iframe>
-              }
-              <a class="action-link" [href]="record.fileUrl" target="_blank" rel="noopener">
-                {{ record.isPdf ? 'Open PDF in a new tab' : 'View document' }} &#8599;
-              </a>
-            }
-          } @else {
-            <p class="status-text">Content not available yet — check back soon.</p>
-          }
-        }
-
         @case ('list') {
           @if (items.length) {
             <ul class="card-grid">
-              @for (item of items; track item.id) {
-                <li class="card">
+              @for (item of items; track item.id; let i = $index) {
+                <li class="card" [appReveal]="(i % 3) * 0.08">
                   @if (item.imageUrl) {
-                    <img class="card-image" [src]="item.imageUrl" [alt]="item.title" loading="lazy">
+                    <div class="card-media">
+                      <img class="card-image" [src]="item.imageUrl" [alt]="item.title" loading="lazy">
+                    </div>
                   }
                   <div class="card-body">
                     @if (item.title) {
-                      <h2 class="card-title">{{ item.title }}</h2>
+                      <h2 class="card-title">
+                        @if (item.pagePath) {
+                          <a [routerLink]="'/' + item.pagePath">{{ item.title }}</a>
+                        } @else {
+                          {{ item.title }}
+                        }
+                      </h2>
                     }
                     @if (item.html) {
                       <div class="card-text rich-text" [innerHTML]="item.html | safeHtml"></div>
                     }
-                    @if (item.fileUrl || item.linkUrl) {
+                    @if (item.fileUrl || item.linkUrl || item.pagePath) {
                       <div class="card-actions">
+                        @if (item.pagePath) {
+                          <a class="action-link" [routerLink]="'/' + item.pagePath">Open page &rarr;</a>
+                        }
                         @if (item.fileUrl) {
                           <a class="action-link" [href]="item.fileUrl" target="_blank" rel="noopener">
                             {{ item.isPdf ? 'View PDF' : 'View document' }} &#8599;
@@ -64,39 +58,68 @@
               }
             </ul>
           } @else {
-            <p class="status-text">Nothing here yet — check back soon.</p>
+            <ng-container *ngTemplateOutlet="emptyState"></ng-container>
           }
         }
 
+        @case ('people') {
+          <ng-container *ngTemplateOutlet="peopleGrid"></ng-container>
+        }
+
+        @case ('profiles') {
+          <ng-container *ngTemplateOutlet="peopleGrid"></ng-container>
+        }
+
         @default {
-          @if (items.length) {
-            <ul class="people-grid">
-              @for (person of items; track person.id) {
-                <li class="person">
-                  @if (person.imageUrl) {
-                    <img class="person-photo" [src]="person.imageUrl" [alt]="person.name" loading="lazy">
-                  } @else {
-                    <span class="person-photo person-initial" aria-hidden="true">{{ person.name.charAt(0) }}</span>
+          <!-- content + item: the record beside an "In this section" rail. -->
+          <div class="content-grid">
+            @if (record) {
+              <article class="paper" appReveal>
+                @if (record.imageUrl) {
+                  <figure class="content-figure">
+                    <img class="content-image" [src]="record.imageUrl" [alt]="record.title || pageTitle">
+                  </figure>
+                }
+                @if (record.html) {
+                  <div class="content-body rich-text" [class.is-short]="isShort" [class.has-dropcap]="!isShort"
+                       [innerHTML]="record.html | safeHtml"></div>
+                }
+
+                @if (record.fileUrl) {
+                  <div class="document">
+                    @if (record.isPdf) {
+                      <iframe class="content-pdf" [src]="safePdfUrl" [title]="pageTitle"></iframe>
+                    }
+                    <a class="doc-link" [href]="record.fileUrl" target="_blank" rel="noopener">
+                      <span class="doc-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+                      </span>
+                      {{ record.isPdf ? 'Open PDF in a new tab' : 'View document' }} &#8599;
+                    </a>
+                  </div>
+                }
+              </article>
+            } @else {
+              <ng-container *ngTemplateOutlet="emptyState"></ng-container>
+            }
+
+            @if (section$ | async; as section) {
+              <aside class="section-rail" aria-label="In this section" appReveal="0.15">
+                <p class="rail-eyebrow">In this section</p>
+                <h2 class="rail-title">{{ section.heading }}</h2>
+                <ul class="rail-links">
+                  @for (link of section.links; track link.path) {
+                    <li>
+                      <a [routerLink]="'/' + link.path" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page">
+                        {{ link.label }}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+                      </a>
+                    </li>
                   }
-                  <h2 class="person-name">{{ person.name }}</h2>
-                  @if (person.designation) {
-                    <p class="person-designation">{{ person.designation }}</p>
-                  }
-                  @if (person.email) {
-                    <a class="person-contact" [href]="'mailto:' + person.email">{{ person.email }}</a>
-                  }
-                  @if (person.phone) {
-                    <a class="person-contact" [href]="'tel:' + person.phone">{{ person.phone }}</a>
-                  }
-                  @if (kind === 'profiles' && person.html) {
-                    <div class="person-text rich-text" [innerHTML]="person.html | safeHtml"></div>
-                  }
-                </li>
-              }
-            </ul>
-          } @else {
-            <p class="status-text">Nothing here yet — check back soon.</p>
-          }
+                </ul>
+              </aside>
+            }
+          </div>
         }
       }
     }
@@ -104,3 +127,45 @@
 </main>
 
 <app-site-footer></app-site-footer>
+
+<ng-template #peopleGrid>
+  @if (items.length) {
+    <ul class="people-grid">
+      @for (person of items; track person.id; let i = $index) {
+        <li class="person" [appReveal]="(i % 4) * 0.07">
+          <span class="person-frame">
+            @if (person.imageUrl) {
+              <img class="person-photo" [src]="person.imageUrl" [alt]="person.name" loading="lazy">
+            } @else {
+              <span class="person-photo person-initial" aria-hidden="true">{{ person.name.charAt(0) }}</span>
+            }
+          </span>
+          <h2 class="person-name">{{ person.name }}</h2>
+          @if (person.designation) {
+            <p class="person-designation">{{ person.designation }}</p>
+          }
+          @if (person.email) {
+            <a class="person-contact" [href]="'mailto:' + person.email">{{ person.email }}</a>
+          }
+          @if (person.phone) {
+            <a class="person-contact" [href]="'tel:' + person.phone">{{ person.phone }}</a>
+          }
+          @if (kind === 'profiles' && person.html) {
+            <div class="person-text rich-text" [innerHTML]="person.html | safeHtml"></div>
+          }
+        </li>
+      }
+    </ul>
+  } @else {
+    <ng-container *ngTemplateOutlet="emptyState"></ng-container>
+  }
+</ng-template>
+
+<ng-template #emptyState>
+  <div class="empty-state">
+    <span class="empty-mark" aria-hidden="true">&sect;</span>
+    <p class="status-text">
+      {{ kind === 'content' || kind === 'item' ? 'Content not available yet — check back soon.' : 'Nothing here yet — check back soon.' }}
+    </p>
+  </div>
+</ng-template>

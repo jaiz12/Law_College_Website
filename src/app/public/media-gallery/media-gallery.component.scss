@@ -1,9 +1,9 @@
 :host{
   display:block;
-  font-family:"Segoe UI", Arial, Helvetica, sans-serif;
+  font-family:var(--font-body);
 }
 .gallery-page{
-  background:#f8fafc;
+  background:var(--parchment);
   min-height:60vh;
   padding:40px 0 56px;
 }
@@ -20,12 +20,12 @@
   margin:0;
   font-size:1.75rem;
   font-weight:700;
-  color:#111827;
+  color:var(--chamber-900);
   overflow-wrap:anywhere;
 }
 .back-link{
   align-self:flex-start;
-  color:#2563eb;
+  color:var(--seal);
   font-weight:600;
   font-size:.9rem;
   &:hover{ text-decoration:underline; }
@@ -40,7 +40,7 @@
   color:#6b7280;
   font-size:1rem;
   text-align:center;
-  a{ color:#2563eb; font-weight:600; }
+  a{ color:var(--seal); font-weight:600; }
 }
 
 // ---- albums ----
@@ -89,7 +89,7 @@
 .album-name{
   font-size:1.05rem;
   font-weight:700;
-  color:#111827;
+  color:var(--chamber-900);
   overflow-wrap:anywhere;
 }
 .album-text{
@@ -130,7 +130,7 @@
     transition:transform .3s ease;
   }
   &:hover img, &:hover video{ transform:scale(1.04); }
-  &:focus-visible{ outline:3px solid #2563eb; outline-offset:2px; }
+  &:focus-visible{ outline:3px solid var(--seal); outline-offset:2px; }
 }
 .play-badge{
   position:absolute;
@@ -206,3 +206,7 @@
   .viewer{ padding:56px 8px; }
   .viewer-nav{ top:auto; bottom:8px; transform:none; }
 }
+
+// Site typography: album and card titles in the display serif.
+.album-description{ font-size:1.05rem; }
+:is(h2, h3){ font-family:var(--font-display); font-weight:600; }

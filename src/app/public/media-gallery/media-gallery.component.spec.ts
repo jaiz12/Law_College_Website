@@ -60,7 +60,7 @@ describe('MediaGalleryComponent', () => {
     ]);
     fixture.detectChanges();
     const root = fixture.nativeElement as HTMLElement;
-    expect(main(fixture).querySelector('h1')!.textContent).toContain('Annual Day');
+    expect(root.querySelector('h1')!.textContent).toContain('Annual Day');
     expect(main(fixture).textContent).toContain('Celebrations');
 
     const tiles = [...main(fixture).querySelectorAll<HTMLButtonElement>('.media-tile')];

@@ -1,11 +1,13 @@
 <app-site-header></app-site-header>
 
+<app-page-banner title="Register / Join"></app-page-banner>
+
 <main class="register-page">
   <div class="register-container">
 
     @if (submitted) {
       <section class="register-card success" role="status" aria-live="polite">
-        <h1 class="success-title">You're officially back in the alumni circle! 🎓💙</h1>
+        <h2 class="success-title">You're officially back in the alumni circle! 🎓💙</h2>
         <p class="success-text">Thank you for staying connected with us.</p>
         @if (registrationId) {
           <p class="success-id">Your Registration ID: <strong>{{ registrationId }}</strong></p>
@@ -16,7 +18,7 @@
       <section class="register-card">
         <header class="register-header">
           <p class="register-eyebrow">Alumni Registration — Stay Connected</p>
-          <h1 class="register-title">Welcome Back! 👋</h1>
+          <h2 class="register-title">Welcome Back! 👋</h2>
           <p class="register-sub">Help us reconnect with our alumni community.</p>
           <p class="register-note">It takes less than 2 minutes.</p>
         </header>

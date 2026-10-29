@@ -1,9 +1,9 @@
 :host{
   display:block;
-  font-family:"Segoe UI", Arial, Helvetica, sans-serif;
+  font-family:var(--font-body);
 }
 .register-page{
-  background:#f8fafc;
+  background:var(--parchment);
   min-height:60vh;
   padding:40px 0 56px;
 }
@@ -26,7 +26,7 @@
 }
 .register-eyebrow{
   margin:0 0 8px;
-  color:#2563eb;
+  color:var(--seal);
   font-size:.8rem;
   font-weight:700;
   letter-spacing:.06em;
@@ -36,7 +36,7 @@
   margin:0;
   font-size:2rem;
   font-weight:700;
-  color:#111827;
+  color:var(--chamber-900);
 }
 .register-sub{
   margin:10px 0 2px;
@@ -80,7 +80,7 @@ input[type="text"], input[type="email"], input[type="tel"], input[type="url"], s
   border:1px solid #d1d5db;
   border-radius:8px;
   background:#fff;
-  color:#111827;
+  color:var(--chamber-900);
   font:inherit;
   font-size:.95rem;
   transition:border-color .15s ease, box-shadow .15s ease;
@@ -88,7 +88,7 @@ input[type="text"], input[type="email"], input[type="tel"], input[type="url"], s
   &::placeholder{ color:#9ca3af; }
   &:focus{
     outline:none;
-    border-color:#2563eb;
+    border-color:var(--seal);
     box-shadow:0 0 0 3px rgba(37, 99, 235, .15);
   }
   &.invalid{
@@ -122,7 +122,7 @@ input[type="file"]{
     height:18px;
     margin-top:1px;
     flex-shrink:0;
-    accent-color:#2563eb;
+    accent-color:var(--seal);
     cursor:pointer;
   }
 }
@@ -197,9 +197,9 @@ input[type="file"]{
   transition:background .15s ease;
 }
 .btn-primary{
-  background:#2563eb;
+  background:var(--seal);
   color:#fff;
-  &:hover:not(:disabled){ background:#1d4ed8; }
+  &:hover:not(:disabled){ background:var(--chamber-900); }
   &:disabled{ opacity:.65; cursor:not-allowed; }
 }
 
@@ -215,7 +215,7 @@ input[type="file"]{
   margin:6px 0 0;
   font-size:1.6rem;
   font-weight:700;
-  color:#111827;
+  color:var(--chamber-900);
 }
 .success-text{
   margin:0 0 14px;
@@ -224,7 +224,7 @@ input[type="file"]{
 }
 .success-id{
   margin:0 0 18px;
-  color:#111827;
+  color:var(--chamber-900);
   strong{ letter-spacing:.03em; }
 }
 
@@ -237,3 +237,7 @@ input[type="file"]{
   .btn{ width:100%; }
   .success{ padding:40px 18px; }
 }
+
+// Site typography.
+.register-title, .success-title{ font-family:var(--font-display); font-weight:600; }
+.register-card{ border-top:3px solid var(--brass); }

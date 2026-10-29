@@ -3,6 +3,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { AnnouncementWithTags, mapAnnouncements } from '../../services/announcement.model';
+import { PageBannerComponent } from '../../shared/page-banner/page-banner.component';
 import { SiteHeaderComponent } from '../../shared/site-header/site-header.component';
 import { SiteFooterComponent } from '../../shared/site-footer/site-footer.component';
 
@@ -15,7 +16,7 @@ import { SiteFooterComponent } from '../../shared/site-footer/site-footer.compon
 @Component({
   selector: 'app-announcement-list',
   standalone: true,
-  imports: [CommonModule, SiteHeaderComponent, SiteFooterComponent],
+  imports: [CommonModule, PageBannerComponent, SiteHeaderComponent, SiteFooterComponent],
   templateUrl: './announcement-list.component.html',
   // Block host so the shared header's position:sticky has a page-tall parent.
   styles: [':host { display: block; }']

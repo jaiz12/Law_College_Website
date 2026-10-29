@@ -1,0 +1,25 @@
+<section class="page-banner">
+  <div class="banner-pattern" aria-hidden="true"></div>
+  <div class="banner-arch" aria-hidden="true"></div>
+  <div class="banner-inner">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <ol>
+        @for (crumb of crumbs$ | async; track $index) {
+          <li>
+            @if (crumb.path !== null) {
+              <a [routerLink]="'/' + crumb.path">{{ crumb.label }}</a>
+            } @else {
+              <span class="crumb-text">{{ crumb.label }}</span>
+            }
+          </li>
+        }
+        <li aria-current="page">{{ title }}</li>
+      </ol>
+    </nav>
+    <h1 class="banner-title">{{ title }}</h1>
+    <span class="banner-rule" aria-hidden="true"></span>
+    @if (subtitle) {
+      <p class="banner-sub">{{ subtitle }}</p>
+    }
+  </div>
+</section>

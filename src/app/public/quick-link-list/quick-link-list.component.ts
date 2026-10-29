@@ -3,6 +3,7 @@ import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { isAbsoluteHttpUrl } from '../../services/url.util';
+import { PageBannerComponent } from '../../shared/page-banner/page-banner.component';
 import { SiteHeaderComponent } from '../../shared/site-header/site-header.component';
 import { SiteFooterComponent } from '../../shared/site-footer/site-footer.component';
 
@@ -23,7 +24,7 @@ interface QuickLinkRow {
 @Component({
   selector: 'app-quick-link-list',
   standalone: true,
-  imports: [CommonModule, SiteHeaderComponent, SiteFooterComponent],
+  imports: [CommonModule, PageBannerComponent, SiteHeaderComponent, SiteFooterComponent],
   templateUrl: './quick-link-list.component.html',
   styleUrl: './quick-link-list.component.scss'
 })

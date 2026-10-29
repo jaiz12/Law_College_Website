@@ -1,15 +1,14 @@
 <app-site-header></app-site-header>
 
+<app-page-banner [title]="album?.name || 'Media & Gallery'"></app-page-banner>
+
 <main class="gallery-page">
   <div class="gallery-container">
     @if (album) {
       <a class="back-link" [routerLink]="galleryPath">&larr; All albums</a>
-      <h1 class="gallery-title">{{ album.name }}</h1>
       @if (album.description) {
         <p class="album-description">{{ album.description }}</p>
       }
-    } @else {
-      <h1 class="gallery-title">Media &amp; Gallery</h1>
     }
 
     @if (loading) {
