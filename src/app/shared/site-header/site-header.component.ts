@@ -1,9 +1,20 @@
 import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Component, ElementRef, HostListener, OnInit, PLATFORM_ID, Renderer2, RendererStyleFlags2, inject } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, DestroyRef, ElementRef, HostListener, OnInit, PLATFORM_ID, Renderer2, RendererStyleFlags2, afterNextRender, inject } from '@angular/core';
+import { IsActiveMatchOptions, Router, RouterModule } from '@angular/router';
+import { map } from 'rxjs';
 import { SafeHtmlPipe } from '../../services/safe-html.pipe';
 import { SiteBrandingService } from '../../services/site-branding.service';
-import { SITE_NAV, SiteNavItem } from '../../services/site-links';
+import { SITE_PATHS, SiteNavItem } from '../../services/site-links';
+import { SiteNavService } from '../../services/site-nav.service';
+
+const SECTION_MATCH: IsActiveMatchOptions = {
+  paths: 'subset', queryParams: 'ignored', fragment: 'ignored', matrixParams: 'ignored'
+};
+
+/** An item's own path plus every path in its submenu and flyouts. */
+function navPaths(item: SiteNavItem): string[] {
+  return [item.path, ...(item.children ?? []).flatMap(navPaths)];
+}
 
 /**
  * Shared site header — logo/title + primary nav. Used on every public page
@@ -24,15 +35,46 @@ export class SiteHeaderComponent implements OnInit {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly document = inject(DOCUMENT);
   private readonly brandingService = inject(SiteBrandingService);
+  private readonly siteNav = inject(SiteNavService);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly branding$ = this.brandingService.branding$;
-  readonly navItems: SiteNavItem[] = SITE_NAV;
+  /** SITE_NAV plus CMS-driven third-level entries (e.g. Statutory Bodies > IQAC). */
+  readonly navItems$ = this.siteNav.nav$;
+  readonly tickerItems$ = this.siteNav.announcements$.pipe(map(items => items.slice(0, 8)));
+  readonly paths = SITE_PATHS;
 
   navOpen = false;
   openSubmenuIndex: number | null = null;
+  /** Path of the submenu entry whose third level is open by click/tap. */
+  openFlyoutPath: string | null = null;
+  /** Page scrolled past the ticker — header gains its shadow. */
+  scrolled = false;
+
+  constructor() {
+    afterNextRender(() => {
+      const host = this.host.nativeElement;
+      const observer = new ResizeObserver(() => this.syncStickyOffset());
+      observer.observe(host);
+      this.destroyRef.onDestroy(() => observer.disconnect());
+      this.syncStickyOffset();
+    });
+  }
 
   ngOnInit(): void {
     this.brandingService.load();
+  }
+
+  /** The header is sticky with a negative top, so the ticker and brand row
+   *  scroll away and only the nav bar stays pinned. On mobile the menu
+   *  button lives in the brand row, so there only the ticker scrolls away.
+   *  Measured, since the ticker and a wrapped CMS title vary in height. */
+  private syncStickyOffset(): void {
+    const host = this.host.nativeElement;
+    const pinned: HTMLElement | null = host.querySelector(this.isDesktopNav ? '.main-nav' : '.header-top');
+    const offset = pinned ? pinned.offsetTop : 0;
+    this.renderer.setStyle(host, '--sticky-top', `${-offset}px`, RendererStyleFlags2.DashCase);
   }
 
   toggleNav(): void {
@@ -56,7 +98,23 @@ export class SiteHeaderComponent implements OnInit {
   closeNav(): void {
     this.navOpen = false;
     this.openSubmenuIndex = null;
+    this.openFlyoutPath = null;
     this.syncNavScrollLock();
+  }
+
+  /** Third-level toggle. Desktop also opens it on hover/focus; the button
+   *  makes it reachable by click, tap and keyboard. */
+  toggleFlyout(path: string, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.openFlyoutPath = this.openFlyoutPath === path ? null : path;
+  }
+
+  /** Section (or any page under it) open. Not routerLinkActive on the <li>:
+   *  submenu links render from the #subLink template, outside the <li>'s
+   *  content, so its RouterLink query can't see them. */
+  isSectionActive(item: SiteNavItem): boolean {
+    return navPaths(item).some(path => this.router.isActive('/' + path, SECTION_MATCH));
   }
 
   /** Splits a long submenu into 2 columns of real, independent <ul>s (see
@@ -99,6 +157,19 @@ export class SiteHeaderComponent implements OnInit {
     }
     event.preventDefault();
     this.openSubmenuIndex = this.openSubmenuIndex === index ? null : index;
+    this.openFlyoutPath = null;
+  }
+
+  @HostListener('window:scroll')
+  onScroll(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.scrolled = window.scrollY > 40;
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.openFlyoutPath = null;
   }
 
   @HostListener('window:resize')

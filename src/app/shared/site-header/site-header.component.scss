@@ -1,13 +1,7 @@
-/* ========= Design tokens (kept in sync with home.component.scss) ========= */
+/* Colours, fonts and easing come from the site tokens in styles.scss (:root). */
 :host{
-  --blue: #2563eb;
-  --text: #111827;
-  --text-muted: #6b7280;
-  --bg-muted: #f3f5f8;
-  --border: #e5e7eb;
-
   display: block;
-  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   line-height: 1.5;
 }
 
@@ -15,15 +9,11 @@
 img{max-width:100%; display:block;}
 a{color:inherit; text-decoration:none;}
 ul{list-style:none; margin:0; padding:0;}
+button{font-family:inherit;}
+:focus-visible{outline:2px solid var(--brass-light); outline-offset:3px; border-radius:3px;}
 
-/* max-width was 1240px — too narrow for 11 top-level items (measured
-   ~1282px needed including padding), so the last item(s) silently
-   overflowed past the box and, on any narrower window, past the visible
-   edge entirely (read as "items are just missing"). Widened to 1320px
-   rather than uncapped so header-top and the nav row keep sharing the
-   exact same box — both use .container, so they stay flush at the same
-   left edge; an uncapped nav row would drift left of the (still-centered)
-   logo row on any window wider than the old 1240px cap. */
+/* Header row and nav row share this box so both start flush at the same
+   left edge. 1320px fits all 11 top-level items on one line. */
 .container{
   width:100%;
   max-width:1320px;
@@ -31,151 +21,305 @@ ul{list-style:none; margin:0; padding:0;}
   padding:0 24px;
 }
 
-/* ========= Header ========= */
 /* Sticky must sit on :host, not .site-header: a sticky element only sticks
    within its parent, and .site-header's parent is this host element — the
    exact same height — so the header just scrolled away with the page. */
 :host{
   position:sticky;
-  top:0;
+  /* Negative: ticker + brand row scroll off, nav stays (see syncStickyOffset). */
+  top:var(--sticky-top, 0px);
   z-index:100;
 }
 .site-header{
-  background:#fff;
+  background:var(--chamber-900);
+  color:#fff;
+  transition:box-shadow .4s var(--ease-out);
 }
+.site-header.is-scrolled{box-shadow:0 14px 34px -18px rgba(0,0,0,.65);}
 
-/* Row 1 — logo/title on the left, login pinned to the far right */
+/* ========= Ticker =========
+   Parchment strip: solid mahogany label, then each notice as date chip +
+   title, split by a small diamond; "View all" pinned on the right. */
+.ticker{
+  display:flex; align-items:stretch;
+  height:40px;
+  background:var(--parchment);
+  color:var(--chamber-900);
+  border-bottom:1px solid var(--line);
+  font-size:.84rem;
+  overflow:hidden;
+}
+.ticker-label{
+  display:flex; align-items:center; gap:10px; flex-shrink:0;
+  padding:0 22px 0 max(24px, calc((100vw - 1320px) / 2 + 24px));
+  background:var(--seal);
+  color:var(--parchment);
+  font-weight:600; letter-spacing:.14em; text-transform:uppercase; font-size:.7rem;
+}
+.ticker-label svg{width:15px; height:15px;}
+.ticker-dot{width:6px; height:6px; border-radius:50%; background:var(--parchment); animation:ticker-pulse 1.8s ease-in-out infinite;}
+.ticker-track{
+  display:flex; flex:1; min-width:0; overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
+  mask-image:linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
+}
+.ticker-list{
+  min-width:100%;
+  display:flex; align-items:center; flex-shrink:0;
+  animation:ticker-scroll 50s linear infinite;
+}
+.ticker-track:hover .ticker-list,
+.ticker-track:focus-within .ticker-list{animation-play-state:paused;}
+.ticker-list li{display:flex; align-items:center; gap:10px; white-space:nowrap; padding:0 22px;}
+.ticker-list li::after{
+  content:''; width:5px; height:5px; margin-left:22px;
+  background:var(--brass); transform:rotate(45deg);
+}
+.ticker-date{
+  font-size:.68rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--seal);
+  padding:2px 7px; border:1px solid rgba(123,22,38,.35); border-radius:2px;
+}
+.ticker-new{
+  font-size:.62rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--parchment); background:var(--seal); padding:2px 6px; border-radius:2px;
+}
+.ticker-list a{font-weight:500; color:var(--chamber-900); transition:color .2s ease;}
+.ticker-list a:hover{color:var(--seal);}
+.ticker-all{
+  display:flex; align-items:center; gap:6px; flex-shrink:0;
+  padding:0 max(24px, calc((100vw - 1320px) / 2 + 24px)) 0 20px;
+  border-left:1px solid var(--line);
+  font-size:.72rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--chamber-800);
+  transition:color .2s ease;
+}
+.ticker-all svg{width:14px; height:14px; transition:transform .3s var(--ease-out);}
+.ticker-all:hover{color:var(--seal);}
+.ticker-all:hover svg{transform:translateX(3px);}
+@keyframes ticker-scroll{to{transform:translateX(-100%);}}
+@keyframes ticker-pulse{50%{opacity:.3;}}
+
+/* ========= Row 1: brand ========= */
 .header-top{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:16px;
-  /* Padding trimmed from 18px to offset the logo going 48px -> 88px below,
-     so the row's overall height barely moves even though the logo is now
-     as big as the footer's. */
-  padding-top:4px;
-  padding-bottom:4px;
-  overflow:hidden;
+  padding-top:12px;
+  padding-bottom:12px;
 }
-.brand{display:flex; align-items:center; gap:12px; flex-shrink:1; min-width:0;}
-/* Same size as .footer-logo (site-footer.component.scss). */
-.brand-logo{width:88px; height:88px; object-fit:contain; flex-shrink:0;}
+.brand{display:flex; align-items:center; gap:16px; flex-shrink:1; min-width:0;}
+/* Seal sits on an ivory disc with a double gold ring — the source logo is
+   black on white, so it needs a light ground on the dark header. */
+.brand-seal{
+  flex-shrink:0;
+  width:78px; height:78px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--parchment);
+  box-shadow:0 0 0 2px var(--brass), 0 0 0 5px var(--chamber-900), 0 0 0 6px rgba(197,161,87,.45);
+  transition:transform .6s var(--ease-out);
+}
+.brand:hover .brand-seal{transform:rotate(-8deg) scale(1.04);}
+.brand-logo{width:66px; height:66px; object-fit:contain; border-radius:50%;}
 .brand-text{display:flex; flex-direction:column; min-width:0;}
-/* CMS rich text (global .rich-text.rich-text-compact styles headings,
-   blockquotes, tables, lists). Wraps instead of ellipsis-truncating: a
-   long CMS title used to lose everything past the first line. */
+/* CMS rich text: first line is the college name (display serif), second
+   the motto (small gold caps). Wraps instead of truncating. */
 .brand-title{
   display:block;
-  font-size:1.375rem; font-weight:700; color:var(--text); line-height:1.25;
+  font-family:var(--font-display);
+  font-size:1.4rem; font-weight:600; color:#fff; line-height:1.2;
+  letter-spacing:.01em;
   white-space:normal;
 }
-.header-actions{display:flex; align-items:center; gap:10px; flex-shrink:0;}
+.brand-title ::ng-deep p + p{
+  font-family:var(--font-body);
+  font-size:.7rem; font-weight:500; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--brass-light);
+  margin-top:6px;
+}
+.header-actions{display:flex; align-items:center; gap:12px; flex-shrink:0;}
 
-/* Row 2 — full-width nav bar, directly under row 1. .nav-inner is also
-   used on row 1 (header-top) so both rows share .container's exact
-   width/max-width/padding and start flush with each other at every
-   viewport width. No scrolling here — below 1320px the hamburger takes
-   over (see the media query at the bottom), and at/above 1320px this is
-   capped to the same 1320px .container width everywhere else on the
-   page, sized to fit all 11 items in one line. */
+/* Solid mahogany, flat and tight — same build as the home .btn-gold. */
+.apply-btn{
+  display:inline-flex; align-items:center; gap:8px;
+  height:42px; padding:0 20px;
+  background:var(--seal); color:var(--parchment);
+  border:1px solid var(--seal);
+  font-size:.76rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+  border-radius:3px;
+  transition:background-color .25s ease, border-color .25s ease;
+}
+.apply-btn svg{width:15px; height:15px; transition:transform .3s var(--ease-out);}
+.apply-btn:hover{background:var(--seal-dark); border-color:var(--seal-dark);}
+.apply-btn:hover svg{transform:translateX(3px);}
+
+/* ========= Row 2: primary nav ========= */
+.main-nav{
+  background:var(--chamber-950);
+  border-top:1px solid rgba(197,161,87,.16);
+}
 /* Direct-child only — a plain ".main-nav ul" descendant selector would also
    match .sub-nav (nested one level deeper) and force it horizontal too. */
-.main-nav > .nav-inner > ul{display:flex; align-items:center; gap:14px; flex-wrap:nowrap;}
+.main-nav > .nav-inner > ul{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:nowrap;}
 .nav-inner > ul > li > a{
-  display:flex; align-items:center; gap:3px;
-  font-size:.9rem; font-weight:500; color:#000; padding:7px 0; white-space:nowrap;
+  position:relative;
+  display:flex; align-items:center; gap:4px;
+  font-size:.86rem; font-weight:500; color:rgba(255,255,255,.84);
+  padding:14px 0; white-space:nowrap; cursor:pointer;
+  transition:color .25s ease;
+}
+/* Gold rule grows under the hovered / current section. */
+.nav-inner > ul > li > a::after{
+  content:''; position:absolute; left:0; right:0; bottom:8px; height:2px;
+  background:var(--brass);
+  transform:scaleX(0); transform-origin:left;
+  transition:transform .45s var(--ease-out);
 }
 /* .active comes from routerLinkActive (Home: exact match; sections: any
    of their pages open), never hardcoded. */
 .nav-inner > ul > li > a.active,
 .nav-inner > ul > li.active > a,
-.nav-inner > ul > li > a:hover{color:var(--blue);}
-.chev{width:14px; height:14px; flex-shrink:0; color:var(--text-muted); transition:transform .2s ease;}
-.has-sub:hover > a .chev{transform:rotate(180deg);}
+.nav-inner > ul > li > a:hover{color:#fff;}
+.nav-inner > ul > li > a.active::after,
+.nav-inner > ul > li.active > a::after,
+.nav-inner > ul > li > a:hover::after{transform:scaleX(1);}
+.chev{width:13px; height:13px; flex-shrink:0; color:var(--brass); transition:transform .35s var(--ease-out);}
 
 .has-sub{position:relative;}
+
+/* ---- Dropdown panel (level 2) ---- */
 .sub-nav{
-  position:absolute; top:100%; left:0;
-  background:#fff; border:1px solid var(--border); border-radius:8px;
-  box-shadow:0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06); min-width:200px; padding:10px;
-  opacity:0; visibility:hidden; transform:translateY(6px);
-  transition:opacity .15s, transform .15s, visibility .15s;
+  position:absolute; top:100%; left:-14px;
+  background:#fff; color:var(--text);
+  border-top:3px solid var(--brass);
+  border-radius:0 0 10px 10px;
+  box-shadow:0 30px 60px -20px rgba(5,15,34,.55);
+  min-width:230px; padding:10px;
+  opacity:0; visibility:hidden; transform:translateY(10px);
+  transition:opacity .3s var(--ease-out), transform .4s var(--ease-out), visibility 0s .3s;
   z-index:50;
 }
-.has-sub:hover .sub-nav{opacity:1; visibility:visible; transform:translateY(0);}
-.sub-nav li a{display:block; padding:6px 10px; border-radius:6px; font-size:.88rem; white-space:nowrap; line-height:1.3;}
-.sub-nav li a:hover,
-.sub-nav li a.active{background:var(--bg-muted); color:var(--blue);}
+.sub-nav li{position:relative;}
+.sub-row{display:flex; align-items:center;}
+.sub-row > a,
+.flyout a{
+  position:relative;
+  flex:1; min-width:0;
+  display:block; padding:8px 12px; border-radius:6px;
+  font-size:.86rem; font-weight:500; line-height:1.3; white-space:nowrap;
+  transition:background .25s ease, color .25s ease, padding-left .35s var(--ease-out);
+}
+/* Gold bar slides in from the left of the hovered entry. */
+.sub-row > a::before,
+.flyout a::before{
+  content:''; position:absolute; left:4px; top:50%; width:3px; height:0;
+  background:var(--brass); border-radius:2px; transform:translateY(-50%);
+  transition:height .3s var(--ease-out);
+}
+.sub-row > a:hover, .sub-row > a.active,
+.flyout a:hover, .flyout a.active{background:var(--parchment); color:var(--seal); padding-left:18px;}
+.sub-row > a:hover::before, .sub-row > a.active::before,
+.flyout a:hover::before, .flyout a.active::before{height:60%;}
+
+.flyout-toggle{
+  flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  width:30px; height:30px; margin-left:2px;
+  border:0; border-radius:6px; background:transparent; color:var(--brass-dark);
+  cursor:pointer;
+  transition:background .25s ease, transform .35s var(--ease-out);
+}
+.flyout-toggle svg{width:14px; height:14px;}
+.flyout-toggle:hover{background:var(--parchment);}
+
+/* ---- Flyout (level 3) — opens beside its entry ---- */
+.flyout{
+  position:absolute; top:-10px; left:calc(100% + 10px);
+  min-width:220px; padding:10px;
+  background:#fff;
+  border-left:3px solid var(--brass);
+  border-radius:0 10px 10px 0;
+  box-shadow:0 30px 60px -20px rgba(5,15,34,.55);
+  opacity:0; visibility:hidden; transform:translateX(-8px);
+  transition:opacity .3s var(--ease-out), transform .4s var(--ease-out), visibility 0s .3s;
+  z-index:60;
+}
+/* Invisible bridge over the 10px gap so the pointer can travel from the
+   entry into the flyout without it closing. */
+.flyout::before{content:''; position:absolute; top:0; bottom:0; right:100%; width:14px;}
 
 /* >7 items (About Us, Student Life, Committee and Cell) — split into 2
    independent columns (two real <ul>s, half the items in each — see
    subNavColumns()) instead of one dropdown tall enough to run off the
-   bottom of the screen. Deliberately NOT CSS multi-column (column-count
-   balances by total height, so item counts per column can come out
-   uneven — 5-then-3 instead of a clean 4-then-4) and NOT a single CSS
-   grid with shared row tracks (a row spans both columns, so one column's
-   wrapped 2-line label stretches a blank gap into the other column at
-   that same row). Two plain flex children have no such coupling. Fixed
-   column widths (not flex:1) so the panel reads as two intentional,
-   evenly-sized lists rather than stretching to fill an arbitrary total. */
-.sub-nav-cols{
-  display:flex;
-  gap:18px;
-  /* No explicit width — this element also carries the base .sub-nav rule's
-     padding+border (border-box), so a fixed width here has to separately
-     account for that on top of the two columns' own width, and previously
-     didn't: the columns+gap needed more room than the box actually had,
-     overflowing past the visible rounded panel (hover highlight included)
-     by the padding+border amount. Auto-sizing to the flex content avoids
-     the arithmetic entirely — the panel is exactly as wide as it needs
-     to be, padding included. */
+   bottom of the screen. Two plain flex children, so one column's wrapped
+   label can't stretch a gap into the other. */
+.sub-nav-cols{display:flex; gap:12px;}
+.sub-nav-col{flex:0 0 220px; min-width:0;}
+.sub-nav-cols .sub-row > a{white-space:normal; line-height:1.25;}
+.sub-nav-col + .sub-nav-col{border-left:1px solid var(--line); padding-left:12px;}
+
+/* Items past the horizontal midpoint (Compliance/Disclosures onward) open
+   from their trigger's right edge so the panel can't run off-screen, and
+   their flyouts open to the left. nth-child counts the "Home" <li> too. */
+.has-sub:nth-child(n+7) .sub-nav{left:auto; right:-14px;}
+.has-sub:nth-child(n+7) .flyout{left:auto; right:calc(100% + 10px); border-left:0; border-right:3px solid var(--brass); border-radius:10px 0 0 10px;}
+.has-sub:nth-child(n+7) .flyout::before{right:auto; left:100%;}
+
+/* Desktop: hover or keyboard focus opens levels 2 and 3; the flyout
+   toggle button opens level 3 by click as well. */
+@media (min-width: 1321px){
+  .has-sub:hover > a .chev{transform:rotate(180deg);}
+  .has-sub:hover > .sub-nav,
+  .has-sub:focus-within > .sub-nav{
+    opacity:1; visibility:visible; transform:none;
+    transition:opacity .3s var(--ease-out), transform .4s var(--ease-out), visibility 0s;
+  }
+  .has-flyout:hover > .flyout,
+  .has-flyout:focus-within > .flyout,
+  .has-flyout.open-flyout > .flyout{
+    opacity:1; visibility:visible; transform:none;
+    transition:opacity .3s var(--ease-out), transform .4s var(--ease-out), visibility 0s;
+  }
+  .has-flyout:hover > .sub-row > a{background:var(--parchment); color:var(--seal);}
+  .has-flyout:hover .flyout-toggle{transform:translateX(2px);}
 }
-.sub-nav-col{flex:0 0 209px; min-width:0;}
-/* Base .sub-nav rule keeps long labels on one line (fine for a single,
-   free-width column) — in 2 columns that same nowrap text just runs past
-   its column's edge. Let it wrap instead, so it stays inside the box. A
-   tight line-height keeps a wrapped 2-line label from reading as more
-   than one extra line's worth of extra space. */
-.sub-nav-cols li a{white-space:normal; line-height:1.2;}
 
-/* Dropdowns default to opening flush with their trigger's left edge, which
-   is fine near the left of the bar — but for items past the horizontal
-   midpoint (Compliance/Disclosures onward), a left-anchored 2-column panel
-   can run past the right edge of the nav, or the viewport itself, and get
-   silently clipped. Flip those to anchor from their trigger's right edge
-   instead. nth-child counts the "Home" <li> too, so 7 lands on
-   Compliance/Disclosures (the 7th top-level item overall). */
-.has-sub:nth-child(n+7) .sub-nav{left:auto; right:0;}
-
+/* ---- Hamburger ---- */
 .nav-toggle{
   display:none;
   flex-direction:column;
   justify-content:center;
   gap:5px;
   width:44px; height:44px;
-  border:1px solid var(--border);
-  border-radius:8px;
-  background:#fff;
+  border:1px solid rgba(197,161,87,.5);
+  border-radius:4px;
+  background:transparent;
   cursor:pointer;
   padding:0;
   flex-shrink:0;
 }
 .nav-toggle span{
   display:block; width:18px; height:2px; margin:0 auto;
-  background:var(--text); border-radius:2px;
-  transition:transform .2s, opacity .2s;
+  background:var(--brass-light); border-radius:2px;
+  transition:transform .35s var(--ease-out), opacity .2s;
 }
 .nav-toggle.is-active span:nth-child(1){transform:translateY(7px) rotate(45deg);}
 .nav-toggle.is-active span:nth-child(2){opacity:0;}
 .nav-toggle.is-active span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
 
+@media (prefers-reduced-motion:reduce){
+  .ticker-list{animation:none;}
+  .ticker-track{overflow-x:auto; scrollbar-width:none;}
+  .ticker-list[aria-hidden="true"]{display:none;}
+  .ticker-dot{animation:none;}
+  .brand:hover .brand-seal, .apply-btn:hover{transform:none;}
+  .sub-nav, .flyout{transform:none;}
+}
+
 /* ========= Responsive ========= */
 @media (max-width: 1320px){
   .nav-toggle{display:flex;}
-  /* Compact header once we're in hamburger territory — 18px top/bottom
-     reads fine next to a full desktop nav row, but is oversized once the
-     header is just a logo + a toggle button on its own. */
-  .header-top{padding-top:12px; padding-bottom:12px;}
 
   .main-nav{
     display:block;
@@ -186,14 +330,16 @@ ul{list-style:none; margin:0; padding:0;}
     top:var(--drawer-top, 72px);
     left:0; right:0;
     max-height:calc(100vh - var(--drawer-top, 72px));
-    background:#fff;
+    background:var(--chamber-900);
+    border-top:1px solid rgba(197,161,87,.3);
     overflow-y:auto;
-    transform:translateY(-8px);
+    transform:translateY(-12px);
     opacity:0;
     visibility:hidden;
     pointer-events:none;
-    transition:opacity .18s, transform .18s, visibility .18s;
+    transition:opacity .3s var(--ease-out), transform .4s var(--ease-out), visibility .3s;
     z-index:99;
+    box-shadow:0 24px 40px rgba(0,0,0,.4);
   }
   .main-nav.nav-open{
     opacity:1; visibility:visible; transform:translateY(0); pointer-events:auto;
@@ -201,41 +347,55 @@ ul{list-style:none; margin:0; padding:0;}
   /* Scoped to .main-nav so this doesn't also strip header-top's padding —
      header-top carries .nav-inner too, purely to share its alignment. */
   .main-nav .nav-inner{padding:0;}
-  /* align-items:stretch overrides the desktop rule's align-items:center
-     (line ~98) — without it each li shrinks to its text width and centers
-     in the column instead of filling the drawer edge-to-edge. */
   .main-nav .nav-inner > ul{flex-direction:column; align-items:stretch; gap:0; padding:8px 4px; white-space:normal;}
-  .main-nav .nav-inner > ul > li{border-bottom:1px solid var(--border);}
-  .main-nav .nav-inner > ul > li > a{padding:14px 16px; justify-content:space-between;}
+  .main-nav .nav-inner > ul > li{border-bottom:1px solid rgba(255,255,255,.08);}
+  .main-nav .nav-inner > ul > li > a{padding:15px 18px; justify-content:space-between; font-size:.95rem;}
+  .nav-inner > ul > li > a::after{display:none;}
+  .nav-inner > ul > li.active > a{color:var(--brass-light);}
 
+  /* Level 2 — accordion inside the drawer. */
   .sub-nav{
     position:static; opacity:1; visibility:visible; transform:none;
+    background:rgba(5,15,34,.55); color:rgba(255,255,255,.85);
     box-shadow:none; border:none; border-radius:0;
-    max-height:0; overflow:hidden; padding:0 16px;
-    transition:max-height .2s ease;
+    max-height:0; overflow:hidden; padding:0 12px;
+    transition:max-height .4s var(--ease-out), padding .3s ease;
   }
-  /* 2 columns only makes sense as a wide desktop dropdown — back to a
-     single column filling the drawer's width in the mobile accordion. */
-  .sub-nav-cols{display:block; width:auto;}
-  .has-sub.open-sub .sub-nav{max-height:600px; padding:4px 16px 10px; overflow-y:auto;}
+  .sub-nav-cols{display:block;}
+  .sub-nav-col + .sub-nav-col{border-left:0; padding-left:0;}
+  .has-sub.open-sub > .sub-nav{max-height:1400px; padding:6px 12px 12px;}
   .has-sub.open-sub > a .chev{transform:rotate(180deg);}
+  .sub-row > a, .flyout a{white-space:normal; padding:11px 12px;}
+  .sub-row > a:hover, .sub-row > a.active,
+  .flyout a:hover, .flyout a.active{background:rgba(197,161,87,.12); color:var(--brass-light);}
+
+  /* Level 3 — nested accordion under its entry. */
+  .flyout-toggle{width:40px; height:40px; color:var(--brass-light);}
+  .flyout-toggle:hover{background:rgba(255,255,255,.06);}
+  .open-flyout > .sub-row .flyout-toggle{transform:rotate(90deg);}
+  .flyout,
+  .has-sub:nth-child(n+7) .flyout{
+    position:static; opacity:1; visibility:visible; transform:none;
+    min-width:0; background:transparent; box-shadow:none; border-radius:0;
+    border:0; border-left:2px solid rgba(197,161,87,.45);
+    margin-left:14px; padding:0 0 0 6px;
+    max-height:0; overflow:hidden;
+    transition:max-height .4s var(--ease-out);
+  }
+  .flyout::before{display:none;}
+  .open-flyout > .flyout{max-height:600px; margin-bottom:6px;}
 }
 @media (max-width: 640px){
   .container{padding:0 16px;}
-
-  /* ---- Header: more breathing room around logo + toggle ---- */
-  .header-top{padding-top:16px; padding-bottom:16px;}
-  .brand{gap:8px;}
-  .brand-logo{width:34px; height:34px;}
-  /* Small enough that the full college name fits on one line instead of
-     ellipsis-truncating against the logo + hamburger on a phone width. */
-  .brand-title{font-size:.8rem;}
-  .header-inner{gap:10px;}
-
-  /* ---- Mobile nav drawer: standard app-style list, offset recalculated
-     to match .header-top's new 16px/16px padding + 38px logo (≈70px). ---- */
-  .main-nav{box-shadow:0 8px 20px rgba(0,0,0,.15);}
-  .main-nav .nav-inner > ul > li > a{padding:16px 20px; font-size:.95rem;}
-  .has-sub.open-sub .sub-nav{padding:4px 20px 12px;}
-  .sub-nav li a{padding:10px 12px;}
+  .ticker-label{padding:0 14px 0 16px; letter-spacing:.08em;}
+  .ticker-label-text, .ticker-all-text{display:none;}
+  .ticker-all{padding:0 16px 0 14px;}
+  .header-top{padding-top:12px; padding-bottom:12px;}
+  .brand{gap:12px;}
+  .brand-seal{width:46px; height:46px; box-shadow:0 0 0 2px var(--brass), 0 0 0 4px var(--chamber-900), 0 0 0 5px rgba(197,161,87,.45);}
+  .brand-logo{width:38px; height:38px;}
+  /* Small enough that the full college name fits beside the logo + toggle. */
+  .brand-title{font-size:.86rem;}
+  .brand-title ::ng-deep p + p{font-size:.56rem; letter-spacing:.14em; margin-top:3px;}
+  .apply-btn{display:none;}
 }

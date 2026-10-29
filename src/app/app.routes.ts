@@ -2,7 +2,7 @@ import { ActivatedRouteSnapshot, Routes } from '@angular/router';
 import { HomeComponent } from './public/home/home.component';
 import { ComingSoonComponent } from './public/coming-soon/coming-soon.component';
 import { LEGACY_PAGE_REDIRECTS, SITE_PATHS, flattenSiteNav } from './services/site-links';
-import { CMS_PAGES } from './services/cms-pages';
+import { CMS_ITEM_PAGES, CMS_PAGES } from './services/cms-pages';
 
 const loadQuickLinkList = () =>
   import('./public/quick-link-list/quick-link-list.component')
@@ -84,7 +84,21 @@ const pageRoutes: Routes = [
     path,
     title: navLabels.get(path) ?? '',
     loadComponent: loadCmsPage,
-    data: { ...page, title: navLabels.get(path) ?? '' }
+    data: {
+      ...page,
+      title: navLabels.get(path) ?? '',
+      // List pages whose records also have their own pages link each card there.
+      itemBase: path in CMS_ITEM_PAGES ? path : null
+    }
+  })),
+  // One page per record of those lists (About Us > Statutory Bodies > IQAC
+  // at about/statutory-bodies/iqac). The record's own title becomes the
+  // page heading once loaded.
+  ...Object.entries(CMS_ITEM_PAGES).map(([path, api]) => ({
+    path: `${path}/:item`,
+    title: navLabels.get(path) ?? '',
+    loadComponent: loadCmsPage,
+    data: { kind: 'item', api, title: navLabels.get(path) ?? '', itemBase: path }
   }))
 ];
 

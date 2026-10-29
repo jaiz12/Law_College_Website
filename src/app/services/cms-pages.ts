@@ -10,11 +10,13 @@
  * - `people`: Faculty / Administrative Staff profile cards, in display order.
  * - `profiles`: the same photo cards plus each record's rich text, newest
  *   first (Student Achievers).
+ * - `item`: one record of a CMS_ITEM_PAGES list, picked by its title slug,
+ *   shown like a content page (routes only, not listed in CMS_PAGES).
  *
  * `api` is the path under API_URL (Law_College_API). Paths here are nav
  * paths from site-links.ts; the page heading/title is that nav entry's label.
  */
-export type CmsPageKind = 'content' | 'list' | 'people' | 'profiles';
+export type CmsPageKind = 'content' | 'list' | 'people' | 'profiles' | 'item';
 
 export interface CmsPageConfig {
   kind: CmsPageKind;
@@ -98,3 +100,22 @@ export const CMS_PAGES: Record<string, CmsPageConfig> = {
   'alumni/alumni-events': list('AlumniEvents'),
   'alumni/newsletters': list('Newsletters')
 };
+
+/**
+ * List pages whose records each also get their own page and a third-level
+ * menu entry under the list page (About Us > Statutory Bodies > IQAC).
+ * Each record lives at `<list path>/<itemSlug(title)>`, so adding a body in
+ * the CMS adds its menu entry and page with no code change.
+ */
+export const CMS_ITEM_PAGES: Record<string, string> = {
+  'about/statutory-bodies': 'StatutoryBodies'
+};
+
+/** URL segment for a record title: "Internal Quality (IQAC)" -> "internal-quality-iqac". */
+export function itemSlug(title: string | null | undefined): string {
+  return (title ?? '')
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}

@@ -1,10 +1,49 @@
-<header class="site-header">
+<header class="site-header" [class.is-scrolled]="scrolled">
 
-  <!-- Row 1: logo/title on the left, nav toggle on the far right -->
+  <!-- Row 0: latest announcements ticker (hidden when there are none) -->
+  @if (tickerItems$ | async; as ticker) {
+    @if (ticker.length) {
+      <div class="ticker">
+        <a class="ticker-label" [routerLink]="'/' + paths.announcements" aria-label="Latest Updates">
+          <span class="ticker-dot" aria-hidden="true"></span><span class="ticker-label-text">Latest Updates</span>
+        </a>
+        <div class="ticker-track" role="marquee" aria-label="Latest announcements">
+          <!-- Rendered twice so the loop scrolls seamlessly; the copy is hidden from screen readers. -->
+          @for (copy of [0, 1]; track copy) {
+            <ul class="ticker-list" [attr.aria-hidden]="copy === 1 ? true : null">
+              @for (item of ticker; track item.id) {
+                <li>
+                  @if (item.startDate) {
+                    <span class="ticker-date">{{ item.startDate | date: 'dd MMM' }}</span>
+                  }
+                  @if (item.urgent) {
+                    <span class="ticker-new">New</span>
+                  }
+                  @if (item.fileUrl) {
+                    <a [href]="item.fileUrl" target="_blank" rel="noopener" [attr.tabindex]="copy === 1 ? -1 : null">{{ item.title }}</a>
+                  } @else {
+                    <a [routerLink]="'/' + paths.announcements" [attr.tabindex]="copy === 1 ? -1 : null">{{ item.title }}</a>
+                  }
+                </li>
+              }
+            </ul>
+          }
+        </div>
+        <a class="ticker-all" [routerLink]="'/' + paths.announcements" aria-label="View all announcements">
+          <span class="ticker-all-text">View All</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+    }
+  }
+
+  <!-- Row 1: logo/title on the left, Apply + nav toggle on the right -->
   @if (branding$ | async; as branding) {
     <div class="header-top container nav-inner">
       <a routerLink="/" class="brand">
-        <img [src]="branding.logoUrl" [alt]="branding.titleText + ' seal'" class="brand-logo">
+        <span class="brand-seal">
+          <img [src]="branding.logoUrl" [alt]="branding.titleText + ' seal'" class="brand-logo">
+        </span>
         <span class="brand-text">
           <!-- CMS Title is CKEditor rich text — rendered, not interpolated,
                so its formatting shows instead of raw tags. -->
@@ -13,6 +52,10 @@
       </a>
 
       <div class="header-actions">
+        <a class="apply-btn" [routerLink]="'/' + paths.onlineApplication">
+          Apply Now
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
         <button type="button" class="nav-toggle" [class.is-active]="navOpen"
                 [attr.aria-expanded]="navOpen" aria-label="Toggle navigation menu" aria-controls="mainNav"
                 (click)="toggleNav()">
@@ -31,10 +74,9 @@
              ariaCurrentWhenActive="page" (click)="closeNav()">Home</a>
         </li>
 
-        @for (item of navItems; track item.path; let i = $index) {
-          <!-- routerLinkActive on the <li> also picks up the submenu's
-               links, so a section is highlighted while any of its pages is open. -->
-          <li class="has-sub" [class.open-sub]="openSubmenuIndex === i" routerLinkActive="active">
+        @for (item of navItems$ | async; track item.path; let i = $index) {
+          <!-- A section is highlighted while any of its pages is open. -->
+          <li class="has-sub" [class.open-sub]="openSubmenuIndex === i" [class.active]="isSectionActive(item)">
             <!-- A leaf item (no children, e.g. "Media & Gallery") always
                  navigates and closes the drawer — same as Home — instead of
                  toggling a submenu that doesn't exist. -->
@@ -60,7 +102,7 @@
                 @for (col of subNavColumns(item); track $index) {
                   <ul class="sub-nav-col">
                     @for (sub of col; track sub.path) {
-                      <li><a [routerLink]="'/' + sub.path" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeNav()">{{ sub.label }}</a></li>
+                      <ng-container *ngTemplateOutlet="subLink; context: { $implicit: sub }"></ng-container>
                     }
                   </ul>
                 }
@@ -68,7 +110,7 @@
             } @else if (item.children?.length) {
               <ul class="sub-nav">
                 @for (sub of item.children; track sub.path) {
-                  <li><a [routerLink]="'/' + sub.path" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeNav()">{{ sub.label }}</a></li>
+                  <ng-container *ngTemplateOutlet="subLink; context: { $implicit: sub }"></ng-container>
                 }
               </ul>
             }
@@ -81,3 +123,28 @@
   <!-- nav-inner is intentionally full-bleed (no max-width), unlike .container
        elsewhere: 11 top-level items need the extra room to avoid scrolling. -->
 </header>
+
+<!-- One submenu entry. An entry with its own children (About Us >
+     Statutory Bodies > IQAC) opens a third-level flyout on hover (desktop)
+     or an accordion via its toggle button (mobile drawer); the entry's own
+     link still opens its page. -->
+<ng-template #subLink let-sub>
+  <li [class.has-flyout]="sub.children?.length" [class.open-flyout]="openFlyoutPath === sub.path">
+    <span class="sub-row">
+      <a [routerLink]="'/' + sub.path" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeNav()">{{ sub.label }}</a>
+      @if (sub.children?.length) {
+        <button type="button" class="flyout-toggle" [attr.aria-expanded]="openFlyoutPath === sub.path"
+                [attr.aria-label]="'Show ' + sub.label + ' pages'" (click)="toggleFlyout(sub.path, $event)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      }
+    </span>
+    @if (sub.children?.length) {
+      <ul class="flyout">
+        @for (leaf of sub.children; track leaf.path) {
+          <li><a [routerLink]="'/' + leaf.path" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeNav()">{{ leaf.label }}</a></li>
+        }
+      </ul>
+    }
+  </li>
+</ng-template>

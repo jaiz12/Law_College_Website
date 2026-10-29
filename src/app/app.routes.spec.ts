@@ -36,6 +36,7 @@ describe('app routes', () => {
   const url = () => TestBed.inject(Router).url;
   const title = () => TestBed.inject(Title).getTitle();
   const heading = () => (harness.routeNativeElement as HTMLElement).querySelector('h1')?.textContent?.replace(/\s+/g, ' ').trim();
+  const page = () => (harness.routeNativeElement as HTMLElement).textContent ?? '';
 
   it('serves real pages at the CMS paths', async () => {
     await harness.navigateByUrl('/' + SITE_PATHS.library);
@@ -75,7 +76,7 @@ describe('app routes', () => {
   it('gives nav pages without an implementation a Coming Soon page titled with the nav label', async () => {
     await harness.navigateByUrl('/admissions/fee-structure', ComingSoonComponent);
     expect(heading()).toContain('Fee Structure');
-    expect(heading()).toContain('Coming Soon');
+    expect(page()).toContain('Coming Soon');
   });
 
   it('serves every CMS module page (cms-pages.ts) with its nav label, endpoint and layout', async () => {
@@ -93,7 +94,8 @@ describe('app routes', () => {
 
   it('serves the Alumni Register / Join form', async () => {
     await harness.navigateByUrl('/' + SITE_PATHS.alumniRegister, AlumniRegisterComponent);
-    expect(heading()).toContain('Welcome Back!');
+    expect(heading()).toBe('Register / Join');
+    expect(page()).toContain('Welcome Back!');
     expect(title()).toBe(`Register / Join | ${COLLEGE}`);
   });
 
