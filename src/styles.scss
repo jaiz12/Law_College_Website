@@ -4,6 +4,159 @@
 @tailwind components;
 @tailwind utilities;
 
+// ========= Site design tokens =========
+// "Chambers" palette for every page: royal navy #102C5E (60%),
+// burgundy #7B1626 (30%), ivory #F5EEDF + antique gold #C5A157 (10%). Components read these
+// instead of their own copies.
+:root {
+  --chamber-950: #06142e;
+  --chamber-900: #0a1f45;
+  --chamber-800: #102c5e;
+  --chamber-700: #1b4185;
+  --brass: #c5a157;
+  --brass-light: #e6cd8f;
+  --brass-dark: #94742f;
+  --parchment: #f5eedf;
+  --parchment-deep: #ebdfc6;
+  --seal: #7b1626;
+  --seal-dark: #5a0f1b;
+  --text: #161f33;
+  --text-muted: #5a6475;
+  --line: #e2d4b5;
+  --font-display: "Spectral", "Book Antiqua", Georgia, serif;
+  --font-secondary: "Pridi", Georgia, serif;
+  --font-body: "Fira Sans", "Segoe UI", Arial, Helvetica, sans-serif;
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --shadow-soft: 0 18px 40px -22px rgba(6,20,46, .35);
+  // Paper grain laid over parchment surfaces.
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .27 0 0 0 0 .12 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  // Row of law-report spines: blue, parchment and mahogany bindings.
+  --spines: repeating-linear-gradient(90deg,
+    var(--chamber-800) 0 22px, var(--brass) 22px 25px, var(--seal) 25px 41px,
+    var(--brass-dark) 41px 43px, var(--chamber-700) 43px 70px, var(--brass) 70px 72px,
+    var(--chamber-950) 72px 90px, var(--seal-dark) 90px 101px, var(--brass) 101px 103px);
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--text);
+  background: var(--grain), var(--parchment);
+}
+
+// ========= Buttons =========
+// Solid, flat and tight: one colour, crisp 3px edge, no gloss or lift.
+// .btn-seal (mahogany, primary), .btn-chamber (Justice Blue), .btn-brass
+// (parchment-tan), and .btn-paper (parchment, for dark grounds).
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  height: 48px; padding: 0 26px;
+  font-family: var(--font-body);
+  font-weight: 600; font-size: .8rem; letter-spacing: .1em; text-transform: uppercase;
+  border: 1px solid transparent; border-radius: 3px;
+  cursor: pointer; text-decoration: none;
+  transition: background-color .25s ease, color .25s ease, border-color .25s ease;
+
+  svg { width: 16px; height: 16px; transition: transform .3s var(--ease-out); }
+  &:hover svg { transform: translateX(3px); }
+}
+.btn-seal { color: var(--parchment); background: var(--seal); border-color: var(--seal); }
+.btn-seal:hover { background: var(--seal-dark); border-color: var(--seal-dark); }
+.btn-chamber { color: var(--parchment); background: var(--chamber-800); border-color: var(--chamber-800); }
+.btn-chamber:hover { background: var(--chamber-900); border-color: var(--chamber-900); }
+.btn-brass { color: var(--chamber-950); background: var(--brass); border-color: var(--brass); }
+.btn-brass:hover { background: var(--brass-dark); border-color: var(--brass-dark); color: #fff; }
+.btn-paper { color: var(--chamber-800); background: var(--parchment); border-color: var(--parchment); }
+.btn-paper:hover { background: #fff; border-color: #fff; }
+@media (max-width: 640px) {
+  .btn { padding: 0 20px; }
+}
+
+// Scales-of-justice line art (decorative watermark). The beam carries the
+// pans; it tilts slowly, as if settling.
+.scales-art {
+  pointer-events: none;
+  .scales-beam { transform-box: view-box; transform-origin: 100px 46px; animation: scales-sway 9s ease-in-out infinite; }
+  .scales-pan-l { animation: scales-pan-l 9s ease-in-out infinite; }
+  .scales-pan-r { animation: scales-pan-r 9s ease-in-out infinite; }
+}
+@keyframes scales-sway { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+@keyframes scales-pan-l { 0%, 100% { transform: translateY(5px); } 50% { transform: translateY(-5px); } }
+@keyframes scales-pan-r { 0%, 100% { transform: translateY(-5px); } 50% { transform: translateY(5px); } }
+@media (prefers-reduced-motion: reduce) {
+  .scales-art :is(.scales-beam, .scales-pan-l, .scales-pan-r) { animation: none; }
+}
+
+// ========= Inner page body (under app-page-banner) =========
+// Shared by the simple list pages (Library, Announcements, Archives) so
+// they match the CMS pages without each carrying a copy.
+.page-shell {
+  background: var(--parchment);
+  min-height: 50vh;
+  padding: 64px 0 96px;
+
+  > .page-shell-inner { width: 100%; max-width: 900px; margin: 0 auto; padding: 0 24px; }
+  @media (max-width: 640px) {
+    padding: 40px 0 64px;
+    > .page-shell-inner { padding: 0 16px; }
+  }
+}
+.site-list {
+  margin: 0; padding: 0; list-style: none;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--brass);
+  border-radius: 4px;
+  box-shadow: 0 30px 60px -44px rgba(6,20,46, .45);
+
+  > li + li { border-top: 1px solid var(--line); }
+}
+.site-list-row {
+  position: relative;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  width: 100%; padding: 20px 26px;
+  text-align: left; background: none; border: 0; font: inherit; color: inherit;
+  transition: background .3s ease, padding-left .45s var(--ease-out);
+
+  &.is-link { cursor: pointer; }
+  &.is-link:hover { background: var(--parchment); padding-left: 34px; }
+  &.is-link:hover .site-list-arrow { background: var(--seal); border-color: var(--seal); color: #fff; transform: translateX(3px); }
+}
+.site-list-title { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; color: var(--chamber-900); overflow-wrap: anywhere; }
+.site-list-meta { font-size: .84rem; color: var(--text-muted); }
+.site-list-arrow {
+  flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--line); color: var(--seal);
+  transition: background .3s ease, color .3s ease, border-color .3s ease, transform .45s var(--ease-out);
+}
+.site-tag {
+  display: inline-block;
+  font-size: .64rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 2px;
+  &.tag-blue { background: rgba(16,44,94, .1); color: var(--chamber-700); }
+  &.tag-green { background: rgba(31, 107, 78, .12); color: #1f6b4e; }
+  &.tag-purple { background: rgba(197,161,87, .18); color: var(--brass-dark); }
+  &.tag-orange { background: rgba(180, 96, 20, .12); color: #9a520f; }
+  &.tag-red { background: var(--seal); color: #fff; }
+}
+.site-empty { margin: 0; padding: 48px 24px; text-align: center; color: var(--text-muted); background: #fff; border: 1px dashed var(--line); border-radius: 4px; }
+
+// ========= Scroll reveal (RevealDirective) =========
+// Only elements the directive has picked up in the browser start hidden, so
+// server-rendered HTML is always visible without JavaScript.
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity .9s var(--ease-out), transform .9s var(--ease-out), filter .9s var(--ease-out);
+  transition-delay: var(--reveal-delay, 0s);
+}
+.reveal.is-revealed { opacity: 1; transform: none; }
+// Animations off in the OS: nothing slides, content still sharpens in.
+@media (prefers-reduced-motion: reduce) {
+  .reveal { transform: none; filter: blur(8px); }
+  .reveal.is-revealed { filter: none; }
+}
+
 // Belt-and-suspenders: a component-scoped rule can't reach html/body, so the
 // public homepage's no-horizontal-overflow guarantee is enforced here instead.
 // `clip` (not `hidden`) — any non-visible overflow on html/body turns body
@@ -51,7 +204,7 @@ html.nav-drawer-open {
   u { text-decoration: underline; }
   s { text-decoration: line-through; }
 
-  a { color: #2563eb; text-decoration: underline; }
+  a { color: var(--seal); text-decoration: underline; text-decoration-color: var(--brass); text-underline-offset: 3px; }
   a:not([href]) { color: inherit; text-decoration: none; }
 
   ul, ol { margin: 0 0 .75em; padding-left: 1.6em; }
@@ -66,8 +219,8 @@ html.nav-drawer-open {
     display: block;
     margin: 0 0 .75em;
     padding: .5em 1em;
-    border-left: 4px solid #cbd5e1;
-    background: rgba(148, 163, 184, .1);
+    border-left: 4px solid var(--brass);
+    background: rgba(197,161,87, .08);
     font-style: italic;
   }
 
@@ -86,7 +239,8 @@ html.nav-drawer-open {
     margin: 0 0 .75em;
   }
   th, td { border: 1px solid #cbd5e1; padding: 6px 10px; text-align: left; vertical-align: top; }
-  th { font-weight: 700; background: rgba(148, 163, 184, .15); }
+  th { font-weight: 700; background: var(--chamber-900); color: #fff; border-color: var(--chamber-800); }
+  tr:nth-child(even) td { background: rgba(235,223,198, .45); }
 
   // Tailwind's preflight makes every <img> display:block, which ignores the
   // paragraph's text-align, so an image centred in CKEditor sat on the left.
