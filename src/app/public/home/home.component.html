@@ -1,150 +1,215 @@
 <!-- ============ HEADER ============ -->
 <app-site-header></app-site-header>
 
-<!-- ============ HERO ============ -->
+<!-- ============ HERO ============
+     Full-bleed CMS banner photo with a blue shade from the left, CMS banner
+     text on top. Falls back to the built-in photo and text. -->
 <section class="hero">
-  <div class="hero-bg" [class.hero-bg-default]="heroBanner === null || (heroBanner && !heroBanner.imageUrl)"
-       [style.background-image]="heroBackground(heroBanner?.imageUrl)"></div>
-  <div class="hero-overlay" [class.hero-overlay-cms]="!!heroBanner?.imageUrl"></div>
-  <div class="container hero-content">
-    @if (heroBanner?.html) {
-      <div class="hero-text rich-text" [innerHTML]="heroBanner!.html | safeHtml"></div>
-    } @else if (heroBanner !== undefined) {
-      <h1>Sikkim Government Law College</h1>
-      <p class="hero-sub">Nurturing Legal Excellence in the Heart of the Himalayas</p>
-      <p class="hero-desc">Established under the Government of Sikkim, we are committed to providing world-class legal education with a focus on ethics, justice, and social responsibility.</p>
-    }
-    <div class="hero-actions">
-      <a [routerLink]="'/' + paths.onlineApplication" class="btn btn-primary">Apply Now</a>
-      <a [routerLink]="['/pages', 'Learn More']" class="btn btn-outline-light">Learn More</a>
+  <div class="hero-media" aria-hidden="true">
+    <div class="hero-img" [class.hero-bg-default]="heroBanner === null || (heroBanner && !heroBanner.imageUrl)"
+         [style.background-image]="heroBackground(heroBanner?.imageUrl)"></div>
+  </div>
+  <div class="container hero-grid">
+    <div class="hero-content">
+      <p class="hero-eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>Gangtok &middot; Sikkim</p>
+      @if (heroBanner?.html) {
+        <div class="hero-text rich-text" [innerHTML]="heroBanner!.html | safeHtml"></div>
+      } @else if (heroBanner !== undefined) {
+        <h1>Sikkim Government Law College</h1>
+        <p class="hero-sub">Nurturing Legal Excellence in the Heart of the Himalayas</p>
+        <p class="hero-desc">Established under the Government of Sikkim, we are committed to providing world-class legal education with a focus on ethics, justice, and social responsibility.</p>
+      }
+      <div class="hero-actions">
+        <a [routerLink]="'/' + paths.onlineApplication" class="btn btn-gold">
+          Apply Now
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a [routerLink]="['/pages', 'Learn More']" class="btn btn-ghost">Learn More</a>
+      </div>
     </div>
+  </div>
+
+  <!-- Statistics (CMS Home > Statistics), counted up when first seen. -->
+  @if (statisticsItems.length) {
+    <div class="container">
+      <ul class="hero-stats">
+        @for (item of statisticsItems; track item.id; let i = $index) {
+          <li class="stat" [appReveal]="i * 0.08">
+            <span class="stat-num" [attr.data-count]="item.count">{{ item.count }}</span>
+            <span class="stat-label">{{ item.title }}</span>
+          </li>
+        }
+      </ul>
+    </div>
+  }
+</section>
+
+<!-- ============ QUICK ACCESS ============ -->
+<nav class="quick-bar" aria-label="Quick access">
+  <div class="container">
+    <ul class="quick-grid" appReveal>
+      <li>
+        <a [routerLink]="'/' + paths.onlineApplication" class="quick-link">
+          <span class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 14h6M9 18h4"/></svg></span>
+          <span class="quick-label">Apply Online</span>
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="'/' + paths.examResults" class="quick-link">
+          <span class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span>
+          <span class="quick-label">Exam Result</span>
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="'/' + paths.academicCalendar" target="_blank" rel="noopener" class="quick-link">
+          <span class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/><path d="M9 15l2 2 4-4"/></svg></span>
+          <span class="quick-label">Academic Calendar</span>
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="['/pages', 'Fee Payment']" class="quick-link">
+          <span class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/></svg></span>
+          <span class="quick-label">Fee Payment</span>
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="'/' + paths.library" class="quick-link">
+          <span class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h13a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3z"/><path d="M4 4v13a3 3 0 0 0 3 3"/><path d="M8 8h8M8 12h8"/></svg></span>
+          <span class="quick-label">Library</span>
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="'/' + paths.legalAidCell" class="quick-link">
+          <span class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18"/><path d="M5 7l-3 6a3 3 0 0 0 6 0z"/><path d="M19 7l-3 6a3 3 0 0 0 6 0z"/><path d="M5 7h14"/><path d="M8 21h8"/></svg></span>
+          <span class="quick-label">Legal Aid</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ============ LATEST ANNOUNCEMENTS ============ -->
+<section class="section notices">
+  <div class="container notices-grid">
+    <div class="notices-intro" appReveal>
+      <p class="eyebrow">Notice Board</p>
+      <h2 class="section-title">Latest Announcements</h2>
+      <span class="title-rule" aria-hidden="true"></span>
+      <a [routerLink]="'/' + paths.announcements" class="text-link">
+        View All
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+
+    <ol class="notice-list">
+      @for (item of announcements; track item.id; let i = $index) {
+        <li [appReveal]="i * 0.08">
+          <a class="notice" [class.card-clickable]="item.fileUrl"
+             [href]="item.fileUrl || null" [attr.target]="item.fileUrl ? '_blank' : null" rel="noopener">
+            <span class="notice-date" [class.notice-date-empty]="!item.startDate">
+              @if (item.startDate) {
+                <span class="notice-day">{{ item.startDate | date: 'dd' }}</span>
+                <span class="notice-month">{{ item.startDate | date: 'MMM y' }}</span>
+              } @else {
+                <span class="notice-day">&sect;</span>
+              }
+            </span>
+            <span class="notice-body">
+              @if (item.tags.length) {
+                <span class="announce-tags">
+                  @for (tag of item.tags; track $index) {
+                    <span class="tag" [class]="'tag-' + tag.kind">{{ tag.text }}</span>
+                  }
+                </span>
+              }
+              <span class="notice-title">{{ item.title }}</span>
+              @if (item.startDate) {
+                <span class="date">{{ item.startDate | date: 'd MMMM y' }}</span>
+              }
+            </span>
+            @if (item.fileUrl) {
+              <span class="notice-arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M8 7h9v9"/></svg>
+              </span>
+            }
+          </a>
+        </li>
+      }
+    </ol>
   </div>
 </section>
 
 <!-- ============ WHY CHOOSE ============ -->
-<section class="section section-muted">
-  <div class="container">
-    <h2 class="section-title">Why Choose SGLC?</h2>
-    <p class="section-sub">Discover what makes Sikkim Government Law College a premier destination for legal education</p>
+@if (whyChooseUsItems.length) {
+  <section class="section why">
+    <div class="why-glow" aria-hidden="true"></div>
+    <div class="container">
+      <div class="section-head" appReveal>
+        <p class="eyebrow eyebrow-light">Why SGLC</p>
+        <h2 class="section-title">Why Choose SGLC?</h2>
+        <p class="section-sub">Discover what makes Sikkim Government Law College a premier destination for legal education</p>
+      </div>
 
-    <div class="grid grid-4">
-      @for (item of whyChooseUsItems; track item.id) {
-        <div class="card" [class.card-clickable]="isValidLink(item.externalLink)"
-             (click)="onWhyChooseUsCardClick(item)">
-          <div class="icon-badge blue">
-            <i [class]="item.icon"></i>
+      <div class="why-grid">
+        @for (item of whyChooseUsItems; track item.id; let i = $index) {
+          <div class="why-card" [class.card-clickable]="isValidLink(item.externalLink)"
+               [appReveal]="(i % 4) * 0.1" (click)="onWhyChooseUsCardClick(item)">
+            <span class="why-num" aria-hidden="true">{{ (i + 1).toString().padStart(2, '0') }}</span>
+            <div class="icon-badge">
+              <i [class]="item.icon"></i>
+            </div>
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.description }}</p>
           </div>
-          <h3>{{ item.title }}</h3>
-          <p>{{ item.description }}</p>
-        </div>
-      }
+        }
+      </div>
     </div>
-  </div>
-</section>
-
-<!-- ============ LATEST ANNOUNCEMENTS ============ -->
-<section class="section">
-  <div class="container">
-    <div class="section-head-row">
-      <h2 class="section-title left">Latest Announcements</h2>
-      <a [routerLink]="'/' + paths.announcements" class="view-all">View All &rarr;</a>
-    </div>
-
-    <div class="grid grid-2">
-      @for (item of announcements; track item.id) {
-        <a class="announce-card" [class.card-clickable]="item.fileUrl"
-           [href]="item.fileUrl || null" [attr.target]="item.fileUrl ? '_blank' : null" rel="noopener">
-          <div class="announce-tags">
-            @for (tag of item.tags; track $index) {
-              <span class="tag" [class]="'tag-' + tag.kind">{{ tag.text }}</span>
-            }
-          </div>
-          <h3>{{ item.title }}</h3>
-          @if (item.startDate) {
-            <span class="date">{{ item.startDate | date: 'd MMMM y' }}</span>
-          }
-        </a>
-      }
-    </div>
-  </div>
-</section>
-
-<!-- ============ QUICK ACCESS ============ -->
-<section class="section section-muted">
-  <div class="container">
-    <h2 class="section-title">Quick Access</h2>
-    <p class="section-sub">Access important services and information with just one click</p>
-
-    <div class="grid grid-6">
-      <a [routerLink]="'/' + paths.onlineApplication" class="quick-card">
-        <span class="quick-icon bg-blue">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-        </span>
-        <span>Apply Online</span>
-      </a>
-      <a [routerLink]="'/' + paths.examResults" class="quick-card">
-        <span class="quick-icon bg-green">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>
-        </span>
-        <span>Exam Result</span>
-      </a>
-      <a [routerLink]="'/' + paths.academicCalendar" target="_blank" rel="noopener" class="quick-card">
-        <span class="quick-icon bg-purple">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/><path d="M9 14l2 2 4-4"/></svg>
-        </span>
-        <span>Academic Calendar</span>
-      </a>
-      <a [routerLink]="['/pages', 'Fee Payment']" class="quick-card">
-        <span class="quick-icon bg-orange">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
-        </span>
-        <span>Fee Payment</span>
-      </a>
-      <a [routerLink]="'/' + paths.library" class="quick-card">
-        <span class="quick-icon bg-red">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 4h13a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3z"/><path d="M4 4v13a3 3 0 0 0 3 3"/><path d="M8 8h8"/><path d="M8 12h8"/></svg>
-        </span>
-        <span>Library</span>
-      </a>
-      <a [routerLink]="'/' + paths.legalAidCell" class="quick-card">
-        <span class="quick-icon bg-teal">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 3v18"/><path d="M5 7l-3 6a3 3 0 0 0 6 0z"/><path d="M19 7l-3 6a3 3 0 0 0 6 0z"/><path d="M5 7h14"/><path d="M8 21h8"/></svg>
-        </span>
-        <span>Legal Aid</span>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- ============ STATS BAR ============ -->
-<section class="stats-bar">
-  <div class="container grid grid-4">
-    @for (item of statisticsItems; track item.id) {
-      <div class="stat"><span class="stat-num">{{ item.count }}</span><span class="stat-label">{{ item.title }}</span></div>
-    }
-  </div>
-</section>
+  </section>
+}
 
 <!-- ============ OUR PROGRAMS ============ -->
-<section class="section">
+<section class="section programs">
   <div class="container">
-    <h2 class="section-title">Our Programs</h2>
-    <p class="section-sub">Comprehensive legal education programs designed for future legal professionals</p>
+    <div class="section-head" appReveal>
+      <p class="eyebrow">Academics</p>
+      <h2 class="section-title">Our Programs</h2>
+      <p class="section-sub">Comprehensive legal education programs designed for future legal professionals</p>
+    </div>
 
-    <div class="grid grid-3">
-      @for (program of programs; track program.id) {
-        <div class="program-card" [class]="program.tint">
+    <div class="program-grid">
+      @for (program of programs; track program.id; let i = $index) {
+        <article class="program-card" [class.is-open]="selectedProgram === program" [appReveal]="i * 0.12">
+          <span class="program-num" aria-hidden="true">{{ romanNumeral(i + 1) }}</span>
           <h3>{{ program.title }}</h3>
           <p>{{ program.shortDescription }}</p>
           @if (selectedProgram === program) {
             <div class="program-full-description rich-text" [innerHTML]="program.description | safeHtml"></div>
           }
-          <button type="button" class="learn-more" (click)="toggleProgramDetails(program)">
+          <button type="button" class="learn-more" [attr.aria-expanded]="selectedProgram === program" (click)="toggleProgramDetails(program)">
             {{ selectedProgram === program ? 'Show Less' : 'Learn More' }}
-            {{ selectedProgram === program ? '' : '→' }}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
           </button>
-        </div>
+        </article>
       }
+    </div>
+  </div>
+</section>
+
+<!-- ============ ADMISSIONS BAND ============
+     Links only to pages that already exist in the nav. -->
+<section class="admit-band">
+  <div class="container admit-inner" appReveal>
+    <div>
+      <p class="eyebrow eyebrow-light">Admission</p>
+      <h2 class="admit-title">Begin your journey in law.</h2>
+    </div>
+    <div class="admit-actions">
+      <a [routerLink]="'/' + paths.onlineApplication" class="btn btn-gold">
+        Online Application
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a routerLink="/admissions/prospectus" class="btn btn-ghost">Prospectus</a>
+      <a routerLink="/admissions/contact-admission-office" class="btn btn-ghost">Contact Admissions Office</a>
     </div>
   </div>
 </section>

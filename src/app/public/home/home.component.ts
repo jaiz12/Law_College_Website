@@ -3,13 +3,55 @@ import { Component, ElementRef, Injector, OnInit, PLATFORM_ID, afterNextRender, 
 import { RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SafeHtmlPipe } from '../../services/safe-html.pipe';
-import { AnnouncementWithTags, mapAnnouncements } from '../../services/announcement.model';
+import { AnnouncementWithTags } from '../../services/announcement.model';
 import { isAbsoluteHttpUrl } from '../../services/url.util';
 import { formatStatCount } from '../../services/format.util';
 import { assetUrl } from '../../services/cms-row';
 import { SITE_PATHS } from '../../services/site-links';
+import { SiteBrandingService } from '../../services/site-branding.service';
+import { SiteNavService } from '../../services/site-nav.service';
+import { RevealDirective } from '../../shared/reveal.directive';
 import { SiteHeaderComponent } from '../../shared/site-header/site-header.component';
 import { SiteFooterComponent } from '../../shared/site-footer/site-footer.component';
+
+const ROMAN_NUMERALS: [number, string][] = [
+  [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']
+];
+
+/**
+ * Counts each `[data-count]` element up from 0 to its number the first
+ * time it scrolls into view, keeping any prefix/suffix ("15+" counts 0..15
+ * then shows "15+"). Values without a number are left as they are. Skipped
+ * entirely when the OS asks for reduced motion.
+ */
+function countUpWhenVisible(root: HTMLElement): void {
+  if (typeof IntersectionObserver === 'undefined'
+      || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return;
+  }
+  const observer = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      observer.unobserve(entry.target);
+      const el = entry.target as HTMLElement;
+      const final = el.dataset['count'] ?? '';
+      const match = final.match(/^(\D*)([\d,]+)(.*)$/);
+      if (!match) continue;
+      const [, prefix, digits, suffix] = match;
+      const target = Number(digits.replace(/,/g, ''));
+      const start = performance.now();
+      const duration = 1600;
+      const tick = (now: number) => {
+        const t = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - t, 4);
+        el.textContent = t < 1 ? `${prefix}${Math.round(target * eased).toLocaleString('en-IN')}${suffix}` : final;
+        if (t < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+  }, { threshold: 0.4 });
+  root.querySelectorAll<HTMLElement>('[data-count]').forEach(el => observer.observe(el));
+}
 
 interface WhyChooseUsItem {
   id: number;
@@ -105,7 +147,7 @@ interface OurProgramItem {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, SafeHtmlPipe, SiteHeaderComponent, SiteFooterComponent],
+  imports: [CommonModule, RouterModule, SafeHtmlPipe, RevealDirective, SiteHeaderComponent, SiteFooterComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -114,6 +156,10 @@ export class HomeComponent implements OnInit {
   private readonly apiService = inject(ApiService);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly injector = inject(Injector);
+  private readonly siteNav = inject(SiteNavService);
+
+  /** Header's branding (logo + plain-text title) for the hero's seal badge. */
+  readonly branding$ = inject(SiteBrandingService).branding$;
 
   /** Exposed for the template so a card with an invalid External Link
    *  doesn't render with a pointer cursor / hover affordance for a click
@@ -263,6 +309,7 @@ export class HomeComponent implements OnInit {
             .filter((item: StatisticItem) => item.count && item.title)
             // Bug Report row 45: same newest-first fix as Why Choose Us.
             .sort((a: { id: number }, b: { id: number }) => b.id - a.id);
+          afterNextRender(() => countUpWhenVisible(this.host.nativeElement), { injector: this.injector });
         },
         error: (err) => {
           console.error('Statistics Error:', err);
@@ -302,20 +349,26 @@ export class HomeComponent implements OnInit {
    * shows the latest few; "View All" opens the full Announcements page.
    */
   getAnnouncements(): void {
-    this.apiService
-      .GetRequestRows('Announcements')
-      .subscribe({
-        next: (data: any[]) => {
-          this.announcements = mapAnnouncements(data, this.apiService.IMAGE_API_URL)
-            .slice(0, this.announcementsToShow);
-        },
-        error: (err) => {
-          console.error('Announcements Error:', err);
-        }
-      });
+    // Shared with the header ticker, so the page makes one request for both.
+    this.siteNav.announcements$.subscribe(items => {
+      this.announcements = items.slice(0, this.announcementsToShow);
+    });
   }
 
   toggleProgramDetails(program: OurProgramItem): void {
     this.selectedProgram = this.selectedProgram === program ? null : program;
+  }
+
+  /** Program card index marker: 1 -> "I", 4 -> "IV". */
+  romanNumeral(value: number): string {
+    let rest = value;
+    let out = '';
+    for (const [n, numeral] of ROMAN_NUMERALS) {
+      while (rest >= n) {
+        out += numeral;
+        rest -= n;
+      }
+    }
+    return out || String(value);
   }
 }

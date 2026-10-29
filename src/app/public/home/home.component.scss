@@ -1,32 +1,17 @@
-/* ========= Design tokens (from home.pdf reference) ========= */
+/* Colours, fonts and easing come from the site tokens in styles.scss (:root). */
 :host{
-  --blue: #2563eb;
-  --blue-dark: #1d4ed8;
-  --navy: #0f1b2d;
-  --text: #111827;
-  --text-muted: #6b7280;
-  --bg-muted: #f3f5f8;
-  --border: #e5e7eb;
-  --white: #ffffff;
-  --green: #10b981;
-  --purple: #8b5cf6;
-  --orange: #f59e0b;
-  --red: #ef4444;
-  --teal: #14b8a6;
-  --radius: 10px;
-  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
-
   display: block;
-  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
   color: var(--text);
-  background: var(--white);
-  line-height: 1.5;
+  background: var(--parchment);
+  line-height: 1.6;
 }
 
 :host, :host *{box-sizing:border-box;}
 img{max-width:100%; display:block;}
 a{color:inherit; text-decoration:none;}
-ul{list-style:none; margin:0; padding:0;}
+ul, ol{list-style:none; margin:0; padding:0;}
+:focus-visible{outline:2px solid var(--brass); outline-offset:3px;}
 
 .container{
   width:100%;
@@ -35,100 +20,152 @@ ul{list-style:none; margin:0; padding:0;}
   padding:0 24px;
 }
 
-/* ========= Buttons ========= */
-.btn{
-  display:inline-block;
-  padding:12px 22px;
-  border-radius:8px;
-  font-weight:600;
-  font-size:0.95rem;
-  border:2px solid transparent;
-  cursor:pointer;
-  transition:background .15s, color .15s, border-color .15s, opacity .15s;
+/* ========= Shared type ========= */
+.eyebrow{
+  display:inline-flex; align-items:center; gap:12px;
+  margin:0 0 16px;
+  font-size:.74rem; font-weight:600; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--seal);
 }
-.btn-primary{background:var(--blue); color:#fff;}
-.btn-primary:hover{background:var(--blue-dark);}
-.btn-outline-light{background:transparent; color:#fff; border-color:#fff;}
-.btn-outline-light:hover{background:rgba(255,255,255,.12);}
-.btn-outline{background:transparent; color:var(--blue); border-color:var(--blue);}
-.btn-outline:hover{background:rgba(37,99,235,.08);}
-.btn-sm{padding:6px 14px; font-size:0.8rem;}
-.btn-block{width:100%; margin-top:6px; text-align:center;}
+.eyebrow::before{content:''; width:28px; height:1px; background:currentColor;}
+.eyebrow-light{color:var(--brass);}
+.section-title{
+  font-family:var(--font-display);
+  font-size:clamp(2rem, 3.4vw, 2.75rem); font-weight:500; line-height:1.15;
+  margin:0 0 14px; color:var(--chamber-800);
+  letter-spacing:-.01em;
+}
+.section-sub{color:var(--text-muted); max-width:600px; margin:0 auto; font-size:1.02rem; line-height:1.7;}
+.section-head{text-align:center; margin-bottom:56px;}
+.section-head .eyebrow::after{content:''; width:34px; height:1px; background:currentColor;}
+.title-rule{display:block; width:64px; height:3px; background:var(--brass); margin:18px 0 26px;}
 
-/* Header and footer chrome (site-header/nav/footer/floating widgets) now
-   live in the shared app-site-header / app-site-footer components — see
-   src/app/shared. */
+/* ========= Buttons =========
+   Solid, flat, tight: one colour, crisp edge, no gloss. .btn-gold is the
+   primary (mahogany); .btn-ghost the parchment outline for dark grounds. */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  height:48px; padding:0 26px;
+  font-family:var(--font-body); font-weight:600; font-size:.8rem; letter-spacing:.1em; text-transform:uppercase;
+  border:1px solid transparent; border-radius:3px;
+  cursor:pointer;
+  transition:background-color .25s ease, color .25s ease, border-color .25s ease;
+}
+.btn svg{width:16px; height:16px; transition:transform .3s var(--ease-out);}
+.btn:hover svg{transform:translateX(3px);}
+.btn-gold{background:var(--seal); color:var(--parchment); border-color:var(--seal);}
+.btn-gold:hover{background:var(--seal-dark); border-color:var(--seal-dark);}
+.btn-ghost{background:transparent; color:var(--parchment); border-color:rgba(245,238,223,.55);}
+.btn-ghost:hover{background:var(--parchment); color:var(--chamber-800); border-color:var(--parchment);}
+
+.text-link{
+  display:inline-flex; align-items:center; gap:10px;
+  font-size:.78rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--seal);
+  padding-bottom:6px; border-bottom:1px solid var(--brass);
+}
+.text-link svg{width:16px; height:16px; transition:transform .45s var(--ease-out);}
+.text-link:hover svg{transform:translateX(5px);}
 
 /* ========= Hero ========= */
+/* Full-bleed photo; the shade is solid blue behind the text on the left
+   and opens up to the right so the building reads. */
 .hero{
   position:relative;
-  min-height:560px;
-  display:flex;
-  align-items:center;
   overflow:hidden;
   color:#fff;
+  background:var(--chamber-900);
+  min-height:min(720px, calc(100vh - 150px));
+  display:flex; flex-direction:column; justify-content:center;
+  padding:96px 0 150px;
 }
-.hero-bg{
+.hero-media{position:absolute; inset:0; overflow:hidden;}
+.hero-img{
   position:absolute; inset:0;
-  background-size:cover;
-  background-position:right center;
-  background-color:#2b2f36;
+  background-size:cover; background-position:center 40%;
+  filter:saturate(.72) contrast(1.05);
+  background-color:var(--chamber-800);
+  animation:hero-settle 2.4s var(--ease-out) both;
+}
+.hero-media::after{
+  content:''; position:absolute; inset:0;
+  background:
+    linear-gradient(90deg, rgba(10,31,69,.96) 0%, rgba(10,31,69,.86) 38%, rgba(16,44,94,.45) 70%, rgba(16,44,94,.2) 100%),
+    linear-gradient(0deg, rgba(6,20,46,.85) 0%, transparent 40%);
 }
 /* Built-in photo, only when the CMS has no Home banner image. */
 .hero-bg-default{background-image:url("/images/home/hero-scales.jpg");}
-.hero-overlay{
-  position:absolute; inset:0;
-  /* Light scrim only — the photo's own dark-to-light gradient already
-     carries the contrast white text needs; a heavy overlay just dims it. */
-  background:linear-gradient(90deg, rgba(10,14,20,.35) 0%, rgba(10,14,20,.18) 55%, rgba(10,14,20,0) 100%);
+.hero-grid{position:relative; z-index:2;}
+.hero-content{max-width:640px;}
+.hero-eyebrow{
+  display:flex; align-items:center; gap:14px;
+  margin:0 0 24px;
+  font-size:.76rem; font-weight:600; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--brass);
 }
-/* CMS banner photos can be anything (bright walls, sky), so the light scrim
-   above isn't enough: dim the whole photo evenly and darken the centre
-   further, where the text sits. */
-.hero-overlay-cms{
-  background:
-    radial-gradient(ellipse 60% 55% at 50% 50%, rgba(8,12,20,.5) 0%, rgba(8,12,20,0) 100%),
-    linear-gradient(rgba(8,12,20,.62), rgba(8,12,20,.62));
+.eyebrow-rule{width:40px; height:1px; background:var(--brass);}
+.hero-content h1{
+  font-family:var(--font-display);
+  font-size:clamp(2.5rem, 4.8vw, 4.1rem); font-weight:500; line-height:1.08;
+  margin:0 0 20px; color:#fff; letter-spacing:-.015em;
 }
-.hero-content{
-  position:relative; z-index:2; padding:90px 24px 110px;
-  max-width:760px; margin:0 auto; text-align:center;
+.hero-sub{
+  font-family:var(--font-secondary); font-weight:300;
+  font-size:1.3rem; margin:0 0 18px; color:var(--parchment);
 }
-.hero-content h1{font-size:2.5rem; font-weight:700; margin:0 0 18px; line-height:1.15; color:#fff;}
-.hero-sub{font-size:1.15rem; margin:0 0 16px; color:#fff; opacity:.95;}
-.hero-desc{font-size:1rem; opacity:.9; margin:0 auto 52px; max-width:620px; color:#fff;}
-/* top:6px nudges only the buttons down; a bigger margin would also shift
-   the (vertically centred) text up. */
-.hero-actions{display:flex; gap:14px; flex-wrap:wrap; justify-content:center; position:relative; top:6px;}
-/* CMS banner text (CKEditor): white on the photo unless the editor picked a colour. */
-.hero-text{color:#fff; margin:0 0 52px; text-shadow:0 1px 4px rgba(0,0,0,.65);}
-/* Same hierarchy as the built-in hero: first line is the title, second the
-   tagline, the rest the description. The title size overrides the editor's
-   inline font-size so it always reads as the heading (!important is the
-   only way past an inline style). */
+.hero-desc{font-size:1.04rem; line-height:1.7; color:rgba(255,255,255,.78); margin:0 0 36px; max-width:540px;}
+.hero-actions{display:flex; gap:12px; flex-wrap:wrap;}
+
+/* CMS banner text (CKEditor): same hierarchy as the built-in text — first
+   line title, second tagline, rest description. The layout owns size and
+   alignment here, so it overrides the editor's inline font-size and
+   text-align (!important is the only way past an inline style). */
+.hero-text{color:#fff; margin:0 0 40px;}
 :host ::ng-deep .hero-text{
-  > *{margin:0 0 14px;}
-  > :first-child{font-size:2.5rem; font-weight:700; line-height:1.15; margin-bottom:18px;}
+  > *{margin:0 0 16px; text-align:left !important;}
+  > :first-child{
+    font-family:var(--font-display);
+    font-size:clamp(2.5rem, 4.8vw, 4.1rem); font-weight:500; line-height:1.08;
+    letter-spacing:-.015em; margin-bottom:22px;
+  }
   > :first-child [style*="font-size"]{font-size:inherit !important;}
-  > :nth-child(2){font-size:1.15rem; opacity:.95; margin-bottom:16px;}
-  > :nth-child(n+3){font-size:1rem; opacity:.9; max-width:620px; margin-left:auto; margin-right:auto;}
+  > :first-child strong{font-weight:500;}
+  > :nth-child(2){font-family:var(--font-secondary); font-weight:300; font-size:1.3rem; color:var(--parchment);}
+  > :nth-child(n+3){font-size:1.04rem; line-height:1.7; color:rgba(255,255,255,.78); max-width:540px;}
   > :last-child{margin-bottom:0;}
 }
-@media (max-width:640px){
-  :host ::ng-deep .hero-text > :first-child{font-size:1.75rem;}
-}
-/* ---- Entrance ----
-   The photo fades in from dark while settling from a zoom. The text is
-   hidden until the browser has taken the page over (HomeComponent adds
-   .is-ready after splitting it into words); animating the server-rendered
-   text instead restarted it mid-way when hydration re-set the CMS HTML.
-   Then each word comes in from blur on a spring-like curve, staggered
-   title -> tagline -> description, and the buttons follow. */
-.hero{background:#141821;}
-.hero-bg{animation:hero-settle 6s cubic-bezier(.2,.6,.2,1) both;}
 
+/* ---- Stats (inside the hero, under the text) ---- */
+.hero-stats{
+  position:relative; z-index:2;
+  display:flex; flex-wrap:wrap;
+  max-width:640px;
+  margin-top:56px;
+  border-top:1px solid rgba(245,238,223,.22);
+}
+.stat{
+  flex:1 1 160px;
+  display:flex; flex-direction:column; gap:6px;
+  padding:22px 28px 0 0;
+}
+.stat + .stat{padding-left:28px; border-left:1px solid rgba(245,238,223,.18);}
+.stat-num{
+  font-family:var(--font-display); font-size:2.4rem; font-weight:500; line-height:1;
+  color:var(--brass-light);
+  font-variant-numeric:tabular-nums;
+}
+.stat-label{font-size:.72rem; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.62);}
+
+/* ---- Entrance ----
+   The text is hidden until the browser has taken the page over
+   (HomeComponent adds .is-ready after splitting it into words); animating
+   the server-rendered text instead restarted it mid-way when hydration
+   re-set the CMS HTML. Each word then comes in from blur, staggered
+   title -> tagline -> description, and the buttons follow. */
 /* Safety net: if the script never runs, show the text anyway. */
 .hero-content:not(.is-ready) > *{opacity:0; animation:hero-show .5s 2.5s forwards;}
+.is-ready .hero-eyebrow{animation:hero-blur-in .9s var(--ease-out) both;}
+.is-ready .eyebrow-rule{animation:rule-grow 1.2s .1s var(--ease-out) both; transform-origin:left;}
 
 :host ::ng-deep .hero-word{
   display:inline-block;
@@ -137,160 +174,254 @@ ul{list-style:none; margin:0; padding:0;}
 .is-ready .hero-actions{
   animation:hero-actions 1s var(--hero-actions-delay, 1s) cubic-bezier(.16,1,.3,1) both;
 }
-.hero-actions .btn{transition:transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s ease;}
-.hero-actions .btn:hover{transform:translateY(-2px); box-shadow:0 10px 24px rgba(0,0,0,.3);}
 
-@keyframes hero-settle{
-  from{opacity:0; transform:scale(1.15);}
-  20%{opacity:1;}
-}
+@keyframes hero-settle{from{opacity:0; transform:scale(1.08);}}
+@keyframes rule-grow{from{transform:scaleX(0);}}
 @keyframes hero-word{from{opacity:0; filter:blur(12px); transform:translateY(.45em);}}
 @keyframes hero-actions{from{opacity:0; filter:blur(6px); transform:translateY(18px) scale(.96);}}
 @keyframes hero-fade{from{opacity:0;}}
 @keyframes hero-blur-in{from{opacity:0; filter:blur(12px);}}
 @keyframes hero-show{to{opacity:1;}}
 
-/* Reduce motion (OS setting, e.g. Windows "Show animations" off): nothing
-   moves or zooms, but words still sharpen in from blur in the same order. */
-@media (prefers-reduced-motion:reduce){
-  .hero-bg{animation-name:hero-fade; animation-duration:1.2s;}
-  :host ::ng-deep .hero-word{animation-name:hero-blur-in;}
-  .is-ready .hero-actions{animation-name:hero-blur-in;}
-  .hero-actions .btn:hover{transform:none;}
+/* ========= Quick access bar (overlaps the hero's lower edge) ========= */
+.quick-bar{position:relative; z-index:3; margin-top:-64px;}
+.quick-grid{
+  display:grid; grid-template-columns:repeat(6, minmax(0, 1fr));
+  background:#fff;
+  border-radius:4px;
+  box-shadow:0 30px 60px -28px rgba(6,20,46,.45);
+  overflow:hidden;
+  border-bottom:3px solid var(--brass);
 }
+.quick-grid li + li{border-left:1px solid var(--line);}
+.quick-link{
+  position:relative;
+  display:flex; flex-direction:column; align-items:center; gap:14px;
+  padding:30px 12px 26px;
+  text-align:center;
+  font-weight:500; font-size:.9rem; color:var(--chamber-900);
+  transition:color .35s ease;
+  isolation:isolate;
+}
+/* Ink fill rises from the bottom on hover. */
+.quick-link::before{
+  content:''; position:absolute; inset:0; z-index:-1;
+  background:var(--chamber-900);
+  transform:scaleY(0); transform-origin:bottom;
+  transition:transform .5s var(--ease-out);
+}
+.quick-link:hover{color:#fff;}
+.quick-link:hover::before{transform:scaleY(1);}
+.quick-icon{
+  width:54px; height:54px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  border:1px solid var(--brass);
+  color:var(--brass-dark);
+  transition:background .4s ease, color .4s ease, transform .5s var(--ease-out);
+}
+.quick-icon svg{width:24px; height:24px;}
+.quick-link:hover .quick-icon{background:var(--brass); color:var(--chamber-950); transform:translateY(-3px);}
 
 /* ========= Sections ========= */
-.section{padding:72px 0;}
-.section-muted{background:var(--bg-muted);}
-.section-title{font-size:1.75rem; font-weight:700; text-align:center; margin:0 0 12px;}
-.section-title.left{text-align:left; margin:0;}
-.section-sub{text-align:center; color:var(--text-muted); max-width:640px; margin:0 auto 44px;}
-.section-head-row{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:32px;}
-.view-all{color:var(--blue); font-weight:600; font-size:.95rem;}
+.section{padding:110px 0;}
 
-.grid{display:grid; gap:24px; min-width:0;}
-.grid-2{grid-template-columns:repeat(2,1fr);}
-.grid-3{grid-template-columns:repeat(3,1fr);}
-.grid-4{grid-template-columns:repeat(4,1fr);}
-.grid-6{grid-template-columns:repeat(6,1fr);}
-/* 1fr tracks default to a content-based min-size, which lets long words or
-   fixed-width children force the grid (and page) wider than the viewport. */
-.grid > *{min-width:0;}
-/* A lone card (why-choose, announcement, quick-access, stat or program with
-   only one backend row) shouldn't stretch full-width or sit left-aligned in
-   an otherwise multi-column grid — collapse to one centered track instead. */
-.grid:has(> *:only-child){grid-template-columns:minmax(0,340px); justify-content:center;}
-
-/* ========= Why choose cards ========= */
-.card{
-  background:#fff; border:1px solid var(--border); border-radius:var(--radius);
-  padding:26px 22px; box-shadow:var(--shadow);
+/* ---- Notice board ---- */
+.notices{padding-top:120px;}
+.notices-grid{display:grid; grid-template-columns:minmax(0, 4fr) minmax(0, 8fr); gap:64px; align-items:start;}
+.notices-intro{position:sticky; top:90px;}
+.notices-intro .section-title{margin:0;}
+.notice-list{display:flex; flex-direction:column; gap:14px;}
+.notice{
+  position:relative;
+  display:flex; align-items:center; gap:24px;
+  padding:20px 24px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:4px;
+  transition:transform .5s var(--ease-out), box-shadow .5s var(--ease-out), border-color .3s ease;
 }
-.card h3{margin:14px 0 8px; font-size:1.05rem;}
-.card p{margin:0; color:var(--text-muted); font-size:.92rem;}
-.card-clickable{cursor:pointer; transition:transform .15s, box-shadow .15s;}
-.card-clickable:hover{transform:translateY(-3px); box-shadow:0 4px 10px rgba(0,0,0,.1);}
-.icon-badge{
-  width:46px; height:46px; border-radius:10px;
+.notice::before{
+  content:''; position:absolute; left:-1px; top:-1px; bottom:-1px; width:3px;
+  background:var(--brass); transform:scaleY(0); transition:transform .5s var(--ease-out);
+}
+.card-clickable{cursor:pointer;}
+.notice:hover{transform:translateX(6px); box-shadow:var(--shadow-soft); border-color:transparent;}
+.notice:hover::before{transform:scaleY(1);}
+.notice-date{
+  flex-shrink:0;
+  width:78px; height:78px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:var(--chamber-900); color:#fff;
+  border-radius:2px;
+}
+.notice-day{font-family:var(--font-display); font-size:1.9rem; font-weight:600; line-height:1; color:var(--brass-light);}
+.notice-month{margin-top:6px; font-size:.64rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.7);}
+.notice-body{display:flex; flex-direction:column; gap:6px; min-width:0; flex:1;}
+.announce-tags{display:flex; gap:8px; flex-wrap:wrap;}
+.tag{font-size:.66rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; padding:3px 10px; border-radius:2px;}
+.tag-blue{background:rgba(16,44,94,.1); color:var(--chamber-800);}
+.tag-green{background:rgba(123,22,38,.1); color:var(--seal);}
+.tag-purple{background:rgba(197,161,87,.18); color:var(--brass-dark);}
+.tag-orange{background:var(--parchment-deep); color:var(--chamber-900);}
+.tag-red{background:var(--seal); color:#fff;}
+.notice-title{font-family:var(--font-display); font-size:1.18rem; font-weight:500; color:var(--chamber-900); overflow-wrap:anywhere; line-height:1.3;}
+.date{color:var(--text-muted); font-size:.82rem;}
+.notice-arrow{
+  flex-shrink:0; width:40px; height:40px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
+  border:1px solid var(--line); color:var(--seal);
+  transition:background .35s ease, color .35s ease, transform .5s var(--ease-out);
 }
-.icon-badge svg{width:24px; height:24px;}
-.icon-badge i{font-size:20px;}
-.icon-badge.blue{background:#dbeafe; color:var(--blue);}
+.notice-arrow svg{width:16px; height:16px;}
+.notice:hover .notice-arrow{background:var(--seal); color:#fff; border-color:var(--seal); transform:rotate(45deg);}
 
-/* ========= Announcements ========= */
-.announce-card{
-  /* Darker than --border ($e5e7eb) — the card was reading almost
-     borderless against the muted section background. */
-  border:1px solid #c7ccd4; border-radius:var(--radius);
-  padding:22px; display:flex; flex-direction:column; gap:10px;
+/* ---- Why choose (dark band) ---- */
+.why{
+  position:relative; overflow:hidden;
+  background:var(--chamber-900); color:#fff;
 }
-.announce-tags{display:flex; gap:10px; flex-wrap:wrap; justify-content:space-between; align-items:center;}
-.tag{font-size:.78rem; font-weight:600; padding:4px 12px; border-radius:20px;}
-.tag-blue{background:#dbeafe; color:#1d4ed8;}
-.tag-green{background:#d1fae5; color:#047857;}
-.tag-purple{background:#ede9fe; color:#6d28d9;}
-.tag-orange{background:#fef3c7; color:#b45309;}
-.tag-red{background:#fee2e2; color:#b91c1c;}
-.announce-card h3{margin:0; font-size:1.05rem; font-weight:700;}
-.announce-card .date{color:var(--text-muted); font-size:.85rem;}
-.announce-card h3{overflow-wrap:anywhere;}
-
-/* ========= Quick access ========= */
-.quick-card{
-  background:#fff; border:1px solid var(--border); border-radius:var(--radius);
-  padding:28px 16px; box-shadow:var(--shadow);
-  display:flex; flex-direction:column; align-items:center; gap:14px;
-  font-weight:600; font-size:.92rem; text-align:center;
-  transition:transform .15s;
+.why .section-title{color:#fff;}
+.why .section-sub{color:rgba(255,255,255,.62);}
+.why-glow{
+  position:absolute; width:720px; height:720px; right:-220px; top:-260px; pointer-events:none;
+  background:radial-gradient(circle, rgba(197,161,87,.18), transparent 65%);
 }
-.quick-card:hover{transform:translateY(-3px);}
-.quick-icon{
+.why-grid{
+  position:relative;
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
+  gap:1px;
+  background:rgba(197,161,87,.22);
+  border:1px solid rgba(197,161,87,.22);
+}
+/* A lone card shouldn't stretch the full width. */
+.why-grid:has(> :only-child){grid-template-columns:minmax(0, 380px); justify-content:center;}
+.why-card{
+  position:relative;
+  padding:40px 32px 44px;
+  background:var(--chamber-900);
+  transition:background .5s var(--ease-out);
+}
+.why-card::after{
+  content:''; position:absolute; left:0; right:0; bottom:0; height:2px;
+  background:var(--brass); transform:scaleX(0); transform-origin:left;
+  transition:transform .6s var(--ease-out);
+}
+.why-card:hover{background:var(--chamber-800);}
+.why-card:hover::after{transform:scaleX(1);}
+.why-num{
+  position:absolute; top:28px; right:28px;
+  font-family:var(--font-display); font-size:2.6rem; font-weight:600; line-height:1;
+  color:transparent; -webkit-text-stroke:1px rgba(197,161,87,.5);
+}
+.icon-badge{
   width:56px; height:56px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
+  border:1px solid var(--brass); color:var(--brass-light);
+  transition:background .4s ease, color .4s ease;
 }
-.quick-icon svg{width:26px; height:26px;}
-.bg-blue{background:var(--blue);}
-.bg-green{background:var(--green);}
-.bg-purple{background:var(--purple);}
-.bg-orange{background:var(--orange);}
-.bg-red{background:var(--red);}
-.bg-teal{background:var(--teal);}
+.icon-badge i{font-size:20px;}
+.why-card:hover .icon-badge{background:var(--brass); color:var(--chamber-950);}
+.why-card h3{margin:26px 0 10px; font-family:var(--font-display); font-size:1.4rem; font-weight:500; overflow-wrap:anywhere;}
+.why-card p{margin:0; color:rgba(255,255,255,.66); font-size:.94rem; overflow-wrap:anywhere;}
 
-/* ========= Stats bar ========= */
-.stats-bar{background:var(--blue); padding:36px 0; color:#fff;}
-.stats-bar .grid{text-align:center;}
-.stat{display:flex; flex-direction:column; gap:4px;}
-.stat-num{font-size:2.1rem; font-weight:800;}
-.stat-label{font-size:.9rem; opacity:.9;}
-
-/* ========= Programs ========= */
-/* Bug Report row 61: CSS Grid stretches every cell in a row to match the
-   tallest one by default (align-items:stretch). Expanding one card's
-   description made the *whole row* taller, so sibling cards grew/widened
-   with it even though their own content never changed. Grid rows own that
-   alignment, not the card itself, hence the fix lives on .grid-3 rather
-   than .program-card. */
-.grid-3{align-items:start;}
-.program-card{border-radius:var(--radius); padding:28px; display:flex; flex-direction:column; gap:12px;}
-.program-card h3{margin:0; font-size:1.2rem; font-weight:700;}
-.program-card p{margin:0; color:var(--text-muted); font-size:.92rem; flex:1;}
+/* ---- Programs ---- */
+.programs{background:var(--parchment-deep);}
+/* align-items:start: expanding one card's description must not stretch its
+   row neighbours (Bug Report row 61). */
+.program-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:28px; align-items:start;}
+.program-grid:has(> :only-child){grid-template-columns:minmax(0, 460px); justify-content:center;}
+.program-card{
+  position:relative; overflow:hidden;
+  display:flex; flex-direction:column; gap:14px;
+  padding:44px 38px 36px;
+  background:#fff;
+  border-radius:180px 180px 4px 4px;
+  border:1px solid var(--line);
+  text-align:center;
+  transition:transform .6s var(--ease-out), box-shadow .6s var(--ease-out);
+}
+.program-card:hover, .program-card.is-open{transform:translateY(-6px); box-shadow:0 34px 60px -32px rgba(6,20,46,.45);}
+.program-num{
+  font-family:var(--font-display); font-size:3.4rem; font-weight:600; line-height:1; font-style:italic;
+  color:var(--brass);
+}
+.program-card h3{margin:0; font-family:var(--font-display); font-size:1.55rem; font-weight:500; color:var(--chamber-900); overflow-wrap:anywhere;}
+.program-card h3::after{content:''; display:block; width:40px; height:2px; background:var(--brass); margin:16px auto 0;}
+.program-card p{margin:0; color:var(--text-muted); font-size:.95rem; overflow-wrap:anywhere;}
+.program-full-description{color:var(--text-muted); font-size:.93rem; line-height:1.75; text-align:left; animation:hero-blur-in .6s var(--ease-out) both;}
+/* [innerHTML] content never gets this component's scoping attribute. */
+.program-full-description ::ng-deep :is(h1, h2, h3, h4){color:var(--chamber-900); font-family:var(--font-display);}
 .learn-more{
-  color:var(--blue); font-weight:600; font-size:.9rem;
-  background:none; border:none; padding:0; text-align:left; cursor:pointer; font-family:inherit;
+  align-self:center;
+  display:inline-flex; align-items:center; gap:8px;
+  margin-top:8px;
+  color:var(--seal); font-weight:600; font-size:.76rem; letter-spacing:.12em; text-transform:uppercase;
+  background:none; border:none; border-bottom:1px solid var(--brass); padding:0 0 5px; cursor:pointer; font-family:inherit;
 }
-.bg-blue-tint{background:#eaf1ff;}
-.bg-green-tint{background:#e9fbf1;}
-.bg-pink-tint{background:#fdf0fa;}
+.learn-more svg{width:15px; height:15px; transition:transform .45s var(--ease-out);}
+.program-card.is-open .learn-more svg{transform:rotate(180deg);}
 
-/* ========= Our Program full description (inline expand, no modal) ========= */
-.program-full-description{
-  color:var(--text-muted); font-size:.92rem; line-height:1.7;
+/* ---- Admissions band ---- */
+.admit-band{
+  position:relative; overflow:hidden;
+  padding:84px 0;
+  background:
+    radial-gradient(ellipse 50% 120% at 100% 50%, rgba(197,161,87,.22), transparent 60%),
+    linear-gradient(110deg, var(--seal), var(--chamber-800) 45%, var(--chamber-900));
+  color:#fff;
 }
-/* Headings, lists, tables, blockquotes etc. are styled by the global
-   .rich-text rules (styles.scss); only this card's heading colour differs
-   (dark headings over muted body text). ::ng-deep because [innerHTML]
-   content never gets this component's scoping attribute. */
-.program-full-description ::ng-deep :is(h1, h2, h3, h4){color:var(--text);}
+.admit-inner{display:flex; align-items:center; justify-content:space-between; gap:40px; flex-wrap:wrap;}
+.admit-title{margin:0; font-family:var(--font-display); font-size:clamp(2rem, 3.8vw, 3rem); font-weight:600; font-style:italic; line-height:1.1;}
+.admit-actions{display:flex; gap:12px; flex-wrap:wrap;}
+
+/* Reduce motion (OS setting, e.g. Windows "Show animations" off): nothing
+   moves, zooms or spins, but things still sharpen in from blur in order. */
+@media (prefers-reduced-motion:reduce){
+  .hero-img{animation-name:hero-fade; animation-duration:1.2s;}
+  :host ::ng-deep .hero-word{animation-name:hero-blur-in;}
+  .is-ready .hero-actions, .is-ready .eyebrow-rule{animation-name:hero-blur-in;}
+  .btn:hover, .notice:hover, .program-card:hover, .program-card.is-open, .quick-link:hover .quick-icon{transform:none;}
+}
 
 /* ========= Responsive ========= */
-@media (max-width: 1240px){
-  .grid-4{grid-template-columns:repeat(2,1fr);}
-  .grid-6{grid-template-columns:repeat(3,1fr);}
-  .grid-3{grid-template-columns:1fr;}
+@media (max-width: 1100px){
+  .hero-media::after{
+    background:
+      linear-gradient(90deg, rgba(10,31,69,.94), rgba(10,31,69,.78)),
+      linear-gradient(0deg, rgba(6,20,46,.85) 0%, transparent 40%);
+  }
+  .quick-grid{grid-template-columns:repeat(3, minmax(0, 1fr));}
+  .quick-grid li:nth-child(4){border-left:0;}
+  .quick-grid li:nth-child(n+4){border-top:1px solid var(--line);}
+  .notices-grid{grid-template-columns:1fr; gap:36px;}
+  .notices-intro{position:static;}
 }
 @media (max-width: 640px){
-  .grid-4, .grid-6{grid-template-columns:1fr 1fr;}
-  /* Announcements' cards carry title + tags + date — too much content for a
-     squeezed 2-up column on a phone (that's what was pushing tags/text past
-     the card edge). Single column here, unlike the other grids above. */
-  .grid-2{grid-template-columns:1fr;}
-  .hero-content h1{font-size:1.8rem;}
-  .hero-content{padding:64px 20px 80px;}
-
   .container{padding:0 16px;}
-}
-@media (max-width: 400px){
-  .grid-4, .grid-6{grid-template-columns:1fr 1fr;}
-  .quick-card{padding:20px 10px;}
+  .hero{min-height:0; padding:64px 0 110px;}
+  .hero-eyebrow{margin-bottom:18px;}
+  :host ::ng-deep .hero-text > :first-child, .hero-content h1{font-size:2.1rem;}
+  .hero-stats{margin-top:40px;}
+  .stat{flex-basis:50%; padding:20px 12px 0 0;}
+  .stat + .stat{padding-left:12px;}
+  .stat:nth-child(odd){padding-left:0; border-left:0;}
+  .stat-num{font-size:2.1rem;}
+  .btn{padding:0 20px;}
+  .quick-grid{grid-template-columns:repeat(2, minmax(0, 1fr));}
+  .quick-grid li:nth-child(n){border-left:0; border-top:0;}
+  .quick-grid li:nth-child(even){border-left:1px solid var(--line);}
+  .quick-grid li:nth-child(n+3){border-top:1px solid var(--line);}
+  .quick-link{padding:22px 8px 20px;}
+  .section{padding:76px 0;}
+  .notices{padding-top:84px;}
+  .notice{gap:14px; padding:14px;}
+  .notice-date{width:62px; height:62px;}
+  .notice-day{font-size:1.5rem;}
+  .notice-arrow{display:none;}
+  .section-head{margin-bottom:40px;}
+  .why-card{padding:34px 24px 36px;}
+  .program-grid{grid-template-columns:1fr;}
+  .program-card{padding:40px 24px 30px; border-radius:140px 140px 4px 4px;}
+  .admit-band{padding:64px 0;}
+  .admit-actions .btn{width:100%; justify-content:center;}
 }

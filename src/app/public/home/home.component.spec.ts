@@ -27,7 +27,7 @@ describe('HomeComponent', () => {
       { Id: 12, Title: 'Same Title', Category: 'Exam' }
     ]);
     fixture.detectChanges();
-    expect(el(fixture).querySelectorAll('.announce-card').length).toBe(2);
+    expect(el(fixture).querySelectorAll('.notice').length).toBe(2);
     expect(warn.calls.allArgs().flat().join(' ')).not.toContain('NG0955');
   });
 
