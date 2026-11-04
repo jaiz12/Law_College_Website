@@ -72,14 +72,14 @@ describe('SiteFooterComponent', () => {
 
     it('accepts 0 as a valid coordinate', () => {
       const fixture = render();
-      expectApi(http, SECTION + 'College Map').flush([{ Latitude: '0', Longitude: '0' }]);
+      expectApi(http, SECTION + 'Google Map').flush([{ Latitude: '0', Longitude: '0' }]);
       fixture.detectChanges();
       expect(mapSrc(fixture)).toBe('https://www.google.com/maps?q=0,0&output=embed');
     });
 
     it('accepts negative coordinates', () => {
       const fixture = render();
-      expectApi(http, SECTION + 'College Map').flush([{ Latitude: '-27.33', Longitude: '88.61' }]);
+      expectApi(http, SECTION + 'Google Map').flush([{ Latitude: '-27.33', Longitude: '88.61' }]);
       fixture.detectChanges();
       expect(mapSrc(fixture)).toContain('q=-27.33,88.61');
     });
@@ -87,7 +87,7 @@ describe('SiteFooterComponent', () => {
     for (const [lat, lng] of [['E', '88'], ['27', '200'], ['91', '0'], ['', ''], [null, null]]) {
       it(`rejects invalid coordinates (${lat}, ${lng}) and keeps the default location`, () => {
         const fixture = render();
-        expectApi(http, SECTION + 'College Map').flush([{ Latitude: lat, Longitude: lng }]);
+        expectApi(http, SECTION + 'Google Map').flush([{ Latitude: lat, Longitude: lng }]);
         fixture.detectChanges();
         expect(mapSrc(fixture)).toContain('Sikkim+Government+Law+College');
       });
@@ -111,15 +111,26 @@ describe('SiteFooterComponent', () => {
   describe('Contact Us', () => {
     it('shows CMS rows, and nothing extra when the CMS section is empty', () => {
       const fixture = render();
-      flushApi(http, SECTION + 'Contact Us', []);
+      flushApi(http, SECTION + 'Contact Details', []);
       fixture.detectChanges();
       const contact = el(fixture).querySelectorAll('.footer-col')[1];
       expect(contact.querySelectorAll('p').length).toBe(0);
     });
 
+    it('reads the "Contact Details" section the CMS saves to', () => {
+      const fixture = render();
+      flushApi(http, SECTION + 'Contact Details', [
+        { id: 24, sectionName: 'Contact Details', icon: 'fa-solid fa-phone', detail: '03592-123456' }
+      ]);
+      fixture.detectChanges();
+      const contact = el(fixture).querySelectorAll('.footer-col')[1];
+      expect(contact.textContent).toContain('03592-123456');
+      expect(contact.querySelector('i.fa-phone')).not.toBeNull();
+    });
+
     it('shows the fallback address only when the API fails', () => {
       const fixture = render();
-      failApi(http, SECTION + 'Contact Us');
+      failApi(http, SECTION + 'Contact Details');
       fixture.detectChanges();
       expect(el(fixture).querySelectorAll('.footer-col')[1].textContent).toContain('Gangtok');
     });

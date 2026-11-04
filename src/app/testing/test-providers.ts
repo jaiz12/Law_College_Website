@@ -17,7 +17,7 @@ export function provideTestHttp(): (Provider | EnvironmentProviders)[] {
   return [provideHttpClient(), provideHttpClientTesting()];
 }
 
-/** The pending request for an API path (e.g. 'HeaderAndFooter/0/College Map'). */
+/** The pending request for an API path (e.g. 'HeaderAndFooter/0/Google Map'). */
 export function expectApi(http: HttpTestingController, path: string): TestRequest {
   return http.expectOne(req => req.url === `${TEST_API_URL}/${path}`);
 }

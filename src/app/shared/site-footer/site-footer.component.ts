@@ -109,9 +109,11 @@ export class SiteFooterComponent implements OnInit {
     });
   }
 
-  /** Contact Us — Icon/Detail rows (e.g. address, email, phone). */
+  /** Contact Us — Icon/Detail rows (e.g. address, email, phone). The CMS
+   *  (Header & Footer > Contact Details) saves these under SectionName
+   *  "Contact Details"; reading "Contact Us" always came back empty. */
   getContactDetails(): void {
-    this.getSectionRows('Contact Us').subscribe({
+    this.getSectionRows('Contact Details').subscribe({
       next: (rows) => {
         this.contactDetails = rows
           .map((item: any) => ({
@@ -157,7 +159,8 @@ export class SiteFooterComponent implements OnInit {
    *  (HeaderAndFooterDTO). Only a real in-range coordinate pair replaces
    *  the default location (0 is a valid coordinate, blank/garbage is not). */
   getCollegeMap(): void {
-    this.getSectionRows('College Map').subscribe({
+    // CMS (Header & Footer > College Map) saves under SectionName "Google Map".
+    this.getSectionRows('Google Map').subscribe({
       next: (rows) => {
         const data = rows[0];
         const lat = parseCoordinate(data?.latitude ?? data?.Latitude, 90);
