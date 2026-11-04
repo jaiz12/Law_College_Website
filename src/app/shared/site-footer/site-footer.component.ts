@@ -193,9 +193,11 @@ export class SiteFooterComponent implements OnInit {
     return 'social-default';
   }
 
-  /** Visit count as fixed-width odometer digits (min 6). */
-  counterDigits(count: number): string[] {
-    return String(count).padStart(6, '0').split('');
+  /** Visit count as fixed-width odometer digits (min 6). While the count is
+   *  unavailable (SiteVisit API not reachable) the odometer shows dashes
+   *  instead of vanishing — never a made-up number. */
+  counterDigits(count: number | null): string[] {
+    return count === null ? Array(6).fill('-') : String(count).padStart(6, '0').split('');
   }
 
   /** Scroll-to-top only appears once the visitor has scrolled down a bit

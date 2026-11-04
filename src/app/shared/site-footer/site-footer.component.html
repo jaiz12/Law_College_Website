@@ -53,17 +53,16 @@
       <!-- Static: no CMS/API field for college timing exists yet. -->
       <h4 class="footer-heading">College Timing</h4>
       <p>09:00 AM to 05:00 PM</p>
-      <!-- Real count from the SiteVisit API only; hidden (never faked) when
-           unavailable. Wrapped in an object so a count of 0 still shows. -->
+      <!-- Real count from the SiteVisit API only; dashes (never a made-up
+           number) while unavailable. Wrapped in an object so 0 still shows. -->
       @if ({ count: monthlyVisitCount$ | async }; as visits) {
-        @if (visits.count !== null) {
-          <h4 class="footer-heading footer-heading-spaced">Site Visitors <span class="footer-heading-note">(this month)</span></h4>
-          <div class="visitor-counter" [attr.aria-label]="visits.count + ' site visitors this month'">
-            @for (digit of counterDigits(visits.count); track $index) {
-              <span>{{ digit }}</span>
-            }
-          </div>
-        }
+        <h4 class="footer-heading footer-heading-spaced">Site Visitors <span class="footer-heading-note">(this month)</span></h4>
+        <div class="visitor-counter" [class.is-pending]="visits.count === null"
+             [attr.aria-label]="visits.count === null ? 'Site visitor count unavailable' : visits.count + ' site visitors this month'">
+          @for (digit of counterDigits(visits.count); track $index) {
+            <span>{{ digit }}</span>
+          }
+        </div>
       }
     </div>
 

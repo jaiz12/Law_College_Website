@@ -137,18 +137,20 @@ describe('SiteFooterComponent', () => {
   });
 
   describe('Site Visitors', () => {
-    it('is hidden while no real count is available', () => {
+    it('stays visible with dashes while no real count is available', () => {
       const fixture = render();
-      expect(el(fixture).querySelector('.visitor-counter')).toBeNull();
+      const counter = el(fixture).querySelector('.visitor-counter');
+      expect(counter?.textContent?.replace(/\s/g, '')).toBe('------');
+      expect(counter?.classList).toContain('is-pending');
     });
 
-    it('is hidden when the SiteVisit API fails (never a made-up number)', () => {
+    it('shows dashes, not a made-up number, when the SiteVisit API fails', () => {
       localStorage.setItem('siteVisitDate', new Date().toISOString().slice(0, 10));
       const fixture = render();
       TestBed.inject(SiteVisitService).start();
       failApi(http, 'SiteVisit/current', 404);
       fixture.detectChanges();
-      expect(el(fixture).querySelector('.visitor-counter')).toBeNull();
+      expect(el(fixture).querySelector('.visitor-counter')?.textContent?.replace(/\s/g, '')).toBe('------');
     });
 
     it('shows the real monthly count, including 0', () => {
