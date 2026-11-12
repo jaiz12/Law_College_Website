@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterModule, TitleStrategy } from '@angular/router';
 import { Observable, combineLatest, map } from 'rxjs';
 
 import { ApiService } from '../../services/api.service';
 import { CmsPageKind, itemSlug } from '../../services/cms-pages';
 import { CmsRow, assetUrl, isPdf, newestFirst, toCmsRow } from '../../services/cms-row';
+import { DocLink, linksOnlyDocs } from '../../services/doc-links.util';
 import { htmlToPlainText } from '../../services/rich-text.util';
 import { SafeHtmlPipe } from '../../services/safe-html.pipe';
 import { SiteNavItem } from '../../services/site-links';
@@ -52,6 +52,33 @@ function findSection(items: SiteNavItem[], path: string, parent: SiteNavItem | n
 }
 
 /**
+ * People in "Reports To" levels: level 0 is everyone with no parent (or a
+ * parent that isn't in the list), level n+1 everyone reporting to level n.
+ * Display order is kept within each level. Bad CMS data (a cycle) can't
+ * hide anyone: whoever is left over joins the last level.
+ */
+export function toTiers<T extends { id: number; parentId: number | null }>(people: T[]): T[][] {
+  const ids = new Set(people.map(p => p.id));
+  const placed = new Set<number>();
+  const tiers: T[][] = [];
+  let level = people.filter(p => p.parentId === null || p.parentId === p.id || !ids.has(p.parentId));
+  while (level.length) {
+    level.forEach(p => placed.add(p.id));
+    tiers.push(level);
+    level = people.filter(p => !placed.has(p.id) && p.parentId !== null && placed.has(p.parentId));
+  }
+  const rest = people.filter(p => !placed.has(p.id));
+  if (rest.length) {
+    if (tiers.length) {
+      tiers[tiers.length - 1].push(...rest);
+    } else {
+      tiers.push(rest);
+    }
+  }
+  return tiers;
+}
+
+/**
  * Generic page for every CMS-managed module (see cms-pages.ts for which
  * nav page uses which endpoint). Route data supplies `api`, `kind` and the
  * nav label as `title`:
@@ -74,7 +101,6 @@ export class CmsPageComponent implements OnInit {
   private readonly apiService = inject(ApiService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly sanitizer = inject(DomSanitizer);
   private readonly destroyRef = inject(DestroyRef);
   private readonly siteNav = inject(SiteNavService);
   private readonly titleStrategy = inject(TitleStrategy);
@@ -89,7 +115,22 @@ export class CmsPageComponent implements OnInit {
   items: CmsItemView[] = [];
   /** content / item kind: the record shown. */
   record: CmsItemView | null = null;
-  safePdfUrl: SafeResourceUrl | null = null;
+  /**
+   * content / item kind: documents to open in a new tab - the record's
+   * uploaded file, or the links of a body that is nothing but links. Shown
+   * as simple rows (no embedded viewer): the college asked for "on click,
+   * just open the PDF".
+   */
+  docs: DocLink[] = [];
+  /** True when the body was only links, now shown as `docs` instead. */
+  bodyIsDocs = false;
+  /**
+   * people kind: Faculty / Staff grouped by the CMS "Reports To" line -
+   * top-level positions (e.g. the Principal) first, then each level below.
+   */
+  tiers: CmsItemView[][] = [];
+  /** Photos that failed to load (missing on the server): show the initial. */
+  readonly brokenPhotos = new Set<number>();
   /** Only a line or two of text: set larger, as a lead, instead of with a drop cap. */
   isShort = false;
 
@@ -114,6 +155,7 @@ export class CmsPageComponent implements OnInit {
           this.items = this.kind === 'people'
             ? items.sort((a, b) => a.displayOrder - b.displayOrder || a.id - b.id)
             : items.sort(newestFirst);
+          this.tiers = this.kind === 'people' ? toTiers(this.items) : [];
 
           if (this.kind === 'content') {
             // The CMS keeps one entry per content page; if there are ever
@@ -142,9 +184,18 @@ export class CmsPageComponent implements OnInit {
   private setRecord(record: CmsItemView | null): void {
     this.record = record;
     this.isShort = htmlToPlainText(record?.html).length < SHORT_CONTENT_CHARS;
-    this.safePdfUrl = record?.isPdf && record.fileUrl
-      ? this.sanitizer.bypassSecurityTrustResourceUrl(record.fileUrl)
-      : null;
+    const bodyLinks = linksOnlyDocs(record?.html);
+    this.bodyIsDocs = bodyLinks.length > 0;
+    this.docs = [
+      ...(record?.fileUrl
+        ? [{ label: record.title || this.pageTitle, url: record.fileUrl, isPdf: record.isPdf }]
+        : []),
+      ...bodyLinks
+    ];
+  }
+
+  onPhotoError(id: number): void {
+    this.brokenPhotos.add(id);
   }
 
   private currentPath(): string {

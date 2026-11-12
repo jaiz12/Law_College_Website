@@ -80,23 +80,26 @@
                     <img class="content-image" [src]="record.imageUrl" [alt]="record.title || pageTitle">
                   </figure>
                 }
-                @if (record.html) {
+                @if (record.html && !bodyIsDocs) {
                   <div class="content-body rich-text" [class.is-short]="isShort" [class.has-dropcap]="!isShort"
                        [innerHTML]="record.html | safeHtml"></div>
                 }
 
-                @if (record.fileUrl) {
-                  <div class="document">
-                    @if (record.isPdf) {
-                      <iframe class="content-pdf" [src]="safePdfUrl" [title]="pageTitle"></iframe>
+                <!-- Documents: one plain row each; a click opens the PDF in a new tab. -->
+                @if (docs.length) {
+                  <ul class="doc-list" [class.doc-list-only]="bodyIsDocs || !record.html">
+                    @for (doc of docs; track $index) {
+                      <li>
+                        <a class="doc-row" [href]="doc.url" target="_blank" rel="noopener">
+                          <span class="doc-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h4"/></svg>
+                          </span>
+                          <span class="doc-label">{{ doc.label }}</span>
+                          <span class="doc-open">{{ doc.isPdf ? 'View PDF' : 'Open' }} &#8599;</span>
+                        </a>
+                      </li>
                     }
-                    <a class="doc-link" [href]="record.fileUrl" target="_blank" rel="noopener">
-                      <span class="doc-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-                      </span>
-                      {{ record.isPdf ? 'Open PDF in a new tab' : 'View document' }} &#8599;
-                    </a>
-                  </div>
+                  </ul>
                 }
               </article>
             } @else {
@@ -130,12 +133,34 @@
 
 <ng-template #peopleGrid>
   @if (items.length) {
-    <ul class="people-grid">
-      @for (person of items; track person.id; let i = $index) {
+    @if (kind === 'people') {
+      <!-- Faculty / Staff: one row per "Reports To" level, top position first. -->
+      <div class="people-tiers">
+        @for (tier of tiers; track $index; let t = $index) {
+          <ul class="people-grid people-tier" [class.is-top]="t === 0 && tiers.length > 1">
+            @for (person of tier; track person.id; let i = $index) {
+              <ng-container *ngTemplateOutlet="personCard; context: { $implicit: person, i: i }"></ng-container>
+            }
+          </ul>
+        }
+      </div>
+    } @else {
+      <ul class="people-grid">
+        @for (person of items; track person.id; let i = $index) {
+          <ng-container *ngTemplateOutlet="personCard; context: { $implicit: person, i: i }"></ng-container>
+        }
+      </ul>
+    }
+  } @else {
+    <ng-container *ngTemplateOutlet="emptyState"></ng-container>
+  }
+</ng-template>
+
+<ng-template #personCard let-person let-i="i">
         <li class="person" [appReveal]="(i % 4) * 0.07">
           <span class="person-frame">
-            @if (person.imageUrl) {
-              <img class="person-photo" [src]="person.imageUrl" [alt]="person.name" loading="lazy">
+            @if (person.imageUrl && !brokenPhotos.has(person.id)) {
+              <img class="person-photo" [src]="person.imageUrl" [alt]="person.name" loading="lazy" (error)="onPhotoError(person.id)">
             } @else {
               <span class="person-photo person-initial" aria-hidden="true">{{ person.name.charAt(0) }}</span>
             }
@@ -154,11 +179,6 @@
             <div class="person-text rich-text" [innerHTML]="person.html | safeHtml"></div>
           }
         </li>
-      }
-    </ul>
-  } @else {
-    <ng-container *ngTemplateOutlet="emptyState"></ng-container>
-  }
 </ng-template>
 
 <ng-template #emptyState>

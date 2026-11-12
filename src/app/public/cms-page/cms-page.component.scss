@@ -78,8 +78,9 @@
   display:block; width:100%; max-height:460px; object-fit:cover;
   border-radius:2px;
 }
+// Full width of the paper, so an image centred in the CMS sits in the
+// middle of the page (QA STL-03), not of a narrower text column.
 .content-body{
-  max-width:72ch;
   color:#2c3445;
   font-size:1.04rem;
   line-height:1.85;
@@ -102,26 +103,25 @@
 }
 .content-body ::ng-deep :is(h1, h2, h3, h4){font-family:var(--font-display); color:var(--chamber-900); font-weight:600;}
 .content-body ::ng-deep h2{padding-bottom:.35em; border-bottom:1px solid var(--line);}
-.document{margin-top:36px; display:flex; flex-direction:column; gap:16px;}
-.content-pdf{
-  width:100%;
-  height:80vh;
-  border:1px solid var(--line);
-  border-radius:2px;
+// Documents: plain rows (icon, name, "View PDF"); the whole row opens the
+// file in a new tab. No embedded viewer.
+.doc-list{list-style:none; margin:32px 0 0; padding:0; display:flex; flex-direction:column; gap:12px;}
+.doc-list-only{margin-top:0;}
+.doc-row{
+  display:flex; align-items:center; gap:16px;
+  padding:14px 18px 14px 14px;
   background:var(--parchment);
+  border:1px solid var(--line);
+  border-radius:3px;
+  color:var(--text);
+  transition:border-color .25s ease, background-color .25s ease;
 }
-.doc-link{
-  align-self:flex-start;
-  display:inline-flex; align-items:center; gap:12px;
-  padding:12px 18px 12px 12px;
-  background:var(--chamber-900); color:#fff;
-  font-size:.8rem; font-weight:700; letter-spacing:.06em;
-  border-radius:2px;
-  transition:background .3s ease, transform .45s var(--ease-out);
-}
-.doc-link:hover{background:var(--seal); transform:translateY(-2px);}
-.doc-icon{width:34px; height:34px; display:flex; align-items:center; justify-content:center; border-radius:2px; background:var(--brass); color:var(--chamber-950);}
-.doc-icon svg{width:18px; height:18px;}
+.doc-row:hover{border-color:var(--seal); background:#fff;}
+.doc-row:focus-visible{outline:2px solid var(--seal); outline-offset:2px;}
+.doc-icon{flex-shrink:0; width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:2px; background:var(--seal); color:#fff;}
+.doc-icon svg{width:20px; height:20px;}
+.doc-label{flex:1; min-width:0; font-weight:600; font-size:1rem; overflow-wrap:anywhere;}
+.doc-open{flex-shrink:0; font-size:.74rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--seal);}
 
 .section-rail{
   position:sticky; top:90px;
@@ -238,6 +238,18 @@
   transition:transform .6s var(--ease-out), box-shadow .6s var(--ease-out);
   &:hover{transform:translateY(-4px); box-shadow:0 30px 50px -30px rgba(6,20,46,.45);}
 }
+// Faculty / Staff by "Reports To" level: each level a centred row, a short
+// gold line between levels.
+.people-tiers{display:flex; flex-direction:column; gap:0;}
+.people-tier{display:flex; flex-wrap:wrap; justify-content:center; gap:28px;}
+.people-tier > .person{flex:0 1 260px;}
+.people-tier + .people-tier{position:relative; margin-top:64px;}
+.people-tier + .people-tier::before{
+  content:''; position:absolute; top:-52px; left:50%;
+  width:1px; height:40px; background:var(--brass);
+}
+.people-tier.is-top > .person{flex-basis:300px;}
+
 // Arched portrait frame with an offset gold outline.
 .person-frame{
   position:relative;
@@ -304,7 +316,7 @@
 }
 
 @media (prefers-reduced-motion:reduce){
-  .card:hover, .person:hover, .doc-link:hover{transform:none;}
+  .card:hover, .person:hover{transform:none;}
   .card:hover .card-image{transform:none;}
   .skeleton-line{animation:none;}
 }
@@ -317,7 +329,10 @@
   .cms-page{padding:40px 0 64px;}
   .cms-container{ padding:0 16px; }
   .paper{ padding:34px 22px; }
-  .content-pdf{ height:70vh; }
+  .doc-row{ flex-wrap:wrap; row-gap:4px; }
+  .doc-label{ flex-basis:calc(100% - 56px); }
+  .doc-open{ margin-left:56px; }
+  .people-tier > .person, .people-tier.is-top > .person{ flex-basis:100%; }
   .card-grid{ grid-template-columns:1fr; }
   .skeleton{padding:28px;}
 }

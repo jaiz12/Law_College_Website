@@ -22,6 +22,8 @@ export interface CmsRow {
   email: string;
   phone: string;
   displayOrder: number;
+  /** Faculty / Staff "Reports To": the id of the person above, or null. */
+  parentId: number | null;
 }
 
 function pick(row: any, ...keys: string[]): any {
@@ -39,8 +41,11 @@ function text(value: unknown): string {
   return typeof value === 'string' ? value.trim() : value == null ? '' : String(value);
 }
 
+/** Empty CKEditor paragraphs ("<p>&nbsp;</p>", "<p><br></p>") at either end. */
+const EDGE_EMPTY_PARAGRAPHS = /^(?:\s*<p\b[^>]*>(?:\s|&nbsp;|<br\s*\/?>)*<\/p>)+|(?:<p\b[^>]*>(?:\s|&nbsp;|<br\s*\/?>)*<\/p>\s*)+$/gi;
+
 export function toCmsRow(row: any): CmsRow {
-  const html = text(pick(row, 'Content', 'Description'));
+  const html = text(pick(row, 'Content', 'Description')).replace(EDGE_EMPTY_PARAGRAPHS, '').trim();
   return {
     id: Number(pick(row, 'Id')) || 0,
     title: text(pick(row, 'Title')),
@@ -53,7 +58,8 @@ export function toCmsRow(row: any): CmsRow {
     designation: text(pick(row, 'Designation')),
     email: text(pick(row, 'Email')),
     phone: text(pick(row, 'Phone')),
-    displayOrder: Number(pick(row, 'DisplayOrder')) || 0
+    displayOrder: Number(pick(row, 'DisplayOrder')) || 0,
+    parentId: Number(pick(row, 'ParentId')) || null
   };
 }
 

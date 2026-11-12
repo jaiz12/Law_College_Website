@@ -44,11 +44,31 @@ describe('CmsPageComponent', () => {
       expect(main(fixture).querySelector<HTMLImageElement>('.content-image')!.src).toBe(`${TEST_IMAGE_URL}assets/x.webp`);
     });
 
-    it('embeds an attached PDF with an open-in-new-tab link', () => {
+    it('shows an attached PDF as a plain row that opens it in a new tab (no embed)', () => {
       const fixture = render('content', 'ComplianceOrDisclosures/NIRF');
       respond(fixture, 'ComplianceOrDisclosures/NIRF', [{ id: 1, content: '', filePath: 'assets/nirf.pdf' }]);
-      expect(main(fixture).querySelector('iframe.content-pdf')).not.toBeNull();
-      expect(main(fixture).querySelector<HTMLAnchorElement>('a.doc-link')!.href).toBe(`${TEST_IMAGE_URL}assets/nirf.pdf`);
+      expect(main(fixture).querySelector('iframe')).toBeNull();
+      const row = main(fixture).querySelector<HTMLAnchorElement>('a.doc-row')!;
+      expect(row.href).toBe(`${TEST_IMAGE_URL}assets/nirf.pdf`);
+      expect(row.target).toBe('_blank');
+      expect(row.textContent).toContain('View PDF');
+    });
+
+    it('turns a body that is only a PDF link into a document row', () => {
+      const api = 'StudentLife/0/National Cadet Crops';
+      const fixture = render('content', api);
+      respond(fixture, api, [{ id: 1, content: '<p><a href="https://drive.google.com/file/d/x/view">NCC Report PDF</a></p><p>&nbsp;</p>' }]);
+      expect(main(fixture).querySelector('.content-body')).toBeNull();
+      const row = main(fixture).querySelector<HTMLAnchorElement>('a.doc-row')!;
+      expect(row.href).toBe('https://drive.google.com/file/d/x/view');
+      expect(row.querySelector('.doc-label')!.textContent!.trim()).toBe('NCC Report PDF');
+    });
+
+    it('keeps a body with text and links as rich text', () => {
+      const fixture = render('content', api);
+      respond(fixture, api, [{ id: 1, content: '<p>Read the <a href="https://example.org/a.pdf">report</a> here.</p>' }]);
+      expect(main(fixture).querySelector('.content-body')!.textContent).toContain('Read the');
+      expect(main(fixture).querySelector('a.doc-row')).toBeNull();
     });
 
     it('shows the empty state when nothing was saved, or only an emptied editor', () => {
@@ -105,6 +125,28 @@ describe('CmsPageComponent', () => {
       // No photo: an initial placeholder instead of a broken image.
       expect(people[1].querySelector('.person-initial')!.textContent!.trim()).toBe('S');
       expect(main(fixture).querySelector('.person-text')).toBeNull();
+    });
+
+    it('groups people by Reports To: top position first, then who reports to them', () => {
+      const fixture = render('people', 'Faculty');
+      respond(fixture, 'Faculty', [
+        { id: 3, name: 'HOD', parentId: 1, displayOrder: 3 },
+        { id: 1, name: 'Principal', parentId: null, displayOrder: 1 },
+        { id: 2, name: 'Professor', parentId: 1, displayOrder: 2 },
+        { id: 4, name: 'Lecturer', parentId: 3, displayOrder: 4 }
+      ]);
+      const tiers = [...main(fixture).querySelectorAll('.people-tier')]
+        .map(t => [...t.querySelectorAll('.person-name')].map(n => n.textContent!.trim()));
+      expect(tiers).toEqual([['Principal'], ['Professor', 'HOD'], ['Lecturer']]);
+    });
+
+    it('shows the initial when a photo file is missing on the server', () => {
+      const fixture = render('people', 'Faculty');
+      respond(fixture, 'Faculty', [{ id: 1, name: 'Dilip', profilePhoto: 'assets/gone.webp', displayOrder: 1 }]);
+      main(fixture).querySelector('img.person-photo')!.dispatchEvent(new Event('error'));
+      fixture.detectChanges();
+      expect(main(fixture).querySelector('img.person-photo')).toBeNull();
+      expect(main(fixture).querySelector('.person-initial')!.textContent!.trim()).toBe('D');
     });
   });
 
