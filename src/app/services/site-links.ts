@@ -46,8 +46,9 @@ export const LEGACY_PAGE_REDIRECTS: Record<string, string> = {
 };
 
 /**
- * Labels are the college's own spreadsheet wording, kept verbatim
- * (including its spelling) — only the paths are aligned with the CMS.
+ * Labels are the college's own spreadsheet wording, with the spelling
+ * slips the QA sheet flagged fixed (Crops, Intership, Greviances, ...).
+ * Paths are aligned with the CMS.
  */
 export const SITE_NAV: SiteNavItem[] = [
   { label: 'About Us', path: 'about', children: [
@@ -69,7 +70,7 @@ export const SITE_NAV: SiteNavItem[] = [
     { label: 'Academic Policies', path: 'academics/academic-policies' }
   ] },
   { label: 'Admission', path: 'admissions', children: [
-    { label: 'Eligibility Admission process & Intake', path: 'admissions/eligibility-admission-process-and-intake' },
+    { label: 'Eligibility, Admission Process & Intake', path: 'admissions/eligibility-admission-process-and-intake' },
     { label: 'Reservation Policy', path: 'admissions/reservation-policy' },
     { label: 'Fee Structure', path: 'admissions/fee-structure' },
     { label: 'Prospectus', path: 'admissions/prospectus' },
@@ -83,15 +84,15 @@ export const SITE_NAV: SiteNavItem[] = [
     { label: 'Student Achievers', path: 'examinations/student-achievers' }
   ] },
   { label: 'Student Life', path: 'student-life', children: [
-    { label: 'Student representative Council (SRC)', path: 'student-life/student-representative-council' },
+    { label: 'Student Representative Council (SRC)', path: 'student-life/student-representative-council' },
     { label: 'Library', path: SITE_PATHS.library },
     { label: 'Student Club', path: 'student-life/student-club' },
     { label: 'National Social Service (NSS)', path: 'student-life/national-social-service' },
-    { label: 'National Cadet Crops (NCC)', path: 'student-life/national-cadet-corps' },
+    { label: 'National Cadet Corps (NCC)', path: 'student-life/national-cadet-corps' },
     { label: 'Medical Aid Cell', path: 'student-life/medical-aid-cell' },
-    { label: 'Intership', path: 'student-life/internships' },
+    { label: 'Internship', path: 'student-life/internships' },
     { label: 'Scholarship', path: 'student-life/scholarships' },
-    { label: 'Bus service', path: 'student-life/bus-service' },
+    { label: 'Bus Service', path: 'student-life/bus-service' },
     { label: 'Canteen', path: 'student-life/canteen' },
     { label: 'Statistics', path: 'student-life/statistics' }
   ] },
@@ -101,13 +102,13 @@ export const SITE_NAV: SiteNavItem[] = [
   ] },
   { label: 'Committee and Cell', path: 'committee-and-cell', children: [
     { label: 'Internal Quality Assurance Cell (IQAC)', path: 'committee-and-cell/internal-quality-assurance-cell' },
-    { label: 'College Mangement Committee', path: 'committee-and-cell/college-management-committee' },
+    { label: 'College Management Committee', path: 'committee-and-cell/college-management-committee' },
     { label: 'Admission Committee', path: 'committee-and-cell/admission-committee' },
     { label: 'Examination Committee', path: 'committee-and-cell/examination-committee' },
     { label: 'Disciplinary Committee', path: 'committee-and-cell/disciplinary-committee' },
-    { label: 'Greviances redressal Committee', path: 'committee-and-cell/grievances-redressal-committee' },
-    { label: 'Internal Committee (Sexual Harrasment Inquiry Committee)', path: 'committee-and-cell/internal-committee' },
-    { label: 'Gender Sensitizations Cell', path: 'committee-and-cell/gender-sensitization-cell' },
+    { label: 'Grievances Redressal Committee', path: 'committee-and-cell/grievances-redressal-committee' },
+    { label: 'Internal Committee (Sexual Harassment Inquiry Committee)', path: 'committee-and-cell/internal-committee' },
+    { label: 'Gender Sensitization Cell', path: 'committee-and-cell/gender-sensitization-cell' },
     { label: 'Anti Ragging Committee and Squad', path: 'committee-and-cell/anti-ragging-committee-and-squad' },
     { label: 'Legal Research Development Cell', path: 'committee-and-cell/legal-research-development-cell' },
     { label: 'Career Counselling & Placement Cell', path: 'committee-and-cell/career-counselling-and-placement-cell' },

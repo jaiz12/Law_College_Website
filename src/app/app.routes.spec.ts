@@ -112,7 +112,7 @@ describe('app routes', () => {
 
     it('keeps a long page title intact', async () => {
       await harness.navigateByUrl('/committee-and-cell/internal-committee');
-      expect(title()).toBe(`Internal Committee (Sexual Harrasment Inquiry Committee) | ${COLLEGE}`);
+      expect(title()).toBe(`Internal Committee (Sexual Harassment Inquiry Committee) | ${COLLEGE}`);
     });
 
     it('Coming Soon and Page Not Found pages', async () => {

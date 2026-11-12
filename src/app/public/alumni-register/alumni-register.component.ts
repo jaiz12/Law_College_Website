@@ -22,6 +22,11 @@ export const ALUMNI_CONNECT_OPTIONS = [
 
 /** The college was established in 1980. */
 const FIRST_BATCH_YEAR = 1980;
+/**
+ * Batches still studying can register ahead of graduating (QA ALU-02: no
+ * year after the current one). The longest programme is 5 years.
+ */
+const FUTURE_BATCH_YEARS = 5;
 
 export const PHOTO_MAX_BYTES = 2 * 1024 * 1024;
 export const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -67,8 +72,8 @@ export class AlumniRegisterComponent implements OnDestroy {
   readonly courses = ALUMNI_COURSES;
   readonly connectOptions = ALUMNI_CONNECT_OPTIONS;
   readonly batchYears: number[] = Array.from(
-    { length: new Date().getFullYear() - FIRST_BATCH_YEAR + 1 },
-    (_, i) => new Date().getFullYear() - i
+    { length: new Date().getFullYear() + FUTURE_BATCH_YEARS - FIRST_BATCH_YEAR + 1 },
+    (_, i) => new Date().getFullYear() + FUTURE_BATCH_YEARS - i
   );
 
   readonly form = this.fb.nonNullable.group({

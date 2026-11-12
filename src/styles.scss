@@ -263,6 +263,13 @@ html.nav-drawer-open {
   .image-style-align-left { float: left; margin: 0 1.5em 1em 0; }
   .image-style-align-right, .image-style-side { float: right; margin: 0 0 1em 1.5em; }
 
+  // Text pasted from Word / Google Docs brings its own inline font family
+  // (Arial) and point sizes (14pt), so CMS pages looked unlike the rest of
+  // the site (QA STL-01/02 "format incorrect"). Keep the site's font and size;
+  // editor sizes set in px (CKEditor's own font-size tool) still apply.
+  [style*="font-family"] { font-family: inherit !important; }
+  [style*="font-size"][style*="pt"] { font-size: inherit !important; }
+
   // Keep floated images inside the content box.
   &::after { content: ''; display: table; clear: both; }
 }

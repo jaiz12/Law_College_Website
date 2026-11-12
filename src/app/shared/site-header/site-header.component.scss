@@ -128,10 +128,16 @@ button{font-family:inherit;}
 .brand-title{
   display:block;
   font-family:var(--font-display);
-  font-size:1.4rem; font-weight:600; color:#fff; line-height:1.2;
+  font-size:1.4rem; font-weight:500; color:#fff; line-height:1.2;
   letter-spacing:.01em;
   white-space:normal;
 }
+/* Bold / italic set in the CMS editor must show (QA HF-03): the base weight
+   stays regular so <strong> is visibly heavier. */
+.brand-title ::ng-deep :is(strong, b){font-weight:700;}
+.brand-title ::ng-deep :is(em, i){font-style:italic;}
+/* CKEditor's trailing empty paragraph adds no height. */
+.brand-title ::ng-deep p:empty, .brand-title ::ng-deep p:has(> br:only-child){display:none;}
 .brand-title ::ng-deep p + p{
   font-family:var(--font-body);
   font-size:.7rem; font-weight:500; letter-spacing:.18em; text-transform:uppercase;
