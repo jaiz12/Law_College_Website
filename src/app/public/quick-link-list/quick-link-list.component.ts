@@ -2,6 +2,8 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { htmlToPlainText } from '../../services/rich-text.util';
+import { SafeHtmlPipe } from '../../services/safe-html.pipe';
 import { isAbsoluteHttpUrl } from '../../services/url.util';
 import { PageBannerComponent } from '../../shared/page-banner/page-banner.component';
 import { SiteHeaderComponent } from '../../shared/site-header/site-header.component';
@@ -11,6 +13,8 @@ interface QuickLinkRow {
   id: number;
   title: string;
   externalLink: string | null;
+  /** CMS Description (CKEditor); '' when empty. */
+  html: string;
 }
 
 /**
@@ -24,7 +28,7 @@ interface QuickLinkRow {
 @Component({
   selector: 'app-quick-link-list',
   standalone: true,
-  imports: [CommonModule, PageBannerComponent, SiteHeaderComponent, SiteFooterComponent],
+  imports: [CommonModule, SafeHtmlPipe, PageBannerComponent, SiteHeaderComponent, SiteFooterComponent],
   templateUrl: './quick-link-list.component.html',
   styleUrl: './quick-link-list.component.scss'
 })
@@ -56,7 +60,9 @@ export class QuickLinkListComponent implements OnInit {
             .map((item: any) => ({
               id: item.id ?? item.Id ?? 0,
               title: item.title ?? item.Title ?? '',
-              externalLink: item.externalLink ?? item.ExternalLink ?? null
+              externalLink: item.externalLink ?? item.ExternalLink ?? null,
+              // Library rows carry a Description the site didn't show (QA STL-02).
+              html: htmlToPlainText(item.description ?? item.Description) ? (item.description ?? item.Description) : ''
             }))
             // Bug Report rows 88/99: newest-added should show first here
             // too, same as the CMS admin list.

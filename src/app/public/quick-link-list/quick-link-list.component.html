@@ -19,6 +19,9 @@
                 <span class="site-list-arrow" aria-hidden="true">&#8594;</span>
               }
             </button>
+            @if (item.html) {
+              <div class="site-list-text rich-text" [innerHTML]="item.html | safeHtml"></div>
+            }
           </li>
         }
       </ul>

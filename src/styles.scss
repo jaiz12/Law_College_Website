@@ -126,6 +126,8 @@ body {
 }
 .site-list-title { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; color: var(--chamber-900); overflow-wrap: anywhere; }
 .site-list-meta { font-size: .84rem; color: var(--text-muted); }
+.site-list-text { margin-top: -6px; padding: 0 26px 20px; color: #4a5263; font-size: .95rem; line-height: 1.7; }
+@media (max-width: 640px) { .site-list-text { padding: 0 18px 18px; } }
 .site-list-arrow {
   flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
