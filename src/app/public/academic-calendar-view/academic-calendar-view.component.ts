@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 import { ApiService } from '../../services/api.service';
+import { assetUrl, isPdf } from '../../services/cms-row';
 import { SafeHtmlPipe } from '../../services/safe-html.pipe';
 import { htmlToPlainText } from '../../services/rich-text.util';
 import { SiteTitleStrategy } from '../../services/site-title.strategy';
@@ -12,19 +12,23 @@ import { SiteHeaderComponent } from '../../shared/site-header/site-header.compon
 import { SiteFooterComponent } from '../../shared/site-footer/site-footer.component';
 
 interface AcademicCalendarView {
+  id: number;
   title: string;
   /** CKEditor rich text from the CMS's Content field. */
   content: string;
-  file: string | null;
+  hasContent: boolean;
+  fileUrl: string | null;
+  isPdf: boolean;
   isActive: boolean;
 }
 
-const PDF_EXTENSIONS = ['.pdf'];
-
 /**
- * Academic Calendar page — shows the calendar marked Active in the CMS
- * (Academics > Academic Calendar): its title, rich-text content and the
- * uploaded image/PDF.
+ * Academic Calendar page (CMS Academics > Academic Calendar). The calendar
+ * marked Active is the current one: its title, rich text and file. The
+ * other calendars are listed under it, newest first, so a calendar added
+ * in the CMS shows on the site even before it is made Active. Files open
+ * in a new tab on click; nothing is embedded (the college asked for PDFs
+ * to simply open).
  */
 @Component({
   selector: 'app-academic-calendar-view',
@@ -35,55 +39,53 @@ const PDF_EXTENSIONS = ['.pdf'];
 })
 export class AcademicCalendarViewComponent implements OnInit {
   private readonly apiService = inject(ApiService);
-  private readonly sanitizer = inject(DomSanitizer);
   private readonly titleStrategy = inject(SiteTitleStrategy);
   private readonly destroyRef = inject(DestroyRef);
 
-  readonly imageBaseUrl = this.apiService.IMAGE_API_URL;
-
   loading = true;
+  /** The Active calendar, if the CMS has one. */
   calendar: AcademicCalendarView | null = null;
-  hasContent = false;
-  fileUrl: string | null = null;
-  safeFileUrl: SafeResourceUrl | null = null;
-  isPdf = false;
+  /** Every other calendar that has something to show, newest first. */
+  others: AcademicCalendarView[] = [];
+  /** "Academic Calendar 2026-27" when the Active calendar is titled by year. */
+  pageTitle = 'Academic Calendar';
 
   ngOnInit(): void {
     // takeUntilDestroyed: a late response must not retitle the next page.
     this.apiService.GetRequestRows('AcademicCalendar').pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data: any[]) => {
-        const items: AcademicCalendarView[] = data.map((item: any) => ({
-          title: item.title ?? item.Title ?? '',
-          content: item.content ?? item.Content ?? '',
-          file: item.file ?? item.File ?? item.filePath ?? item.FilePath ?? null,
-          isActive: item.isActive ?? item.IsActive ?? false
-        }));
+        const items: AcademicCalendarView[] = data
+          .map((item: any) => {
+            const content = item.content ?? item.Content ?? '';
+            const file = item.file ?? item.File ?? item.filePath ?? item.FilePath ?? null;
+            return {
+              id: Number(item.id ?? item.Id) || 0,
+              title: (item.title ?? item.Title ?? '').trim(),
+              content,
+              // CKEditor leaves "<p>&nbsp;</p>" in an emptied editor — that's no content.
+              hasContent: htmlToPlainText(content).length > 0,
+              fileUrl: assetUrl(this.apiService.IMAGE_API_URL, file),
+              isPdf: isPdf(file),
+              isActive: !!(item.isActive ?? item.IsActive)
+            };
+          })
+          .filter(item => item.fileUrl || item.hasContent)
+          .sort((a, b) => b.id - a.id);
 
-        // Only ever show a calendar the CMS explicitly marked Active; no
-        // active calendar means the empty state, not a guess.
         this.calendar = items.find(item => item.isActive) ?? null;
-        // CKEditor leaves "<p>&nbsp;</p>" in an emptied editor — that's no content.
-        this.hasContent = htmlToPlainText(this.calendar?.content).length > 0;
+        this.others = items.filter(item => item !== this.calendar);
 
-        if (this.calendar?.file) {
-          this.fileUrl = this.imageBaseUrl + this.calendar.file;
-          this.isPdf = PDF_EXTENSIONS.some(ext => this.calendar!.file!.toLowerCase().endsWith(ext));
-          this.safeFileUrl = this.isPdf
-            ? this.sanitizer.bypassSecurityTrustResourceUrl(this.fileUrl)
-            : null;
-        } else {
-          this.fileUrl = null;
-          this.safeFileUrl = null;
-        }
-
-        this.titleStrategy.setPageTitle(this.calendar?.title);
+        const title = this.calendar?.title ?? '';
+        this.pageTitle = !title
+          ? 'Academic Calendar'
+          : /academic\s+calendar/i.test(title) ? title : `Academic Calendar ${title}`;
+        this.titleStrategy.setPageTitle(this.pageTitle);
         this.loading = false;
       },
       error: (err) => {
         console.error('Academic Calendar Error:', err);
         this.calendar = null;
-        this.fileUrl = null;
-        this.safeFileUrl = null;
+        this.others = [];
         this.loading = false;
       }
     });
