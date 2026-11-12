@@ -7,8 +7,11 @@
 
     @if (submitted) {
       <section class="register-card success" role="status" aria-live="polite">
-        <h2 class="success-title">You're officially back in the alumni circle! 🎓💙</h2>
+        <h2 class="success-title">Your details have been submitted! 🎓</h2>
         <p class="success-text">Thank you for staying connected with us.</p>
+        <p class="register-flow">
+          <strong>Next step:</strong> The applicant must visit the College with the required documents and fee. Registration will be completed only after document verification and fee payment at the College.
+        </p>
         @if (registrationId) {
           <p class="success-id">Your Registration ID: <strong>{{ registrationId }}</strong></p>
         }
@@ -21,6 +24,9 @@
           <h2 class="register-title">Welcome Back! 👋</h2>
           <p class="register-sub">Help us reconnect with our alumni community.</p>
           <p class="register-note">It takes less than 2 minutes.</p>
+          <p class="register-flow" role="note">
+            <strong>Please note:</strong> The applicant must visit the College with the required documents and fee. Registration will be completed only after document verification and fee payment at the College.
+          </p>
         </header>
 
         <form [formGroup]="form" (ngSubmit)="submit()" novalidate>

@@ -217,6 +217,13 @@ input[type="file"]{
   font-weight:700;
   color:var(--chamber-900);
 }
+/* College's own flow (QA ALU-02): online form first, then a visit with
+   documents and fee; registration completes only after that. */
+.register-flow{
+  margin:18px 0 0; padding:14px 18px;
+  background:var(--parchment); border-left:3px solid var(--seal); border-radius:2px;
+  color:var(--text); font-size:.92rem; line-height:1.6; text-align:left;
+}
 .success-text{
   margin:0 0 14px;
   color:#4b5563;

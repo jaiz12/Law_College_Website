@@ -111,7 +111,8 @@ describe('AlumniRegisterComponent', () => {
     req.flush({ message: 'Registered Successfully', description: 'SGLCG/ALUM/2026/07', isSucceeded: true });
     fixture.detectChanges();
     expect(el(fixture).querySelector('.success-id')!.textContent).toContain('SGLCG/ALUM/2026/07');
-    expect(el(fixture).textContent).toContain("You're officially back in the alumni circle!");
+    expect(el(fixture).textContent).toContain('Your details have been submitted!');
+    expect(el(fixture).textContent).toContain('Registration will be completed only after document verification');
     expect(el(fixture).textContent).toContain('Thank you for staying connected with us.');
     expect(el(fixture).querySelector('form')).toBeNull();
   });
